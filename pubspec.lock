@@ -151,10 +151,10 @@ packages:
     dependency: transitive
     description:
       name: intl
-      sha256: "3bc132a9dbce73a7e4a21a17d06e1878839ffbf975568bc875c60537824b0c4d"
+      sha256: d6f56758b7d3014a48af9701c085700aac781a92a87a62b1333b46d8879661cf
       url: "https://pub.dev"
     source: hosted
-    version: "0.18.1"
+    version: "0.19.0"
   leak_tracker:
     dependency: transitive
     description:
@@ -356,18 +356,18 @@ packages:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_charts
-      sha256: ab73109c586f5ec2b01adc2672026a1fb3f93b2b5f6061ba8d7126c119061002
+      sha256: "59e2b0dea7dd0238cd8deeeb87e8117f09e2dd4d2bea91048b70e74c65a3cb18"
       url: "https://pub.dev"
     source: hosted
-    version: "24.2.9"
+    version: "29.1.37+1"
   syncfusion_flutter_core:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
-      sha256: "7666506885ebc8f62bb928ad4588a73e20caaff2b2cf2b2b56f67d98f4113525"
+      sha256: a9b203c3b4ad5c3bfed3e82c3f43f6861c4f2e8a12dca43b8abb8f128ffe42b5
       url: "https://pub.dev"
     source: hosted
-    version: "24.2.9"
+    version: "29.1.37"
   term_glyph:
     dependency: transitive
     description:

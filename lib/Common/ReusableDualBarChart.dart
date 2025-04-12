@@ -1,34 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:visualization/ChartDataProvider.dart';
 
-import 'DetailScreen.dart';
+import '../DetailScreen.dart';
+import '../Model/DualBarData.dart';
 
-class DualBarChart extends StatefulWidget {
+class ReusableDualBarChart extends StatefulWidget {
+  final List<DualBarData> data;
+
+  const ReusableDualBarChart({super.key, required this.data});
+
   @override
-  State<DualBarChart> createState() => _DualBarChartState();
+  State<ReusableDualBarChart> createState() => _ReusableDualBarChartState();
 }
 
-class _DualBarChartState extends State<DualBarChart> {
+class _ReusableDualBarChartState extends State<ReusableDualBarChart> {
   int? selectedIndex;
-  final data = ChartDataProvider.getDualBarChartData(); // Dữ liệu cột
 
   @override
   Widget build(BuildContext context) {
+    final data = widget.data;
+
     return Column(
       children: [
-        SizedBox(
-          height: MediaQuery.of(context).size.height * .8,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return Stack(
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return SizedBox(
+              height: 500,
+              child: Stack(
                 children: [
                   BarChart(
                     BarChartData(
-                      maxY: _getMaxY(),
+                      maxY: _getMaxY(data),
                       barTouchData: BarTouchData(
                         touchTooltipData: BarTouchTooltipData(
-                          tooltipBgColor: Colors.blueAccent, // Màu nền tooltip
+                          tooltipBgColor: Colors.blueAccent,
                           getTooltipItem: (group, groupIndex, rod, rodIndex) {
                             final item = data[groupIndex];
                             String actualText = 'Actual: ${item.actual}';
@@ -42,13 +47,10 @@ class _DualBarChartState extends State<DualBarChart> {
 
                             return BarTooltipItem(
                               '$actualText\n$targetText${negativeText.isNotEmpty ? '\n$negativeText' : ''}',
-                              TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                             );
                           },
                         ),
-                        // touchResponseCallback: (touchResponse) {
-                        //   // Callback cho touch, có thể thêm logic nếu cần
-                        // },
                       ),
                       titlesData: FlTitlesData(
                         bottomTitles: AxisTitles(
@@ -64,25 +66,23 @@ class _DualBarChartState extends State<DualBarChart> {
                                 return SideTitleWidget(
                                   axisSide: meta.axisSide,
                                   child: MouseRegion(
-                                    cursor: SystemMouseCursors.click, // 👈 Hiển thị pointer khi hover
+                                    cursor: SystemMouseCursors.click,
                                     child: GestureDetector(
                                       onTap: () {
                                         setState(() {
                                           selectedIndex = index;
                                         });
-
-                                        // Chuyển trang với hiệu ứng fade
                                         Navigator.push(
                                           context,
                                           PageRouteBuilder(
-                                            transitionDuration: Duration(milliseconds: 400),
+                                            transitionDuration: const Duration(milliseconds: 400),
                                             pageBuilder: (context, animation, secondaryAnimation) =>
                                                 FadeTransition(opacity: animation, child: DetailScreen(item: item)),
                                           ),
                                         );
                                       },
                                       child: AnimatedDefaultTextStyle(
-                                        duration: Duration(milliseconds: 300),
+                                        duration: const Duration(milliseconds: 300),
                                         style: TextStyle(
                                           fontSize: isSelected ? 18 : 16,
                                           fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
@@ -95,27 +95,23 @@ class _DualBarChartState extends State<DualBarChart> {
                                   ),
                                 );
                               }
-                              return SizedBox.shrink();
+                              return const SizedBox.shrink();
                             },
-
                           ),
                         ),
                         leftTitles: AxisTitles(
                           sideTitles: SideTitles(
                             showTitles: true,
-                            interval: _getInterval(), // Sử dụng interval tính toán
+                            interval: _getInterval(data),
                             reservedSize: 40,
                             getTitlesWidget: (value, meta) {
-                              if (value % _getInterval() != 0) return Container();
-
-                              // Định dạng giá trị hiển thị cho trục Y
+                              if (value % _getInterval(data) != 0) return Container();
                               String formattedValue = '${value.toInt()}';
-
                               return Padding(
                                 padding: const EdgeInsets.only(right: 8),
                                 child: Text(
                                   formattedValue,
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                                   textAlign: TextAlign.right,
                                 ),
                               );
@@ -125,16 +121,15 @@ class _DualBarChartState extends State<DualBarChart> {
                         rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                         topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                       ),
-                      barGroups: _buildBarGroups(),
+                      barGroups: _buildBarGroups(data),
                       gridData: FlGridData(show: true),
                       borderData: FlBorderData(show: false),
                     ),
-
                   ),
                 ],
-              );
-            }
-          ),
+              ),
+            );
+          },
         ),
         const SizedBox(height: 16),
         _buildLegend(),
@@ -142,44 +137,37 @@ class _DualBarChartState extends State<DualBarChart> {
     );
   }
 
-  // Hàm làm tròn lên đến số chẵn gần nhất
   double _roundToNextMultiple(double value, double multiple) {
     return (value / multiple).ceil() * multiple;
   }
 
-// Tính toán maxY và interval sao cho chúng là bội số của 10
-  double _getMaxY() {
+  double _getMaxY(List<DualBarData> data) {
     double maxVal = 0;
     double minVal = double.infinity;
 
-    // Tìm max và min giữa actual và target
     for (var item in data) {
       maxVal = [maxVal, item.actual, item.target].reduce((a, b) => a > b ? a : b);
       minVal = [minVal, item.actual, item.target].reduce((a, b) => a < b ? a : b);
     }
 
-    // Tính maxY, và làm tròn lên bội số của 10
     return _roundToNextMultiple(maxVal + (maxVal - minVal) * 0.2, 10);
   }
 
-// Tính toán interval sao cho chúng là bội số của 10
-  double _getInterval() {
-    double maxVal = _getMaxY();
+  double _getInterval(List<DualBarData> data) {
+    double maxVal = _getMaxY(data);
     double minVal = double.infinity;
 
     for (var item in data) {
       minVal = [minVal, item.actual, item.target].reduce((a, b) => a < b ? a : b);
     }
 
-    // Tính interval sao cho giá trị hiển thị không quá dày đặc
     double range = maxVal - minVal;
-    double interval = range / 5; // Chia thành 5 khoảng
+    double interval = range / 5;
 
-    // Làm tròn interval lên bội số của 10
     return _roundToNextMultiple(interval, 10);
   }
 
-  List<BarChartGroupData> _buildBarGroups() {
+  List<BarChartGroupData> _buildBarGroups(List<DualBarData> data) {
     return data.asMap().entries.map((entry) {
       final index = entry.key;
       final item = entry.value;
@@ -187,8 +175,6 @@ class _DualBarChartState extends State<DualBarChart> {
       Color actualColor;
       if (item.actual > item.target) {
         actualColor = Colors.red;
-      } else if (item.actual == item.target) {
-        actualColor = Colors.green;
       } else {
         actualColor = Colors.green;
       }
@@ -200,13 +186,13 @@ class _DualBarChartState extends State<DualBarChart> {
           BarChartRodData(
             toY: item.actual,
             color: actualColor,
-            width: 40,
+            width: 20,
             borderRadius: BorderRadius.circular(2),
           ),
           BarChartRodData(
             toY: item.target,
             color: Colors.grey,
-            width: 40,
+            width: 20,
             borderRadius: BorderRadius.circular(2),
           ),
         ],
@@ -221,7 +207,7 @@ class _DualBarChartState extends State<DualBarChart> {
         _legendItem(Colors.red, 'Actual > Target (Negative)'),
         _legendItem(Colors.green, 'Target Achieved'),
         _legendItem(Colors.grey, 'Target'),
-        _legendItem(Colors.black, 'Unit: K\$'), // Chú thích đơn vị K$
+        _legendItem(Colors.black, 'Unit: K\$'),
       ],
     );
   }
@@ -231,8 +217,8 @@ class _DualBarChartState extends State<DualBarChart> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(width: 16, height: 16, color: color),
-        SizedBox(width: 6),
-        Text(text, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w200)),
+        const SizedBox(width: 6),
+        Text(text, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w200)),
       ],
     );
   }

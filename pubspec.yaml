@@ -34,10 +34,10 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-  syncfusion_flutter_charts: ^24.2.9
   fl_chart: ^0.65.0
   flutter_charts: ^0.5.2            # Thư viện biểu đồ của Google
   provider: ^6.0.5                    # Quản lý trạng thái
+  syncfusion_flutter_charts: ^29.1.37+1
 dev_dependencies:
   flutter_test:
     sdk: flutter
