@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:visualization/ChartDataProvider.dart';
 
-import 'DetailScreen.dart';
+import 'Detail/DetailScreen.dart';
 
 class DualBarChart extends StatefulWidget {
   @override
@@ -18,7 +18,7 @@ class _DualBarChartState extends State<DualBarChart> {
     return Column(
       children: [
         SizedBox(
-          height: MediaQuery.of(context).size.height * .8,
+          height: MediaQuery.of(context).size.height * .85,
           child: LayoutBuilder(
             builder: (context, constraints) {
               return Stack(

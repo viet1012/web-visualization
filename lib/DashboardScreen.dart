@@ -1,13 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:visualization/Common/ReusableDualBarChart.dart';
 
 import 'ChartDataProvider.dart';
 import 'DualBarChart.dart';
 import 'GroupPerformanceCard.dart';
+import 'Overview/ReusableOverviewChart.dart';
 import 'StatCard.dart';
 
-class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
+class DashboardScreen extends StatefulWidget {
+
+  final VoidCallback onToggleTheme;
+
+  const DashboardScreen({super.key, required this.onToggleTheme});
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  final data = ChartDataProvider.getDualBarChartData();
 
   @override
   Widget build(BuildContext context) {
@@ -22,41 +33,102 @@ class DashboardScreen extends StatelessWidget {
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  "Final update: ",
-                  style: const TextStyle(color: Colors.black, fontSize: 20),
-                ),
-                Text(
-                  "Next update: ",
-                  style: const TextStyle(color: Colors.black, fontSize: 20),
-                ),
+              children: const [
+                Text("Final update: ", style: TextStyle(fontSize: 20)),
+                Text("Next update: ", style: TextStyle(fontSize: 20)),
               ],
             ),
+
           ],
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.brightness_6),
+            onPressed: widget.onToggleTheme,
+          ),
+        ],
         elevation: 0,
       ),
       body: SingleChildScrollView(
         child: SizedBox(
+            width: MediaQuery.of(context).size.width ,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+            child: Wrap(
               children: [
                 // Hàng 1: Tổng quan
-                Card(
-                  elevation: 8, // Tăng độ sâu của shadow
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16), // Bo góc của Card
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    // Khoảng cách giữa nội dung bên trong Card và viền Card
-                    child: DualBarChart(),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: Card(
+                    elevation: 8,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: ReusableOverviewChart(data: data),
+                    ),
                   ),
                 ),
+                // SizedBox(
+                //   width: MediaQuery.of(context).size.width / 2 - 24,
+                //   child: AspectRatio(
+                //     aspectRatio: 2,
+                //     child: Card(
+                //       elevation: 8,
+                //       shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(16),
+                //       ),
+                //       child: Padding(
+                //         padding: const EdgeInsets.all(16),
+                //         child: PieChart(
+                //           PieChartData(
+                //             sections:
+                //                 ChartDataProvider.getPieChartDataFromDualBarData(),
+                //             centerSpaceRadius: 1,
+                //             sectionsSpace: 3,
+                //             pieTouchData: PieTouchData(enabled: false),
+                //             startDegreeOffset: -90,
+                //             borderData: FlBorderData(show: false),
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                // SizedBox(
+                //   width: MediaQuery.of(context).size.width / 2 - 24,
+                //   child: AspectRatio(
+                //     aspectRatio: 2,
+                //     child: Card(
+                //       elevation: 8,
+                //       shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(16),
+                //       ),
+                //       child: Padding(
+                //         padding: const EdgeInsets.all(16),
+                //         child: ReusableDualBarChart(data: data),
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                // SizedBox(
+                //   width: MediaQuery.of(context).size.width / 2 - 24,
+                //   child: AspectRatio(
+                //     aspectRatio: 2,
+                //     child: Card(
+                //       elevation: 8,
+                //       shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(16),
+                //       ),
+                //       child: Padding(
+                //         padding: const EdgeInsets.all(16),
+                //         child: GroupPerformanceCard(),
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 // SizedBox(
                 //   height: 400,
                 //   child: Row(
@@ -108,42 +180,8 @@ class DashboardScreen extends StatelessWidget {
                 //     ],
                 //   ),
                 // ),
-                // const Row(
-                //   children: [
-                //     Expanded(
-                //       child: StatCard(
-                //         title: "For Manager",
-                //         value: "12,345",
-                //         color: Colors.blue,
-                //       ),
-                //     ),
-                //     Expanded(
-                //       child: StatCard(
-                //         title: "Revenue",
-                //         value: "\$48,234",
-                //         color: Colors.green,
-                //       ),
-                //     ),
-                //     Expanded(
-                //       child: StatCard(
-                //         title: "For Leader",
-                //         value: "1,234",
-                //         color: Colors.orange,
-                //       ),
-                //     ),
-                //     Expanded(
-                //       child: StatCard(
-                //         title: "For Staff",
-                //         value: "3.2%",
-                //         color: Colors.purple,
-                //       ),
-                //     ),
-                //   ],
                 // ),
-                // const SizedBox(height: 20),
 
-                // Hàng 2: Biểu đồ đường và bánh
-                // const SizedBox(height: 20),
               ],
             ),
           ),

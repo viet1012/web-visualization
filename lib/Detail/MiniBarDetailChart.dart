@@ -1,0 +1,54 @@
+import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+
+import '../Model/TargetActualData.dart'; // hoặc sửa theo đường dẫn của bạn
+
+class MiniBarChart extends StatelessWidget {
+  final double actual;
+  final double target;
+
+  const MiniBarChart({
+    super.key,
+    required this.actual,
+    required this.target,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SfCartesianChart(
+      margin: const EdgeInsets.all(0),
+      plotAreaBorderWidth: 0,
+      primaryXAxis: CategoryAxis(
+        labelPlacement: LabelPlacement.onTicks,
+        labelStyle: const TextStyle(fontSize: 14),
+      ),
+      primaryYAxis: NumericAxis(
+        labelStyle: const TextStyle(fontSize: 14),
+        minimum: 0,
+        maximum: actual > target ? actual * 1.2 : target * 1.2,
+      ),
+      series: <CartesianSeries<TargetActualData, String>>[
+        BarSeries<TargetActualData, String>(
+          dataSource: [
+            TargetActualData('Actual', actual),
+            TargetActualData('Target', target),
+          ],
+          xValueMapper: (data, _) => data.label,
+          yValueMapper: (data, _) => data.value,
+          pointColorMapper: (data, _) => data.label == 'Actual'
+              ? (actual > target
+              ? Colors.red
+              : actual == target
+              ? Colors.green
+              : Colors.green)
+              : Colors.grey[400],
+          dataLabelSettings: const DataLabelSettings(
+            isVisible: true,
+            textStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          ),
+          width: 0.4,
+        ),
+      ],
+    );
+  }
+}

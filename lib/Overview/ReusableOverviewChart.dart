@@ -4,24 +4,24 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import '../Detail/DetailScreen.dart';
 import '../Model/DualBarData.dart';
 
-class ReusableDualBarChart extends StatefulWidget {
+class ReusableOverviewChart extends StatefulWidget {
   final List<DualBarData> data;
 
-  const ReusableDualBarChart({super.key, required this.data});
+  const ReusableOverviewChart({super.key, required this.data});
 
   @override
-  State<ReusableDualBarChart> createState() => _ReusableDualBarChartState();
+  State<ReusableOverviewChart> createState() => _ReusableOverviewChartState();
 }
 
-class _ReusableDualBarChartState extends State<ReusableDualBarChart> {
+class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
   int? selectedIndex;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          height: MediaQuery.of(context).size.height * .7,
+        SizedBox(
+          height: MediaQuery.of(context).size.height * .86,
           child: SfCartesianChart(
             primaryXAxis: CategoryAxis(
               labelStyle: const TextStyle(
@@ -38,9 +38,9 @@ class _ReusableDualBarChartState extends State<ReusableDualBarChart> {
                       color: isSelected ? Colors.blueAccent : Colors.black,
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                       decoration:
-                          isSelected
-                              ? TextDecoration.underline
-                              : TextDecoration.none,
+                      isSelected
+                          ? TextDecoration.underline
+                          : TextDecoration.none,
                       fontSize: isSelected ? 16 : 14,
                     ),
                   );
@@ -52,10 +52,11 @@ class _ReusableDualBarChartState extends State<ReusableDualBarChart> {
               },
             ),
             primaryYAxis: NumericAxis(
+              labelStyle: const TextStyle(fontSize: 18),
               interval: _getInterval(widget.data),
               title: AxisTitle(
                 text: 'K\$',
-                textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
             ),
             series: _buildSeries(widget.data),
@@ -81,8 +82,8 @@ class _ReusableDualBarChartState extends State<ReusableDualBarChart> {
   }
 
   List<CartesianSeries<DualBarData, String>> _buildSeries(
-    List<DualBarData> data,
-  ) {
+      List<DualBarData> data,
+      ) {
     return <CartesianSeries<DualBarData, String>>[
       ColumnSeries<DualBarData, String>(
         dataSource: data,
@@ -97,8 +98,7 @@ class _ReusableDualBarChartState extends State<ReusableDualBarChart> {
         dataLabelSettings: const DataLabelSettings(
           isVisible: true,
           textStyle: TextStyle(
-            fontSize: 14, // 👈 Tùy chỉnh kích thước nếu cần
-            color: Colors.black, // 👈 Màu chữ (tuỳ chọn)
+            fontSize: 18, // 👈 Tùy chỉnh kích thước nếu cần
           ),
         ),
       ),
@@ -114,8 +114,7 @@ class _ReusableDualBarChartState extends State<ReusableDualBarChart> {
         dataLabelSettings: const DataLabelSettings(
           isVisible: true,
           textStyle: TextStyle(
-            fontSize: 14, // 👈 Tùy chỉnh kích thước nếu cần
-            color: Colors.black, // 👈 Màu chữ (tuỳ chọn)
+            fontSize: 18, // 👈 Tùy chỉnh kích thước nếu cần
           ),
         ),
       ),
@@ -149,9 +148,11 @@ class _ReusableDualBarChartState extends State<ReusableDualBarChart> {
         const SizedBox(width: 6),
         Text(
           text,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ],
     );
   }
+
+
 }
