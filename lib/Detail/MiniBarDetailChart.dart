@@ -20,10 +20,10 @@ class MiniBarChart extends StatelessWidget {
       plotAreaBorderWidth: 0,
       primaryXAxis: CategoryAxis(
         labelPlacement: LabelPlacement.onTicks,
-        labelStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        labelStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
       primaryYAxis: NumericAxis(
-        labelStyle: const TextStyle(fontSize: 16),
+        labelStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         minimum: 0,
         maximum: actual > target ? actual * 1.2 : target * 1.2,
       ),
@@ -44,7 +44,7 @@ class MiniBarChart extends StatelessWidget {
               : Colors.grey[400],
           dataLabelSettings: const DataLabelSettings(
             isVisible: true,
-            textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           width: 0.4,
         ),

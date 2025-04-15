@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:visualization/Common/ReusableDualBarChart.dart';
-
 import 'ChartDataProvider.dart';
-import 'DualBarChart.dart';
-import 'GroupPerformanceCard.dart';
+import 'Common/BlinkingText.dart';
+import 'Common/DateDisplayWidget.dart';
+import 'Common/TimeInfoCard.dart';
 import 'Overview/ReusableOverviewChart.dart';
-import 'StatCard.dart';
+
 
 class DashboardScreen extends StatefulWidget {
-
   final VoidCallback onToggleTheme;
 
   const DashboardScreen({super.key, required this.onToggleTheme});
+
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
@@ -24,19 +22,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 4,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Cost Monitoring',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: const [
-                Text("Final update: ", style: TextStyle(fontSize: 20)),
-                Text("Next update: ", style: TextStyle(fontSize: 20)),
+            Row(
+              children: [
+                BlinkingText(text: 'Cost Monitoring'),
+                SizedBox(width: 16),
+                DateDisplayWidget(),
               ],
+            ),
+            TimeInfoCard(
+              finalTime: "12:00 PM",
+              nextTime: "03:00 PM",
             ),
 
           ],
@@ -48,11 +47,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             onPressed: widget.onToggleTheme,
           ),
         ],
-        elevation: 0,
       ),
       body: SingleChildScrollView(
         child: SizedBox(
-            width: MediaQuery.of(context).size.width ,
+          width: MediaQuery.of(context).size.width,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Wrap(
@@ -62,15 +60,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   width: MediaQuery.of(context).size.width,
                   child: Card(
                     elevation: 8,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
+                    shadowColor: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        side: BorderSide(color: Colors.blue.shade100),
+                      ),
                     child: Padding(
                       padding: const EdgeInsets.all(8),
                       child: ReusableOverviewChart(data: data),
                     ),
                   ),
                 ),
+
                 // SizedBox(
                 //   width: MediaQuery.of(context).size.width / 2 - 24,
                 //   child: AspectRatio(
@@ -181,7 +182,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 //   ),
                 // ),
                 // ),
-
               ],
             ),
           ),

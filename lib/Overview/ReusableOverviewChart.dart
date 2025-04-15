@@ -16,6 +16,22 @@ class ReusableOverviewChart extends StatefulWidget {
 class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
   int? selectedIndex;
 
+  //Data Demo
+  List<DualBarData> _getDetailDataFor(DualBarData item) {
+    return [
+      DualBarData('A', item.actual - 10, item.target - 10),
+      DualBarData('B', item.actual, item.target - 10),
+      DualBarData('C', item.actual + 5, item.target - 10),
+      DualBarData('D', item.actual - 2, item.target - 10),
+      DualBarData('E', item.actual - 2, item.target - 10),
+      DualBarData('F', item.actual - 2, item.target - 10),
+      DualBarData('G', item.actual - 2, item.target - 10),
+      DualBarData('H', item.actual - 4, item.target - 10),
+      DualBarData('II', item.actual + 13, item.target - 10),
+      DualBarData('JJ', item.actual - 20, item.target - 10),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -36,11 +52,12 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
                     widget.data[index].tiltle,
                     TextStyle(
                       color: isSelected ? Colors.blueAccent : Colors.black,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.w500,
                       decoration:
-                      isSelected
-                          ? TextDecoration.underline
-                          : TextDecoration.none,
+                          isSelected
+                              ? TextDecoration.underline
+                              : TextDecoration.none,
                       fontSize: isSelected ? 16 : 14,
                     ),
                   );
@@ -52,24 +69,37 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
               },
             ),
             primaryYAxis: NumericAxis(
-              labelStyle: const TextStyle(fontSize: 20),
+              labelStyle: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
               interval: _getInterval(widget.data),
               title: AxisTitle(
                 text: 'K\$',
-                textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                textStyle: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  fontStyle: FontStyle.italic,
+                ),
               ),
             ),
             series: _buildSeries(widget.data),
             onAxisLabelTapped: (AxisLabelTapArgs args) {
-              final index = widget.data.indexWhere((e) => e.tiltle == args.text);
+              final index = widget.data.indexWhere(
+                (e) => e.tiltle == args.text,
+              );
               if (index != -1) {
                 final item = widget.data[index];
+                final detailData = _getDetailDataFor(item);
                 setState(() {
                   selectedIndex = index;
                 });
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => DetailScreen(item: item)),
+                  MaterialPageRoute(
+                    builder:
+                        (_) => DetailScreen(item: item, detailData: detailData),
+                  ),
                 );
               }
             },
@@ -82,8 +112,8 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
   }
 
   List<CartesianSeries<DualBarData, String>> _buildSeries(
-      List<DualBarData> data,
-      ) {
+    List<DualBarData> data,
+  ) {
     return <CartesianSeries<DualBarData, String>>[
       ColumnSeries<DualBarData, String>(
         dataSource: data,
@@ -153,6 +183,4 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
       ],
     );
   }
-
-
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:visualization/ChartDataProvider.dart';
+import 'package:visualization/DashboardScreen.dart';
 
 import 'Detail/DetailScreen.dart';
 
@@ -77,7 +78,7 @@ class _DualBarChartState extends State<DualBarChart> {
                                           PageRouteBuilder(
                                             transitionDuration: Duration(milliseconds: 400),
                                             pageBuilder: (context, animation, secondaryAnimation) =>
-                                                FadeTransition(opacity: animation, child: DetailScreen(item: item)),
+                                                FadeTransition(opacity: animation, child: CircleAvatar()),
                                           ),
                                         );
                                       },

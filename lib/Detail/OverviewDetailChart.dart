@@ -26,7 +26,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
           child: SfCartesianChart(
             primaryXAxis: CategoryAxis(
               labelStyle: const TextStyle(
-                fontSize: 16,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
               axisLabelFormatter: (AxisLabelRenderDetails details) {
@@ -37,32 +37,39 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
                     widget.data[index].tiltle,
                     TextStyle(
                       color: isSelected ? Colors.blueAccent : Colors.black,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.w500,
                       decoration:
-                      isSelected
-                          ? TextDecoration.underline
-                          : TextDecoration.none,
+                          isSelected
+                              ? TextDecoration.underline
+                              : TextDecoration.none,
                       fontSize: isSelected ? 16 : 14,
                     ),
                   );
                 }
                 return ChartAxisLabel(
                   details.text,
-                  TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 );
               },
             ),
             primaryYAxis: NumericAxis(
-              labelStyle: const TextStyle(fontSize: 16),
+              labelStyle: const TextStyle(fontSize: 18),
               interval: _getInterval(widget.data),
               title: AxisTitle(
                 text: 'K\$',
-                textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                textStyle: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  fontStyle: FontStyle.italic,
+                ),
               ),
             ),
             series: _buildSeries(widget.data),
             onAxisLabelTapped: (AxisLabelTapArgs args) {
-              final index = widget.data.indexWhere((e) => e.tiltle == args.text);
+              final index = widget.data.indexWhere(
+                (e) => e.tiltle == args.text,
+              );
               if (index != -1) {
                 final item = widget.data[index];
                 setState(() {
@@ -70,7 +77,9 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
                 });
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => SubDetailScreen(item: item)),
+                  MaterialPageRoute(
+                    builder: (_) => SubDetailScreen(item: item),
+                  ),
                 );
               }
             },
@@ -83,8 +92,8 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
   }
 
   List<CartesianSeries<DualBarData, String>> _buildSeries(
-      List<DualBarData> data,
-      ) {
+    List<DualBarData> data,
+  ) {
     return <CartesianSeries<DualBarData, String>>[
       ColumnSeries<DualBarData, String>(
         dataSource: data,
@@ -93,7 +102,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
         pointColorMapper:
             (item, _) => item.actual > item.target ? Colors.red : Colors.green,
         name: 'Actual',
-        width: 0.45,
+        width: 0.5,
         spacing: 0.1,
         // 👈 khoảng cách giữa các cột trong cùng nhóm
         dataLabelSettings: const DataLabelSettings(
@@ -109,7 +118,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
         yValueMapper: (item, _) => item.target,
         name: 'Target',
         color: Colors.grey,
-        width: 0.45,
+        width: 0.5,
         spacing: 0.1,
         // 👈 khoảng cách giữa các cột trong cùng nhóm
         dataLabelSettings: const DataLabelSettings(
