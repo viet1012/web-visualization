@@ -22,7 +22,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
     return Column(
       children: [
         SizedBox(
-          height: MediaQuery.of(context).size.height * .6,
+          height: MediaQuery.of(context).size.height * .65,
           child: SfCartesianChart(
             primaryXAxis: CategoryAxis(
               labelStyle: const TextStyle(
@@ -53,11 +53,11 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
               },
             ),
             primaryYAxis: NumericAxis(
-              labelStyle: const TextStyle(fontSize: 14),
+              labelStyle: const TextStyle(fontSize: 16),
               interval: _getInterval(widget.data),
               title: AxisTitle(
                 text: 'K\$',
-                textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
             series: _buildSeries(widget.data),
@@ -93,13 +93,13 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
         pointColorMapper:
             (item, _) => item.actual > item.target ? Colors.red : Colors.green,
         name: 'Actual',
-        width: 0.4,
+        width: 0.45,
         spacing: 0.1,
         // 👈 khoảng cách giữa các cột trong cùng nhóm
         dataLabelSettings: const DataLabelSettings(
           isVisible: true,
           textStyle: TextStyle(
-            fontSize: 14, // 👈 Tùy chỉnh kích thước nếu cần
+            fontSize: 18, // 👈 Tùy chỉnh kích thước nếu cần
           ),
         ),
       ),
@@ -109,13 +109,13 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
         yValueMapper: (item, _) => item.target,
         name: 'Target',
         color: Colors.grey,
-        width: 0.4,
+        width: 0.45,
         spacing: 0.1,
         // 👈 khoảng cách giữa các cột trong cùng nhóm
         dataLabelSettings: const DataLabelSettings(
           isVisible: true,
           textStyle: TextStyle(
-            fontSize: 14, // 👈 Tùy chỉnh kích thước nếu cần
+            fontSize: 18, // 👈 Tùy chỉnh kích thước nếu cần
           ),
         ),
       ),
@@ -149,7 +149,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
         const SizedBox(width: 6),
         Text(
           text,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ],
     );

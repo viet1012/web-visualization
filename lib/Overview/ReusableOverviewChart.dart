@@ -47,12 +47,12 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
                 }
                 return ChartAxisLabel(
                   details.text,
-                  TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 );
               },
             ),
             primaryYAxis: NumericAxis(
-              labelStyle: const TextStyle(fontSize: 18),
+              labelStyle: const TextStyle(fontSize: 20),
               interval: _getInterval(widget.data),
               title: AxisTitle(
                 text: 'K\$',
@@ -92,13 +92,13 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
         pointColorMapper:
             (item, _) => item.actual > item.target ? Colors.red : Colors.green,
         name: 'Actual',
-        width: 0.4,
-        spacing: 0.1,
+        width: 0.5,
+        spacing: 0.05,
         // 👈 khoảng cách giữa các cột trong cùng nhóm
         dataLabelSettings: const DataLabelSettings(
           isVisible: true,
           textStyle: TextStyle(
-            fontSize: 18, // 👈 Tùy chỉnh kích thước nếu cần
+            fontSize: 20, // 👈 Tùy chỉnh kích thước nếu cần
           ),
         ),
       ),
@@ -108,13 +108,13 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
         yValueMapper: (item, _) => item.target,
         name: 'Target',
         color: Colors.grey,
-        width: 0.4,
-        spacing: 0.1,
+        width: 0.5,
+        spacing: 0.05,
         // 👈 khoảng cách giữa các cột trong cùng nhóm
         dataLabelSettings: const DataLabelSettings(
           isVisible: true,
           textStyle: TextStyle(
-            fontSize: 18, // 👈 Tùy chỉnh kích thước nếu cần
+            fontSize: 20, // 👈 Tùy chỉnh kích thước nếu cần
           ),
         ),
       ),
@@ -148,7 +148,7 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
         const SizedBox(width: 6),
         Text(
           text,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ],
     );

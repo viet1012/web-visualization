@@ -22,8 +22,8 @@ class DetailScreen extends StatelessWidget {
     [
       DualBarData('A', 35, 43 ),  // Thực tế > Target => Âm
       DualBarData('B', 60, 49),  // Đạt
-      DualBarData('C', 25, 30),  // Chưa đạt
-      DualBarData('D', 40, 40),  // Đạt
+      DualBarData('C', 25, 35),  // Chưa đạt
+      DualBarData('D', 40, 43),  // Đạt
       DualBarData('E', 42, 40),  // Âm
       DualBarData('F', 34, 55),  // Chưa đạt
       DualBarData('G', 35, 35),  // Chưa đạt

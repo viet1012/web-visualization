@@ -7,12 +7,12 @@ class ChartDataProvider {
 
   static List<DualBarData> getDualBarChartData() {
     return [
-      DualBarData('PR_PRO', 35, 43 ),  // Thực tế > Target => Âm
-      DualBarData('MO_PRO', 28, 49),  // Đạt
-      DualBarData('GU_PRO', 25, 30),  // Chưa đạt
-      DualBarData('MA', 40, 40),  // Đạt
-      DualBarData('TE', 42, 40),  // Âm
-      DualBarData('COMMON', 35, 35),  // Chưa đạt
+      DualBarData('PR_PRO', 80, 120 ),
+      DualBarData('MO_PRO', 120, 100),
+      DualBarData('GU_PRO', 150, 60),
+      DualBarData('MA', 100, 100),
+      DualBarData('TE', 134, 120),
+      DualBarData('COMMON', 130, 130),
     ];
   }
 
