@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -279,27 +281,60 @@ class DashboardScreen extends StatefulWidget {
 // }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  final data = ChartDataProvider.getDualBarChartData();
-
   int selectedMonth = DateTime.now().month;
   int selectedYear = DateTime.now().year;
-  DateTime selectedDate = DateTime(
-    DateTime.now().year,
-    DateTime.now().month,
-    1,
-  );
-  late ApiService toolCostService; // Đối tượng ToolCostService
+  DateTime selectedDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
 
-  late Future<List<ToolCostModel>> monthlyDataFuture; // Future cho dữ liệu
+  DateTime _currentDate = DateTime.now(); // Initialize directly
+  Timer? _dailyTimer;
+  final dayFormat = DateFormat('d-MMM-yyyy');
 
   @override
   void initState() {
     super.initState();
-    final provider = Provider.of<ToolCostProvider>(context, listen: false);
-    final String month = "${selectedYear}-${selectedMonth.toString().padLeft(2, '0')}";
-    provider.fetchToolCosts(month);
+
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      print("After build - Current Date: $_currentDate");
+      final provider = Provider.of<ToolCostProvider>(context, listen: false);
+      _fetchData(provider);
+    });
+
+    _dailyTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      final now = DateTime.now();
+      if (now.day != _currentDate.day ||
+          now.month != _currentDate.month ||
+          now.year != _currentDate.year) {
+        _currentDate = now;
+
+        if (mounted) {
+          final provider = Provider.of<ToolCostProvider>(context, listen: false);
+
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            setState(() {
+              selectedDate = DateTime(now.year, now.month, 1);
+              selectedMonth = now.month;
+              selectedYear = now.year;
+            });
+            _fetchData(provider);
+          });
+        }
+      }
+    });
   }
 
+
+  @override
+  void dispose() {
+    _dailyTimer?.cancel(); // 🧹 Dọn dẹp khi màn hình bị hủy
+    super.dispose();
+  }
+
+  void _fetchData(ToolCostProvider provider) {
+    final String month = "${selectedYear}-${selectedMonth.toString().padLeft(2, '0')}";
+    provider.clearData(); // 👈 Reset trước khi fetch
+    provider.fetchToolCosts(month);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -318,7 +353,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Container(
                   decoration: BoxDecoration(shape: BoxShape.circle),
                   width: 160,
-                  height: 40, // thêm dòng này!
+                  height: 40,
                   child: Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: _buildMonthYearDropdown(),
@@ -326,7 +361,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               ],
             ),
-            TimeInfoCard(finalTime: "12:00 PM", nextTime: "03:00 PM"),
+            TimeInfoCard(
+              finalTime: dayFormat.format(_currentDate), // Ngày hiện tại
+              nextTime: dayFormat.format(_currentDate.add(const Duration(days: 1))), // Ngày kế tiếp
+            ),
+
           ],
         ),
         centerTitle: true,
@@ -337,62 +376,47 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
       ),
-      body: FutureBuilder<List<ToolCostModel>>(
-        future: monthlyDataFuture, // Dữ liệu từ API
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            // Hiển thị Loading khi dữ liệu đang tải
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            // Hiển thị lỗi nếu có lỗi xảy ra
-            return Center(child: Text("Error: ${snapshot.error}"));
-          } else if (snapshot.hasData) {
-            final monthlyData = snapshot.data!;
-            // Kiểm tra xem dữ liệu có rỗng không
-            if (monthlyData.isEmpty) {
-              return NoDataWidget(
-                title: "Chưa có dữ liệu",
-                message: "Vui lòng thử lại với khoảng thời gian khác.",
-                icon: Icons.search_off,
-              );
-            }
-            // Dữ liệu đã có, hiển thị UI chính
-            return SingleChildScrollView(
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Wrap(
-                    children: [
-                      // Hàng 1: Tổng quan
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        child: Card(
-                          elevation: 8,
-                          shadowColor: Colors.blue,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            side: BorderSide(color: Colors.blue.shade100),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: ReusableOverviewChart(data: monthlyData),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          } else {
-            // Nếu không có dữ liệu
-            return NoDataWidget(
+      body: Consumer<ToolCostProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (provider.data.isEmpty) {
+            return const NoDataWidget(
               title: "Chưa có dữ liệu",
               message: "Vui lòng thử lại với khoảng thời gian khác.",
               icon: Icons.search_off,
             );
           }
+
+          return SingleChildScrollView(
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Wrap(
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: Card(
+                        elevation: 8,
+                        shadowColor: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: BorderSide(color: Colors.blue.shade100),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: ReusableOverviewChart(data: provider.data),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
         },
       ),
     );
@@ -401,8 +425,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildMonthYearDropdown() {
     final now = DateTime.now();
     final List<DateTime> options = List.generate(
-      24, // số tháng muốn hiển thị (2 năm gần nhất)
-      (index) => DateTime(now.year, now.month - index, 1),
+      12,
+          (index) => DateTime(now.year, now.month - index, 1),
     );
 
     return Container(
@@ -418,26 +442,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
           icon: const Icon(Icons.arrow_drop_down, color: Colors.blue),
           isExpanded: true,
           dropdownColor: Colors.white,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-          ),
-          items:
-              options.map((date) {
-                final label = DateFormat('MMM yyyy').format(date); // "Apr 2024"
-                return DropdownMenuItem(value: date, child: Text(label));
-              }).toList(),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black),
+          items: options.map((date) {
+            final label = DateFormat('MMM yyyy').format(date);
+            return DropdownMenuItem(value: date, child: Text(label));
+          }).toList(),
           onChanged: (DateTime? value) {
             if (value != null) {
               setState(() {
                 selectedDate = value;
                 selectedMonth = value.month;
                 selectedYear = value.year;
-                monthlyDataFuture = toolCostService.fetchToolCosts(
-                  "${selectedYear}-${selectedMonth.toString().padLeft(2, '0')}",
-                ); // Load lại dữ liệu khi tháng/năm thay đổi
               });
+              final provider = Provider.of<ToolCostProvider>(context, listen: false);
+              _fetchData(provider);
             }
           },
         ),

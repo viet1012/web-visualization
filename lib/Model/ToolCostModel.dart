@@ -13,8 +13,8 @@ class ToolCostModel {
   factory ToolCostModel.fromJson(Map<String, dynamic> json) {
     return ToolCostModel(
       title: json['dept'] ?? '',
-      target: (json['tgt_MTD'] ?? 0.0).toDouble(),
-      actual: (json['act'] ?? 0.0).toDouble(),
+      target: double.parse(((json['tgt_MTD'] ?? 0.0).toDouble() / 1000).toStringAsFixed(1)),
+      actual: double.parse(((json['act'] ?? 0.0).toDouble() / 1000).toStringAsFixed(1)),
     );
   }
 
@@ -22,8 +22,8 @@ class ToolCostModel {
   Map<String, dynamic> toJson() {
     return {
       'dept': title,
-      'tgt_MTD': target,
-      'act': actual,
+      'tgt_MTD': target * 1000,  // Chuyển đổi lại nếu cần
+      'act': actual * 1000,       // Chuyển đổi lại nếu cần
     };
   }
 }
