@@ -27,7 +27,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             children: [
               BlinkingText(text: titleText),
               const SizedBox(width: 16),
-              const DateDisplayWidget(),
+              // const DateDisplayWidget(),
             ],
           ),
           TimeInfoCard(

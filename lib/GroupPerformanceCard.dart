@@ -49,7 +49,7 @@ class GroupPerformanceCard extends StatelessWidget {
                     SizedBox(
                       width: 80,
                       child: Text(
-                        item.tiltle,
+                        item.title,
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                         overflow: TextOverflow.ellipsis,
                       ),

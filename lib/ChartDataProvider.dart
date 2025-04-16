@@ -1,20 +1,26 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-import 'Model/DualBarData.dart';
+import 'Model/ToolCostModel.dart';
 
 class ChartDataProvider {
 
-  static List<DualBarData> getDualBarChartData() {
+  static List<ToolCostModel> getDualBarChartData() {
     return [
-      DualBarData('PR_PRO', 80, 120 ),
-      DualBarData('MO_PRO', 120, 100),
-      DualBarData('GU_PRO', 150, 60),
-      DualBarData('MA', 100, 100),
-      DualBarData('TE', 134, 120),
-      DualBarData('COMMON', 130, 130),
+      // ToolCostModel('PR_PRO', 80, 120, DateTime(2025, 4, 1)),
+      // ToolCostModel('MO_PRO', 120, 100, DateTime(2025, 4, 1)),
+      // ToolCostModel('GU_PRO', 150, 60, DateTime(2025, 4, 1)),
+      // ToolCostModel('MA', 100, 100, DateTime(2025, 4, 1)),
+      // ToolCostModel('TE', 134, 120, DateTime(2025, 4, 1)),
+      // ToolCostModel('COMMON', 130, 130, DateTime(2025, 3, 1)),
+      // ToolCostModel('PR_PRO', 200, 200, DateTime(2025, 3, 1)),
+      // ToolCostModel('MO_PRO', 220, 200, DateTime(2025, 3, 1)),
+      // ToolCostModel('GU_PRO', 150, 200, DateTime(2025, 3, 1)),
+      // ToolCostModel('MA', 100, 200, DateTime(2025, 3, 3)),
+      // ToolCostModel('TE', 134, 200, DateTime(2025, 3, 1)),
     ];
   }
+
 
   static List<PieChartSectionData> getPieChartDataFromDualBarData() {
     final data = getDualBarChartData(); // Dữ liệu cột

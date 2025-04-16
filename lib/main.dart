@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 
 import 'DashboardScreen.dart';
+import 'Provider/ToolCostProvider.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const DashboardApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ToolCostProvider()),
+      ],
+      child: DashboardApp(),
+    ),
+  );
 }
+
 
 class DashboardApp extends StatefulWidget {
   const DashboardApp({super.key});

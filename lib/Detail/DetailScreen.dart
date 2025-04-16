@@ -1,26 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../Common/CustomAppBar.dart';
 import '../Common/DateDisplayWidget.dart';
 import '../Common/TimeInfoCard.dart';
+import '../Model/StackBarData.dart';
 import 'MiniBarDetailChart.dart';
 import 'OverviewDetailChart.dart';
-import '../Model/DualBarData.dart';
+import '../Model/ToolCostModel.dart';
 
-class DetailScreen extends StatelessWidget {
-  final DualBarData item;
-  final List<DualBarData> detailData;
+class DetailScreen extends StatefulWidget {
+  final ToolCostModel item;
+  final List<ToolCostModel> detailData;
 
   const DetailScreen({super.key, required this.item, required this.detailData});
 
   @override
+  State<DetailScreen> createState() => _DetailScreenState();
+}
+
+class _DetailScreenState extends State<DetailScreen> {
+  @override
   Widget build(BuildContext context) {
-    final status = _getStatus(item);
+    final status = _getStatus(widget.item);
     final statusColor = _getStatusColor(status);
     final statusIcon = _getStatusIcon(status);
 
     return Scaffold(
       appBar: CustomAppBar(
-        titleText: '${item.tiltle} ',
+        titleText: '${widget.item.title} ',
         finalTime: "12:00 PM",
         nextTime: "03:00 PM",
       ),
@@ -40,12 +47,10 @@ class DetailScreen extends StatelessWidget {
                   child: IntrinsicHeight(
                     child: Row(
                       children: [
-                        Container(
-                          width:
-                              MediaQuery.of(context).size.width *
-                              0.1, // Chiếm 10% chiều rộng
-                          padding: const EdgeInsets.all(16),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * .1,
                           child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(statusIcon, color: statusColor, size: 24),
                               const SizedBox(width: 10),
@@ -62,10 +67,10 @@ class DetailScreen extends StatelessWidget {
                         ),
                         SizedBox(
                           height: 150,
-                          width: MediaQuery.of(context).size.width * .7,
+                          width: MediaQuery.of(context).size.width * .8,
                           child: MiniBarChart(
-                            actual: item.actual.toDouble(),
-                            target: item.target.toDouble(),
+                            actual: widget.item.actual.toDouble(),
+                            target: widget.item.target.toDouble(),
                           ),
                         ),
                       ],
@@ -79,7 +84,7 @@ class DetailScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              OverviewDetailChart(data: detailData),
+              OverviewDetailChart(data: widget.detailData),
             ],
           ),
         ),
@@ -88,7 +93,7 @@ class DetailScreen extends StatelessWidget {
   }
 }
 
-String _getStatus(DualBarData item) {
+String _getStatus(ToolCostModel item) {
   if (item.actual > item.target) return 'Over Target';
   if (item.actual < item.target) return 'Under Target';
   return 'Target Achieved';

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../SubDetail/SubDetailScreen.dart';
-import '../Model/DualBarData.dart';
+import '../Model/ToolCostModel.dart';
 
 class OverviewDetailChart extends StatefulWidget {
-  final List<DualBarData> data;
+  final List<ToolCostModel> data;
 
   const OverviewDetailChart({super.key, required this.data});
 
@@ -33,7 +33,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
                 if (index != null && index < widget.data.length) {
                   final isSelected = selectedIndex == index;
                   return ChartAxisLabel(
-                    widget.data[index].tiltle,
+                    widget.data[index].title,
                     TextStyle(
                       color: isSelected ? Colors.blueAccent : Colors.black,
                       fontWeight:
@@ -67,7 +67,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
             series: _buildSeries(widget.data),
             onAxisLabelTapped: (AxisLabelTapArgs args) {
               final index = widget.data.indexWhere(
-                (e) => e.tiltle == args.text,
+                (e) => e.title == args.text,
               );
               if (index != -1) {
                 final item = widget.data[index];
@@ -90,13 +90,13 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
     );
   }
 
-  List<CartesianSeries<DualBarData, String>> _buildSeries(
-    List<DualBarData> data,
+  List<CartesianSeries<ToolCostModel, String>> _buildSeries(
+    List<ToolCostModel> data,
   ) {
-    return <CartesianSeries<DualBarData, String>>[
-      ColumnSeries<DualBarData, String>(
+    return <CartesianSeries<ToolCostModel, String>>[
+      ColumnSeries<ToolCostModel, String>(
         dataSource: data,
-        xValueMapper: (item, _) => item.tiltle,
+        xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.actual,
         pointColorMapper:
             (item, _) => item.actual > item.target ? Colors.red : Colors.green,
@@ -111,9 +111,9 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
           ),
         ),
       ),
-      ColumnSeries<DualBarData, String>(
+      ColumnSeries<ToolCostModel, String>(
         dataSource: data,
-        xValueMapper: (item, _) => item.tiltle,
+        xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.target,
         name: 'Target',
         color: Colors.grey,
@@ -130,7 +130,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
     ];
   }
 
-  double _getInterval(List<DualBarData> data) {
+  double _getInterval(List<ToolCostModel> data) {
     double maxVal = data
         .map((e) => e.actual > e.target ? e.actual : e.target)
         .reduce((a, b) => a > b ? a : b);

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../Detail/DetailScreen.dart';
-import '../Model/DualBarData.dart';
+import '../Model/ToolCostModel.dart';
 
 class ReusableOverviewChart extends StatefulWidget {
-  final List<DualBarData> data;
+  final List<ToolCostModel> data;
 
   const ReusableOverviewChart({super.key, required this.data});
 
@@ -17,18 +17,9 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
   int? selectedIndex;
 
   //Data Demo
-  List<DualBarData> _getDetailDataFor(DualBarData item) {
+  List<ToolCostModel> _getDetailDataFor(ToolCostModel item) {
     return [
-      DualBarData('A', item.actual - 10, item.target - 10),
-      DualBarData('B', item.actual, item.target - 10),
-      DualBarData('C', item.actual + 5, item.target - 10),
-      DualBarData('D', item.actual - 2, item.target - 10),
-      DualBarData('E', item.actual - 2, item.target - 10),
-      DualBarData('F', item.actual - 2, item.target - 10),
-      DualBarData('G', item.actual - 2, item.target - 10),
-      DualBarData('H', item.actual - 4, item.target - 10),
-      DualBarData('II', item.actual + 13, item.target - 10),
-      DualBarData('JJ', item.actual - 20, item.target - 10),
+
     ];
   }
 
@@ -50,7 +41,7 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
                 if (index != null && index < widget.data.length) {
                   final isSelected = selectedIndex == index;
                   return ChartAxisLabel(
-                    widget.data[index].tiltle,
+                    widget.data[index].title,
                     TextStyle(
                       color: isSelected ? Colors.blueAccent : Colors.black,
                       fontWeight:
@@ -87,7 +78,7 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
             series: _buildSeries(widget.data),
             onAxisLabelTapped: (AxisLabelTapArgs args) {
               final index = widget.data.indexWhere(
-                (e) => e.tiltle == args.text,
+                (e) => e.title == args.text,
               );
               if (index != -1) {
                 final item = widget.data[index];
@@ -112,13 +103,13 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
     );
   }
 
-  List<CartesianSeries<DualBarData, String>> _buildSeries(
-    List<DualBarData> data,
+  List<CartesianSeries<ToolCostModel, String>> _buildSeries(
+    List<ToolCostModel> data,
   ) {
-    return <CartesianSeries<DualBarData, String>>[
-      ColumnSeries<DualBarData, String>(
+    return <CartesianSeries<ToolCostModel, String>>[
+      ColumnSeries<ToolCostModel, String>(
         dataSource: data,
-        xValueMapper: (item, _) => item.tiltle,
+        xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.actual,
         pointColorMapper:
             (item, _) => item.actual > item.target ? Colors.red : Colors.green,
@@ -133,9 +124,9 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
           ),
         ),
       ),
-      ColumnSeries<DualBarData, String>(
+      ColumnSeries<ToolCostModel, String>(
         dataSource: data,
-        xValueMapper: (item, _) => item.tiltle,
+        xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.target,
         name: 'Target',
         color: Colors.grey,
@@ -152,7 +143,7 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
     ];
   }
 
-  double _getInterval(List<DualBarData> data) {
+  double _getInterval(List<ToolCostModel> data) {
     double maxVal = data
         .map((e) => e.actual > e.target ? e.actual : e.target)
         .reduce((a, b) => a > b ? a : b);

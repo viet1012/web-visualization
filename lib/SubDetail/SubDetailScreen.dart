@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import '../Common/CustomAppBar.dart';
-import '../Model/DualBarData.dart';
+import '../Model/ToolCostModel.dart';
 import '../Model/StackBarData.dart';
 
 class SubDetailScreen extends StatefulWidget {
-  final DualBarData item;
+  final ToolCostModel item;
 
   const SubDetailScreen({super.key, required this.item});
 
@@ -34,7 +34,7 @@ class _SubDetailScreenState extends State<SubDetailScreen> {
 
     return Scaffold(
       appBar: CustomAppBar(
-        titleText: '${widget.item.tiltle} ',
+        titleText: '${widget.item.title} ',
         finalTime: "12:00 PM",
         nextTime: "03:00 PM",
       ),
@@ -227,7 +227,7 @@ class _SubDetailScreenState extends State<SubDetailScreen> {
     return (maxCumulative * 1.1).ceilToDouble();
   }
 
-  String _getStatus(DualBarData item) {
+  String _getStatus(ToolCostModel item) {
     if (item.actual > item.target) return 'Over Target';
     if (item.actual < item.target) return 'Under Target';
     return 'Target Achieved';
