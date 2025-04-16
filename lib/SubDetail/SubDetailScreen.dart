@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import '../Common/CustomAppBar.dart';
 import '../Model/DualBarData.dart';
 import '../Model/StackBarData.dart';
 
@@ -32,12 +33,10 @@ class _SubDetailScreenState extends State<SubDetailScreen> {
     final statusIcon = _getStatusIcon(status);
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: statusColor,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [Text('${widget.item.tiltle} Overview'), Icon(statusIcon)],
-        ),
+      appBar: CustomAppBar(
+        titleText: '${widget.item.tiltle} ',
+        finalTime: "12:00 PM",
+        nextTime: "03:00 PM",
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -64,9 +63,15 @@ class _SubDetailScreenState extends State<SubDetailScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Target vs Actual (by day)',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            Row(
+              children: [
+                const Text(
+                  'Target vs Actual (by day)',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(width: 8),
+                Icon(statusIcon, color: statusColor),
+              ],
             ),
             const SizedBox(height: 12),
             SizedBox(

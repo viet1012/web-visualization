@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../SubDetail/SubDetailScreen.dart';
-import 'DetailScreen.dart';
 import '../Model/DualBarData.dart';
 
 class OverviewDetailChart extends StatefulWidget {
@@ -60,7 +59,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
                 text: 'K\$',
                 textStyle: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 18,
+                  fontSize: 20,
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -102,7 +101,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
         pointColorMapper:
             (item, _) => item.actual > item.target ? Colors.red : Colors.green,
         name: 'Actual',
-        width: 0.5,
+        width: 0.6,
         spacing: 0.1,
         // 👈 khoảng cách giữa các cột trong cùng nhóm
         dataLabelSettings: const DataLabelSettings(
@@ -118,7 +117,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
         yValueMapper: (item, _) => item.target,
         name: 'Target',
         color: Colors.grey,
-        width: 0.5,
+        width: 0.6,
         spacing: 0.1,
         // 👈 khoảng cách giữa các cột trong cùng nhóm
         dataLabelSettings: const DataLabelSettings(
@@ -145,7 +144,6 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
         _legendItem(Colors.red, 'Actual > Target (Negative)'),
         _legendItem(Colors.green, 'Target Achieved'),
         _legendItem(Colors.grey, 'Target'),
-        _legendItem(Colors.black, 'Unit: K\$'),
       ],
     );
   }

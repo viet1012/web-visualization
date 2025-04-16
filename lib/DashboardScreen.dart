@@ -37,7 +37,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
               finalTime: "12:00 PM",
               nextTime: "03:00 PM",
             ),
-
           ],
         ),
         centerTitle: true,

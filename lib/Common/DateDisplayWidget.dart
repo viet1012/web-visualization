@@ -54,6 +54,7 @@ class _DateDisplayWidgetState extends State<DateDisplayWidget> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(Icons.calendar_today, size: 16, color: Colors.blue),
+              const SizedBox(width: 4),
               Text('Month: ', style: TextStyle(fontSize: 18)),
               Text(
                 monthFormat.format(now),
@@ -65,6 +66,7 @@ class _DateDisplayWidgetState extends State<DateDisplayWidget> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(Icons.date_range, size: 16, color: Colors.orange),
+              const SizedBox(width: 4),
               Text('MTD: ', style: TextStyle(fontSize: 18)),
               Text(
                 dayFormat.format(startOfMonth),

@@ -46,7 +46,7 @@ class MiniBarChart extends StatelessWidget {
             isVisible: true,
             textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          width: 0.4,
+          width: 0.8,
         ),
       ],
     );

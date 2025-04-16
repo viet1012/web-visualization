@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
-
+import '../Common/CustomAppBar.dart';
 import '../Common/DateDisplayWidget.dart';
 import '../Common/TimeInfoCard.dart';
 import 'MiniBarDetailChart.dart';
@@ -10,35 +9,20 @@ import '../Model/DualBarData.dart';
 class DetailScreen extends StatelessWidget {
   final DualBarData item;
   final List<DualBarData> detailData;
+
   const DetailScreen({super.key, required this.item, required this.detailData});
 
   @override
   Widget build(BuildContext context) {
-
     final status = _getStatus(item);
     final statusColor = _getStatusColor(status);
     final statusIcon = _getStatusIcon(status);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                Text('${item.tiltle} Detail',style: TextStyle(fontWeight: FontWeight.bold),),
-                SizedBox(width: 16),
-                DateDisplayWidget(),
-              ],
-            ),
-            TimeInfoCard(
-              finalTime: "12:00 PM",
-              nextTime: "03:00 PM",
-            ),
-
-          ],
-        ),
-        backgroundColor: statusColor,
+      appBar: CustomAppBar(
+        titleText: '${item.tiltle} ',
+        finalTime: "12:00 PM",
+        nextTime: "03:00 PM",
       ),
       body: Padding(
         padding: const EdgeInsets.all(8),
@@ -59,38 +43,26 @@ class DetailScreen extends StatelessWidget {
                         Container(
                           width:
                               MediaQuery.of(context).size.width *
-                              0.3, // Chiếm 40% chiều rộng
+                              0.1, // Chiếm 10% chiều rộng
                           padding: const EdgeInsets.all(16),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            // Căn giữa theo chiều dọc
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          child: Row(
                             children: [
-                              _buildInfoRow("Target", "${item.target} K\$"),
-                              _buildInfoRow("Actual", "${item.actual} K\$"),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  Icon(
-                                    statusIcon,
-                                    color: statusColor,
-                                    size: 24,
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    status,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: statusColor,
-                                    ),
-                                  ),
-                                ],
+                              Icon(statusIcon, color: statusColor, size: 24),
+                              const SizedBox(width: 10),
+                              Text(
+                                status,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: statusColor,
+                                ),
                               ),
                             ],
                           ),
                         ),
-                        Expanded(
+                        SizedBox(
+                          height: 150,
+                          width: MediaQuery.of(context).size.width * .7,
                           child: MiniBarChart(
                             actual: item.actual.toDouble(),
                             target: item.target.toDouble(),
@@ -114,27 +86,6 @@ class DetailScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-Widget _buildInfoRow(String title, String value) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 6),
-    child: Row(
-      children: [
-        SizedBox(
-          width: 100,
-          child: Text(
-            '$title:',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
-        ),
-        Text(
-          value,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-        ),
-      ],
-    ),
-  );
 }
 
 String _getStatus(DualBarData item) {

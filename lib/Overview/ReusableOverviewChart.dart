@@ -36,6 +36,7 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        const Text("Tool Cost", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
         SizedBox(
           height: MediaQuery.of(context).size.height * .86,
           child: SfCartesianChart(
@@ -105,7 +106,7 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
             },
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
         _buildLegend(),
       ],
     );
@@ -165,7 +166,6 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
         _legendItem(Colors.red, 'Actual > Target (Negative)'),
         _legendItem(Colors.green, 'Target Achieved'),
         _legendItem(Colors.grey, 'Target'),
-        _legendItem(Colors.black, 'Unit: K\$'),
       ],
     );
   }
@@ -183,4 +183,5 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
       ],
     );
   }
+
 }

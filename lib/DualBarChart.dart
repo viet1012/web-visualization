@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:visualization/ChartDataProvider.dart';
-import 'package:visualization/DashboardScreen.dart';
-
-import 'Detail/DetailScreen.dart';
 
 class DualBarChart extends StatefulWidget {
   @override
