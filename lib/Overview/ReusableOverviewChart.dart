@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:visualization/API/ApiService.dart';
 
+import '../Common/ToolCostPopup.dart';
 import '../Detail/DetailScreen.dart';
+import '../Detail/ToolCostDetail.dart';
 import '../Model/ToolCostModel.dart';
 import '../Provider/ToolCostProvider.dart';
 
@@ -18,21 +21,12 @@ class ReusableOverviewChart extends StatefulWidget {
 
 class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
   int? selectedIndex;
-
-  //Data Demo
-  List<ToolCostModel> _getDetailDataFor(ToolCostModel item) {
-    return [
-      ToolCostModel(title: "IT", target: 10, actual: 8),
-      ToolCostModel(title: "TE", target: 10, actual: 13),
-      ToolCostModel(title: "PC", target: 10, actual: 15),
-      ToolCostModel(title: "QA", target: 10, actual: 10),
-    ];
-  }
-
+  final apiService = ApiService();
   final numberFormat = NumberFormat("##0.0");
 
   @override
   Widget build(BuildContext context) {
+
     return Column(
       children: [
         const Text(
@@ -88,12 +82,17 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
               ),
             ),
             series: _buildSeries(widget.data),
-            onAxisLabelTapped: (AxisLabelTapArgs args) {
+            onAxisLabelTapped: (AxisLabelTapArgs args) async {
               final index = widget.data.indexWhere((e) => e.title == args.text);
               if (index != -1) {
                 final item = widget.data[index];
-                final detailData = _getDetailDataFor(item);
-                Provider.of<ToolCostProvider>(context, listen: false).setSelectedItem(item);
+                final detailData = await apiService.fetchToolCostsDetail("2025-04", item.title);
+                print("detailData $detailData");
+                Provider.of<ToolCostProvider>(
+                  context,
+                  listen: false,
+                ).setSelectedItem(item);
+
                 setState(() {
                   selectedIndex = index;
                 });
@@ -136,6 +135,38 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
             fontWeight: FontWeight.w600,
           ),
         ),
+
+        onPointTap: (ChartPointDetails details) {
+          final index = details.pointIndex ?? -1;
+          showDialog(
+            context: context,
+            builder: (_) => ToolCostPopup(
+              title: 'Details Data',
+              data: [
+                ToolCostDetail(
+                  div: 'IT',
+                  group: 'A1',
+                  tcode: 'TX01',
+                  name: 'Tool A',
+                  qty: 5,
+                  amount: 1250.0,
+                  usedDate: '2024-04-10',
+                ),
+                ToolCostDetail(
+                  div: 'QA',
+                  group: 'B2',
+                  tcode: 'TX02',
+                  name: 'Tool B',
+                  qty: 3,
+                  amount: 900.0,
+                  usedDate: '2024-04-12',
+                ),
+              ],
+            ),
+          );
+
+
+        },
       ),
       ColumnSeries<ToolCostModel, String>(
         dataSource: data,
@@ -189,4 +220,6 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
       ],
     );
   }
+
+
 }

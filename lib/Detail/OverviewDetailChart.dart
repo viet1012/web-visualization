@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:visualization/Model/ToolCostDetailModel.dart';
 
+import '../Common/NoDataWidget.dart';
 import '../SubDetail/SubDetailScreen.dart';
 import '../Model/ToolCostModel.dart';
 
 class OverviewDetailChart extends StatefulWidget {
-  final List<ToolCostModel> data;
+  final List<ToolCostDetailModel> data;
 
   const OverviewDetailChart({super.key, required this.data});
 
@@ -18,6 +20,15 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
 
   @override
   Widget build(BuildContext context) {
+
+    if (widget.data.isEmpty) {
+      return const NoDataWidget(
+        title: "No Data Available",
+        message: "Please try again with a different time range.",
+        icon: Icons.error_outline,
+      );
+    }
+
     return Column(
       children: [
         SizedBox(
@@ -74,12 +85,12 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
                 setState(() {
                   selectedIndex = index;
                 });
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => SubDetailScreen(item: item),
-                  ),
-                );
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (_) => SubDetailScreen(item: item),
+                //   ),
+                // );
               }
             },
           ),
@@ -90,11 +101,11 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
     );
   }
 
-  List<CartesianSeries<ToolCostModel, String>> _buildSeries(
-    List<ToolCostModel> data,
+  List<CartesianSeries<ToolCostDetailModel, String>> _buildSeries(
+    List<ToolCostDetailModel> data,
   ) {
-    return <CartesianSeries<ToolCostModel, String>>[
-      ColumnSeries<ToolCostModel, String>(
+    return <CartesianSeries<ToolCostDetailModel, String>>[
+      ColumnSeries<ToolCostDetailModel, String>(
         dataSource: data,
         xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.actual,
@@ -111,7 +122,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
           ),
         ),
       ),
-      ColumnSeries<ToolCostModel, String>(
+      ColumnSeries<ToolCostDetailModel, String>(
         dataSource: data,
         xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.target,
@@ -130,7 +141,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
     ];
   }
 
-  double _getInterval(List<ToolCostModel> data) {
+  double _getInterval(List<ToolCostDetailModel> data) {
     double maxVal = data
         .map((e) => e.actual > e.target ? e.actual : e.target)
         .reduce((a, b) => a > b ? a : b);

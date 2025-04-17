@@ -354,9 +354,12 @@ class _DashboardScreenState extends State<DashboardScreen>  with RouteAware{
     super.dispose();
   }
 
+  String month = "";
+
   void _fetchData(ToolCostProvider provider) {
-    final String month =
+     month =
         "${selectedYear}-${selectedMonth.toString().padLeft(2, '0')}";
+     print("Month: $month");
     provider.clearData(); // 👈 Reset trước khi fetch
     provider.fetchToolCosts(month);
   }
@@ -409,9 +412,9 @@ class _DashboardScreenState extends State<DashboardScreen>  with RouteAware{
 
           if (provider.data.isEmpty) {
             return const NoDataWidget(
-              title: "Chưa có dữ liệu",
-              message: "Vui lòng thử lại với khoảng thời gian khác.",
-              icon: Icons.search_off,
+              title: "No Data Available",
+              message: "Please try again with a different time range.",
+              icon: Icons.error_outline,
             );
           }
 
@@ -484,6 +487,7 @@ class _DashboardScreenState extends State<DashboardScreen>  with RouteAware{
                 selectedDate = value;
                 selectedMonth = value.month;
                 selectedYear = value.year;
+                month = "${selectedYear.toString()}-${selectedMonth.toString().padLeft(2, '0')}";
               });
               final provider = Provider.of<ToolCostProvider>(
                 context,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:visualization/Model/ToolCostDetailModel.dart';
 import '../Common/CustomAppBar.dart';
 import '../Common/DateDisplayWidget.dart';
 import '../Common/TimeInfoCard.dart';
@@ -12,7 +13,7 @@ import '../Model/ToolCostModel.dart';
 
 class DetailScreen extends StatefulWidget {
   final ToolCostModel item;
-  final List<ToolCostModel> detailData;
+  final List<ToolCostDetailModel> detailData;
 
   const DetailScreen({super.key, required this.item, required this.detailData});
 
@@ -32,7 +33,7 @@ class _DetailScreenState extends State<DetailScreen> {
 
     return Scaffold(
       appBar: CustomAppBar(
-        titleText: '${widget.item.title} ',
+        titleText: '${selectedItem?.title.toString()} ',
         finalTime: "12:00 PM",
         nextTime: "03:00 PM",
       ),
@@ -74,8 +75,8 @@ class _DetailScreenState extends State<DetailScreen> {
                           height: 150,
                           width: MediaQuery.of(context).size.width * .8,
                           child: MiniBarChart(
-                            actual: widget.item.actual.toDouble(),
-                            target: widget.item.target.toDouble(),
+                            actual: selectedItem!.actual.toDouble(),
+                            target: selectedItem.target.toDouble(),
                           ),
                         ),
                       ],
@@ -85,7 +86,7 @@ class _DetailScreenState extends State<DetailScreen> {
               ),
               const SizedBox(height: 16),
               const Text(
-                'Dual Bar Chart',
+                'Tools Cost By Each Groups',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
