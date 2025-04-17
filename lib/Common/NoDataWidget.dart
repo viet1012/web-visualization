@@ -29,8 +29,8 @@ class NoDataWidget extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
               color: Colors.grey.shade600,
             ),
           ),
@@ -38,7 +38,7 @@ class NoDataWidget extends StatelessWidget {
           Text(
             message,
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 24,
               color: Colors.grey.shade500,
             ),
             textAlign: TextAlign.center,

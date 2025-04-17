@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-
 import 'DashboardScreen.dart';
 import 'Provider/ToolCostProvider.dart';
 import 'package:provider/provider.dart';
+
+/// ✅ Khai báo global: có thể dùng ở mọi nơi
+final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
 
 void main() {
   runApp(
@@ -14,7 +16,6 @@ void main() {
     ),
   );
 }
-
 
 class DashboardApp extends StatefulWidget {
   const DashboardApp({super.key});
@@ -29,14 +30,15 @@ class _DashboardAppState extends State<DashboardApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorObservers: [routeObserver], // ✅ dùng biến global ở đây
       title: 'Cost Monitoring Web',
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: const Color(0xFF121212),
         cardColor: const Color(0xFF1E1E1E),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF1E1E1E), // Màu tối hơn AppBar
-          foregroundColor: Colors.white, // Màu chữ/icon
+          backgroundColor: Color(0xFF1E1E1E),
+          foregroundColor: Colors.white,
           elevation: 0,
         ),
         textTheme: ThemeData.dark().textTheme.apply(

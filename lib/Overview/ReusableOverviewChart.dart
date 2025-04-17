@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../Detail/DetailScreen.dart';
 import '../Model/ToolCostModel.dart';
+import '../Provider/ToolCostProvider.dart';
 
 class ReusableOverviewChart extends StatefulWidget {
   final List<ToolCostModel> data;
@@ -19,18 +22,27 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
   //Data Demo
   List<ToolCostModel> _getDetailDataFor(ToolCostModel item) {
     return [
-
+      ToolCostModel(title: "IT", target: 10, actual: 8),
+      ToolCostModel(title: "TE", target: 10, actual: 13),
+      ToolCostModel(title: "PC", target: 10, actual: 15),
+      ToolCostModel(title: "QA", target: 10, actual: 10),
     ];
   }
+
+  final numberFormat = NumberFormat("##0.0");
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Text("Tool Cost", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+        const Text(
+          "Tool Cost",
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        ),
         SizedBox(
-          height: MediaQuery.of(context).size.height * .86,
+          height: MediaQuery.of(context).size.height * .85,
           child: SfCartesianChart(
+            plotAreaBorderColor: Colors.black45,
             primaryXAxis: CategoryAxis(
               labelStyle: const TextStyle(
                 fontSize: 16,
@@ -77,12 +89,11 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
             ),
             series: _buildSeries(widget.data),
             onAxisLabelTapped: (AxisLabelTapArgs args) {
-              final index = widget.data.indexWhere(
-                (e) => e.title == args.text,
-              );
+              final index = widget.data.indexWhere((e) => e.title == args.text);
               if (index != -1) {
                 final item = widget.data[index];
                 final detailData = _getDetailDataFor(item);
+                Provider.of<ToolCostProvider>(context, listen: false).setSelectedItem(item);
                 setState(() {
                   selectedIndex = index;
                 });
@@ -111,16 +122,18 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
         dataSource: data,
         xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.actual,
+        dataLabelMapper: (item, _) => numberFormat.format(item.actual),
         pointColorMapper:
             (item, _) => item.actual > item.target ? Colors.red : Colors.green,
         name: 'Actual',
         width: 0.5,
-        spacing: 0.05,
+        spacing: 0.1,
         // 👈 khoảng cách giữa các cột trong cùng nhóm
         dataLabelSettings: const DataLabelSettings(
           isVisible: true,
           textStyle: TextStyle(
             fontSize: 20, // 👈 Tùy chỉnh kích thước nếu cần
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
@@ -128,15 +141,17 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
         dataSource: data,
         xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.target,
+        dataLabelMapper: (item, _) => numberFormat.format(item.target),
         name: 'Target',
         color: Colors.grey,
         width: 0.5,
-        spacing: 0.05,
+        spacing: 0.1,
         // 👈 khoảng cách giữa các cột trong cùng nhóm
         dataLabelSettings: const DataLabelSettings(
           isVisible: true,
           textStyle: TextStyle(
             fontSize: 20, // 👈 Tùy chỉnh kích thước nếu cần
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
@@ -174,5 +189,4 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
       ],
     );
   }
-
 }

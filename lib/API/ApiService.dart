@@ -4,7 +4,7 @@ import '../Model/ToolCostModel.dart';
 
 class ApiService {
 
-  final String baseUrl = "http://localhost:8080/api";
+  final String baseUrl = "http://F2PC24017:8080/api";
 
   Future<List<ToolCostModel>> fetchToolCosts(String month) async {
     final url = Uri.parse("$baseUrl/tool-cost?month=$month");
@@ -20,10 +20,8 @@ class ApiService {
           return item['act'] != null && item['tgt_WholeM'] != 0.0;
         }).toList();
 
-        // Sắp xếp theo thứ tự ưu tiên mong muốn (Press, Mold, Guide, MA, PE)
-        final sortedData = _sortData(filteredData);
 
-        return parseToolCostList(sortedData);  // Chuyển đổi dữ liệu từ JSON thành danh sách ToolCostModel
+        return parseToolCostList(filteredData);  // Chuyển đổi dữ liệu từ JSON thành danh sách ToolCostModel
       } else {
         print("Error: ${response.statusCode}");
         return [];
@@ -34,20 +32,7 @@ class ApiService {
     }
   }
 
-  // Sắp xếp dữ liệu theo thứ tự mong muốn
-  List<dynamic> _sortData(List<dynamic> data) {
-    // Thứ tự ưu tiên
-    List<String> order = ['PRESS', 'MOLD', 'GUIDE', 'MA', 'PE', 'MTC', 'COMMON'];
 
-    // Sắp xếp lại theo thứ tự order
-    data.sort((a, b) {
-      int aIndex = order.indexOf(a['dept']);
-      int bIndex = order.indexOf(b['dept']);
-      return aIndex.compareTo(bIndex);
-    });
-
-    return data;
-  }
 
   // Chuyển đổi JSON thành danh sách ToolCostModel
   List<ToolCostModel> parseToolCostList(List<dynamic> data) {

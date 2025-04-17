@@ -11,6 +11,7 @@ class ToolCostProvider with ChangeNotifier {
 
   List<ToolCostModel> get data => _data;
   bool get isLoading => _isLoading;
+  ToolCostModel? selectedItem;
 
   Future<void> fetchToolCosts(String month) async {
     final now = DateTime.now();
@@ -34,6 +35,11 @@ class ToolCostProvider with ChangeNotifier {
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  void setSelectedItem(ToolCostModel item) {
+    selectedItem = item;
+    notifyListeners(); // Thông báo rằng có sự thay đổi dữ liệu
   }
 
   void clearData() {

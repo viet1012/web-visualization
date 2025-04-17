@@ -12,6 +12,7 @@ import 'Common/NoDataWidget.dart';
 import 'Common/TimeInfoCard.dart';
 import 'Overview/ReusableOverviewChart.dart';
 import 'Provider/ToolCostProvider.dart';
+import 'main.dart';
 
 class DashboardScreen extends StatefulWidget {
   final VoidCallback onToggleTheme;
@@ -280,10 +281,14 @@ class DashboardScreen extends StatefulWidget {
 //
 // }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class _DashboardScreenState extends State<DashboardScreen>  with RouteAware{
   int selectedMonth = DateTime.now().month;
   int selectedYear = DateTime.now().year;
-  DateTime selectedDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
+  DateTime selectedDate = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    1,
+  );
 
   DateTime _currentDate = DateTime.now(); // Initialize directly
   Timer? _dailyTimer;
@@ -293,7 +298,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
 
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       print("After build - Current Date: $_currentDate");
       final provider = Provider.of<ToolCostProvider>(context, listen: false);
@@ -302,13 +306,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     _dailyTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
       final now = DateTime.now();
+      print("[TIMER CHECK] Current Time: $now | Stored Time: $_currentDate");
+
       if (now.day != _currentDate.day ||
           now.month != _currentDate.month ||
           now.year != _currentDate.year) {
+        print("[DATE CHANGED] Detected date change! Refreshing...");
+
         _currentDate = now;
 
         if (mounted) {
-          final provider = Provider.of<ToolCostProvider>(context, listen: false);
+          final provider = Provider.of<ToolCostProvider>(
+            context,
+            listen: false,
+          );
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
             setState(() {
@@ -323,15 +334,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
+  @override
+  void didPopNext() {
+    super.didPopNext();
+    // print("didPopNext");
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)!);
+  }
+
 
   @override
   void dispose() {
+    routeObserver.unsubscribe(this);
     _dailyTimer?.cancel(); // 🧹 Dọn dẹp khi màn hình bị hủy
     super.dispose();
   }
 
   void _fetchData(ToolCostProvider provider) {
-    final String month = "${selectedYear}-${selectedMonth.toString().padLeft(2, '0')}";
+    final String month =
+        "${selectedYear}-${selectedMonth.toString().padLeft(2, '0')}";
     provider.clearData(); // 👈 Reset trước khi fetch
     provider.fetchToolCosts(month);
   }
@@ -350,9 +375,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 SizedBox(width: 16),
                 DateDisplayWidget(selectedDate: selectedDate),
                 SizedBox(width: 16),
-                Container(
-                  decoration: BoxDecoration(shape: BoxShape.circle),
-                  width: 160,
+                SizedBox(
+                  width: 140,
                   height: 40,
                   child: Padding(
                     padding: const EdgeInsets.only(right: 8),
@@ -363,9 +387,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             TimeInfoCard(
               finalTime: dayFormat.format(_currentDate), // Ngày hiện tại
-              nextTime: dayFormat.format(_currentDate.add(const Duration(days: 1))), // Ngày kế tiếp
+              nextTime: dayFormat.format(
+                _currentDate.add(const Duration(days: 1)),
+              ), // Ngày kế tiếp
             ),
-
           ],
         ),
         centerTitle: true,
@@ -401,7 +426,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       width: MediaQuery.of(context).size.width,
                       child: Card(
                         elevation: 8,
-                        shadowColor: Colors.blue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                           side: BorderSide(color: Colors.blue.shade100),
@@ -426,7 +450,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final now = DateTime.now();
     final List<DateTime> options = List.generate(
       12,
-          (index) => DateTime(now.year, now.month - index, 1),
+      (index) => DateTime(now.year, now.month - index, 1),
     );
 
     return Container(
@@ -441,12 +465,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
           value: selectedDate,
           icon: const Icon(Icons.arrow_drop_down, color: Colors.blue),
           isExpanded: true,
+          underline: SizedBox(),
+          // Ẩn dòng dưới
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.blue.shade900,
+          ),
           dropdownColor: Colors.white,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black),
-          items: options.map((date) {
-            final label = DateFormat('MMM yyyy').format(date);
-            return DropdownMenuItem(value: date, child: Text(label));
-          }).toList(),
+          items:
+              options.map((date) {
+                final label = DateFormat('MMM yyyy').format(date);
+                return DropdownMenuItem(value: date, child: Text(label));
+              }).toList(),
           onChanged: (DateTime? value) {
             if (value != null) {
               setState(() {
@@ -454,7 +485,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 selectedMonth = value.month;
                 selectedYear = value.year;
               });
-              final provider = Provider.of<ToolCostProvider>(context, listen: false);
+              final provider = Provider.of<ToolCostProvider>(
+                context,
+                listen: false,
+              );
               _fetchData(provider);
             }
           },

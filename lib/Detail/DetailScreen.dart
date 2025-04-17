@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../Common/CustomAppBar.dart';
 import '../Common/DateDisplayWidget.dart';
 import '../Common/TimeInfoCard.dart';
 import '../Model/StackBarData.dart';
+import '../Provider/ToolCostProvider.dart';
 import 'MiniBarDetailChart.dart';
 import 'OverviewDetailChart.dart';
 import '../Model/ToolCostModel.dart';
@@ -21,6 +23,9 @@ class DetailScreen extends StatefulWidget {
 class _DetailScreenState extends State<DetailScreen> {
   @override
   Widget build(BuildContext context) {
+
+    final selectedItem = Provider.of<ToolCostProvider>(context).selectedItem;
+
     final status = _getStatus(widget.item);
     final statusColor = _getStatusColor(status);
     final statusIcon = _getStatusIcon(status);
