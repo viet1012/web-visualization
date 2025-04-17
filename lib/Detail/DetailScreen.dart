@@ -58,12 +58,12 @@ class _DetailScreenState extends State<DetailScreen> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(statusIcon, color: statusColor, size: 24),
+                              Icon(statusIcon, color: statusColor, size: 30),
                               const SizedBox(width: 10),
                               Text(
                                 status,
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   color: statusColor,
                                 ),
