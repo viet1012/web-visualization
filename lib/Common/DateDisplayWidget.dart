@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 class DateDisplayWidget extends StatelessWidget {
   final DateTime selectedDate;
-
-  const DateDisplayWidget({super.key, required this.selectedDate});
+  final Widget monthYearDropDown;
+  const DateDisplayWidget({super.key, required this.selectedDate, required this.monthYearDropDown});
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +24,8 @@ class DateDisplayWidget extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -33,12 +33,10 @@ class DateDisplayWidget extends StatelessWidget {
               Icon(Icons.calendar_today, size: 16, color: Colors.blue),
               const SizedBox(width: 4),
               Text('Month: ', style: TextStyle(fontSize: 18)),
-              Text(
-                monthFormat.format(selectedDate),
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
+              monthYearDropDown
             ],
           ),
+          SizedBox(width: 16),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [

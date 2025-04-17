@@ -30,10 +30,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               // const DateDisplayWidget(),
             ],
           ),
-          TimeInfoCard(
-            finalTime: finalTime,
-            nextTime: nextTime,
-          ),
+
         ],
       ),
       centerTitle: true,

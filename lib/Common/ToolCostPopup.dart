@@ -24,7 +24,7 @@ class ToolCostPopup extends StatelessWidget {
       backgroundColor: theme.colorScheme.surface,
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxWidth:  double.infinity ,
+          maxWidth:   MediaQuery.of(context).size.width * 0.8,
           maxHeight: MediaQuery.of(context).size.height * 0.9,
         ),
         child: Padding(
@@ -63,8 +63,6 @@ class ToolCostPopup extends StatelessWidget {
   }
 
   Widget _buildDataTable(BuildContext context, ThemeData theme) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
     return Scrollbar(
       thumbVisibility: true,
       thickness: 10,
@@ -74,12 +72,12 @@ class ToolCostPopup extends StatelessWidget {
         child: Table(
           border: TableBorder.all(color: theme.dividerColor.withOpacity(0.5)),
           columnWidths: {
-            0: FixedColumnWidth(120), // Adjust width for the first column
-            1: FixedColumnWidth(180), // Adjust width for the second column
-            2: FixedColumnWidth(200), // Adjust width for the third column
-            3: FixedColumnWidth(250), // Adjust width for the fourth column
-            4: FixedColumnWidth(150),  // Adjust width for the fifth column
-            5: FixedColumnWidth(150), // Adjust width for the sixth column
+            0: FixedColumnWidth(150), // Adjust width for the first column
+            1: FixedColumnWidth(200), // Adjust width for the second column
+            2: FixedColumnWidth(250), // Adjust width for the third column
+            3: FixedColumnWidth(300), // Adjust width for the fourth column
+            4: FixedColumnWidth(200),  // Adjust width for the fifth column
+            5: FixedColumnWidth(180), // Adjust width for the sixth column
             6: FixedColumnWidth(200), // Adjust width for the seventh column
           },
           children: [
@@ -108,7 +106,7 @@ class ToolCostPopup extends StatelessWidget {
                   _buildTableCell(item.usedDate),
                 ],
               );
-            }).toList(),
+            }),
           ],
         ),
       ),

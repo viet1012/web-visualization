@@ -113,7 +113,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
             (item, _) => item.actual > item.target ? Colors.red : Colors.green,
         name: 'Actual',
         width: 0.6,
-        spacing: 0.1,
+        spacing: 0.2,
         // 👈 khoảng cách giữa các cột trong cùng nhóm
         dataLabelSettings: const DataLabelSettings(
           isVisible: true,
@@ -129,12 +129,12 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
         name: 'Target',
         color: Colors.grey,
         width: 0.6,
-        spacing: 0.1,
+        spacing: 0.2,
         // 👈 khoảng cách giữa các cột trong cùng nhóm
         dataLabelSettings: const DataLabelSettings(
           isVisible: true,
           textStyle: TextStyle(
-            fontSize: 18, // 👈 Tùy chỉnh kích thước nếu cần
+            fontSize: 16, // 👈 Tùy chỉnh kích thước nếu cần
           ),
         ),
       ),

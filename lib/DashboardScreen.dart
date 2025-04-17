@@ -281,7 +281,7 @@ class DashboardScreen extends StatefulWidget {
 //
 // }
 
-class _DashboardScreenState extends State<DashboardScreen>  with RouteAware{
+class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
   int selectedMonth = DateTime.now().month;
   int selectedYear = DateTime.now().year;
   DateTime selectedDate = DateTime(
@@ -346,7 +346,6 @@ class _DashboardScreenState extends State<DashboardScreen>  with RouteAware{
     routeObserver.subscribe(this, ModalRoute.of(context)!);
   }
 
-
   @override
   void dispose() {
     routeObserver.unsubscribe(this);
@@ -357,9 +356,8 @@ class _DashboardScreenState extends State<DashboardScreen>  with RouteAware{
   String month = "";
 
   void _fetchData(ToolCostProvider provider) {
-     month =
-        "${selectedYear}-${selectedMonth.toString().padLeft(2, '0')}";
-     print("Month: $month");
+    month = "$selectedYear-${selectedMonth.toString().padLeft(2, '0')}";
+    print("Month: $month");
     provider.clearData(); // 👈 Reset trước khi fetch
     provider.fetchToolCosts(month);
   }
@@ -376,14 +374,15 @@ class _DashboardScreenState extends State<DashboardScreen>  with RouteAware{
               children: [
                 BlinkingText(text: 'Cost Monitoring'),
                 SizedBox(width: 16),
-                DateDisplayWidget(selectedDate: selectedDate),
-                SizedBox(width: 16),
-                SizedBox(
-                  width: 140,
-                  height: 40,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: _buildMonthYearDropdown(),
+                DateDisplayWidget(
+                  selectedDate: selectedDate,
+                  monthYearDropDown: SizedBox(
+                    width: 140,
+                    height: 40,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: _buildMonthYearDropdown(),
+                    ),
                   ),
                 ),
               ],
@@ -435,7 +434,10 @@ class _DashboardScreenState extends State<DashboardScreen>  with RouteAware{
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(8),
-                          child: ReusableOverviewChart(data: provider.data),
+                          child: ReusableOverviewChart(
+                            data: provider.data,
+                            month: month,
+                          ),
                         ),
                       ),
                     ),
@@ -459,21 +461,21 @@ class _DashboardScreenState extends State<DashboardScreen>  with RouteAware{
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.grey.shade400),
+        // color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade400),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<DateTime>(
           value: selectedDate,
-          icon: const Icon(Icons.arrow_drop_down, color: Colors.blue),
+          icon: const Icon(Icons.arrow_drop_down, color: Colors.blueAccent),
           isExpanded: true,
           underline: SizedBox(),
           // Ẩn dòng dưới
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: Colors.blue.shade900,
+            color: Colors.blueAccent,
           ),
           dropdownColor: Colors.white,
           items:
@@ -487,7 +489,8 @@ class _DashboardScreenState extends State<DashboardScreen>  with RouteAware{
                 selectedDate = value;
                 selectedMonth = value.month;
                 selectedYear = value.year;
-                month = "${selectedYear.toString()}-${selectedMonth.toString().padLeft(2, '0')}";
+                month =
+                    "${selectedYear.toString()}-${selectedMonth.toString().padLeft(2, '0')}";
               });
               final provider = Provider.of<ToolCostProvider>(
                 context,
