@@ -131,7 +131,7 @@
       );
     }
 
-    List<CartesianSeries<ToolCostModel, String>> _buildSeries(
+    List<CartesianSeries<ToolCostModel, String>> _buildSeries (
       List<ToolCostModel> data,
     ) {
       return <CartesianSeries<ToolCostModel, String>>[

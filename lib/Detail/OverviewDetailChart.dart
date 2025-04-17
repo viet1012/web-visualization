@@ -85,12 +85,12 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
                 setState(() {
                   selectedIndex = index;
                 });
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (_) => SubDetailScreen(item: item),
-                //   ),
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => SubDetailScreen(item: item),
+                  ),
+                );
               }
             },
           ),
@@ -101,7 +101,70 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
     );
   }
 
+
+
+
   List<CartesianSeries<ToolCostDetailModel, String>> _buildSeries(
+      List<ToolCostDetailModel> data,
+      ) {
+
+    final greenData = data.where((e) => e.actual <= e.target).toList();
+    final redData = data.where((e) => e.actual > e.target).toList();
+
+    return <CartesianSeries<ToolCostDetailModel, String>>[
+      // 👉 Miền Target màu xám
+      AreaSeries<ToolCostDetailModel, String>(
+        dataSource: data,
+        xValueMapper: (item, _) => item.title,
+        yValueMapper: (item, _) => item.target,
+        name: 'Target',
+        gradient: LinearGradient(
+          colors: [
+            Colors.grey.withOpacity(0.5),
+            Colors.grey.withOpacity(0.1),
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+        borderColor: Colors.grey,
+        borderWidth: 2,
+
+        dataLabelSettings: const DataLabelSettings(
+          labelAlignment: ChartDataLabelAlignment.top,
+          isVisible: true,
+          textStyle: TextStyle(
+            fontSize: 20,
+            color: Colors.grey,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+
+      // 👉 Cột Actual màu xanh nếu đạt, màu đỏ nếu vượt target
+      StackedColumnSeries<ToolCostDetailModel, String>(
+        dataSource: data,
+        xValueMapper: (item, _) => item.title,
+        yValueMapper: (item, _) => item.actual,
+        pointColorMapper: (item, _) =>
+        item.actual > item.target ? Colors.red : Colors.green,
+        name: 'Actual',
+        width: 0.5,
+        spacing: 0.2,
+        dataLabelSettings: const DataLabelSettings(
+          isVisible: true,
+          labelAlignment: ChartDataLabelAlignment.middle,
+          textStyle: TextStyle(
+            fontSize: 20,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    ];
+  }
+
+
+  List<CartesianSeries<ToolCostDetailModel, String>> _buildSeries1(
     List<ToolCostDetailModel> data,
   ) {
     return <CartesianSeries<ToolCostDetailModel, String>>[
@@ -130,6 +193,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
         color: Colors.grey,
         width: 0.6,
         spacing: 0.2,
+
         // 👈 khoảng cách giữa các cột trong cùng nhóm
         dataLabelSettings: const DataLabelSettings(
           isVisible: true,

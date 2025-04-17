@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:visualization/Model/ToolCostDetailModel.dart';
 import '../Common/CustomAppBar.dart';
 import '../Model/ToolCostModel.dart';
 import '../Model/StackBarData.dart';
 
 class SubDetailScreen extends StatefulWidget {
-  final ToolCostModel item;
+  final ToolCostDetailModel item;
 
   const SubDetailScreen({super.key, required this.item});
 
@@ -90,7 +91,7 @@ class _SubDetailScreenState extends State<SubDetailScreen> {
                   minimum: 0,
                   maximum: _getMaxYAxis(monthlyData),
                   interval: 20,
-                  labelStyle: const TextStyle(fontSize: 18),
+                  labelStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 axes: <ChartAxis>[
                   NumericAxis(
@@ -168,7 +169,12 @@ class _SubDetailScreenState extends State<SubDetailScreen> {
         color: Colors.green,
         name: 'Within Target',
         width: 0.7,
-        dataLabelSettings: const DataLabelSettings(isVisible: true),
+
+        dataLabelSettings: const DataLabelSettings(
+          isVisible: true,
+          labelAlignment: ChartDataLabelAlignment.middle,
+          textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
       ),
       LineSeries<StackBarData, String>(
         dataSource: data,
@@ -177,6 +183,7 @@ class _SubDetailScreenState extends State<SubDetailScreen> {
         name: 'Exceeded Line',
         color: Colors.redAccent,
         markerSettings: const MarkerSettings(isVisible: true),
+        width: 5,
         dataLabelSettings: const DataLabelSettings(
           isVisible: true,
           textStyle: TextStyle(
@@ -191,9 +198,18 @@ class _SubDetailScreenState extends State<SubDetailScreen> {
         yAxisName: 'CumulativeAxis',
         name: 'Cumulative Actual',
         color: Colors.blue,
+        width: 5,
         markerSettings: const MarkerSettings(isVisible: true),
-        dataLabelSettings: const DataLabelSettings(isVisible: false),
-        dashArray: [6, 3],
+        dataLabelSettings: const DataLabelSettings(
+          isVisible: true,
+          textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        dashArray: [0, 0],
+        dataLabelMapper: (d, index) {
+          return index == data.length - 1
+              ? cumulativeActual[index].toStringAsFixed(1)
+              : '';
+        },
       ),
       LineSeries<StackBarData, String>(
         dataSource: data,
@@ -202,9 +218,18 @@ class _SubDetailScreenState extends State<SubDetailScreen> {
         yAxisName: 'CumulativeAxis',
         name: 'Cumulative Target',
         color: Colors.orange,
+        width: 5,
         markerSettings: const MarkerSettings(isVisible: true),
-        dataLabelSettings: const DataLabelSettings(isVisible: false),
-        dashArray: [4, 4],
+        dataLabelSettings: const DataLabelSettings(
+          isVisible: true,
+          textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        dashArray: [0, 0],
+        dataLabelMapper: (d, index) {
+          return index == data.length - 1
+              ? cumulativeActual[index].toStringAsFixed(1)
+              : '';
+        },
       ),
     ];
   }
@@ -227,7 +252,7 @@ class _SubDetailScreenState extends State<SubDetailScreen> {
     return (maxCumulative * 1.1).ceilToDouble();
   }
 
-  String _getStatus(ToolCostModel item) {
+  String _getStatus(ToolCostDetailModel item) {
     if (item.actual > item.target) return 'Over Target';
     if (item.actual < item.target) return 'Under Target';
     return 'Target Achieved';
