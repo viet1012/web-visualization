@@ -13,9 +13,11 @@ import '../Model/ToolCostModel.dart';
 
 class DetailScreen extends StatefulWidget {
   final ToolCostModel item;
+  final String month;
+  final String dept;
   final List<ToolCostDetailModel> detailData;
 
-  const DetailScreen({super.key, required this.item, required this.detailData});
+  const DetailScreen({super.key, required this.item, required this.detailData, required this.month, required this.dept});
 
   @override
   State<DetailScreen> createState() => _DetailScreenState();
@@ -90,7 +92,7 @@ class _DetailScreenState extends State<DetailScreen> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              OverviewDetailChart(data: widget.detailData),
+              OverviewDetailChart(data: widget.detailData, month: widget.month, dept: widget.dept),
             ],
           ),
         ),

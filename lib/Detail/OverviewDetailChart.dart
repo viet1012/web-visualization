@@ -2,14 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:visualization/Model/ToolCostDetailModel.dart';
 
+import '../API/ApiService.dart';
 import '../Common/NoDataWidget.dart';
+import '../Common/ToolCostPopup.dart';
+import '../Model/DetailsDataModel.dart';
 import '../SubDetail/SubDetailScreen.dart';
 import '../Model/ToolCostModel.dart';
 
 class OverviewDetailChart extends StatefulWidget {
   final List<ToolCostDetailModel> data;
+  final String month;
+  final String dept;
 
-  const OverviewDetailChart({super.key, required this.data});
+  const OverviewDetailChart({
+    super.key,
+    required this.data,
+    required this.month,
+    required this.dept,
+  });
 
   @override
   State<OverviewDetailChart> createState() => _OverviewDetailChartState();
@@ -20,7 +30,6 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
 
   @override
   Widget build(BuildContext context) {
-
     if (widget.data.isEmpty) {
       return const NoDataWidget(
         title: "No Data Available",
@@ -77,9 +86,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
             ),
             series: _buildSeries(widget.data),
             onAxisLabelTapped: (AxisLabelTapArgs args) {
-              final index = widget.data.indexWhere(
-                (e) => e.title == args.text,
-              );
+              final index = widget.data.indexWhere((e) => e.title == args.text);
               if (index != -1) {
                 final item = widget.data[index];
                 setState(() {
@@ -101,13 +108,9 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
     );
   }
 
-
-
-
   List<CartesianSeries<ToolCostDetailModel, String>> _buildSeries(
-      List<ToolCostDetailModel> data,
-      ) {
-
+    List<ToolCostDetailModel> data,
+  ) {
     final greenData = data.where((e) => e.actual <= e.target).toList();
     final redData = data.where((e) => e.actual > e.target).toList();
 
@@ -116,8 +119,8 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
         dataSource: data,
         xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.actual,
-        pointColorMapper: (item, _) =>
-        item.actual > item.target ? Colors.red : Colors.green,
+        pointColorMapper:
+            (item, _) => item.actual > item.target ? Colors.red : Colors.green,
         name: 'Actual',
         width: 0.5,
         spacing: 0.2,
@@ -131,6 +134,63 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        onPointTap: (ChartPointDetails details) async {
+          final index = details.pointIndex ?? -1;
+          final item = widget.data[index];
+
+          // Show loading dialog
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (_) => const Center(child: CircularProgressIndicator()),
+          );
+
+          try {
+            // Gọi API để lấy dữ liệu
+            List<DetailsDataModel> detailsData = await ApiService()
+                .fetchSubDetailsData(widget.month, widget.dept,item.title);
+
+            // Tắt loading
+            Navigator.of(context).pop();
+
+            if (detailsData.isNotEmpty) {
+              // Hiển thị popup dữ liệu
+              showDialog(
+                context: context,
+                builder:
+                    (_) =>
+                    ToolCostPopup(title: 'Details Data', data: detailsData),
+              );
+            } else {
+              // Có thể thêm thông báo nếu không có dữ liệu
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      'No data available',
+                      style: TextStyle(
+                        fontSize: 22.0, // Tăng kích thước font chữ
+                        fontWeight: FontWeight.bold, // Tùy chọn để làm đậm
+                      ),
+                    ),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 20.0),
+                  // Thêm khoảng cách trên/dưới
+                  behavior:
+                  SnackBarBehavior
+                      .fixed, // Tùy chọn hiển thị phía trên thay vì ở dưới
+                ),
+              );
+            }
+          } catch (e) {
+            Navigator.of(context).pop(); // Đảm bảo tắt loading nếu lỗi
+            print("Error fetching data: $e");
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Error fetching data')));
+          }
+        },
       ),
       // 👉 Miền Target màu xám
       AreaSeries<ToolCostDetailModel, String>(
@@ -139,10 +199,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
         yValueMapper: (item, _) => item.target,
         name: 'Target',
         gradient: LinearGradient(
-          colors: [
-            Colors.grey.withOpacity(0.5),
-            Colors.grey.withOpacity(0.1),
-          ],
+          colors: [Colors.grey.withOpacity(0.5), Colors.grey.withOpacity(0.1)],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -161,10 +218,8 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
       ),
 
       // 👉 Cột Actual màu xanh nếu đạt, màu đỏ nếu vượt target
-
     ];
   }
-
 
   List<CartesianSeries<ToolCostDetailModel, String>> _buildSeries1(
     List<ToolCostDetailModel> data,

@@ -57,6 +57,7 @@ class ApiService {
 
   Future<List<DetailsDataModel>> fetchDetailsData(String month, String deptInput) async {
     final url = Uri.parse("$baseUrl/details-data?month=$month&dept=$deptInput");
+    print("url: $url");
 
     try {
       final response = await http.get(url);
@@ -73,6 +74,23 @@ class ApiService {
     }
   }
 
+  Future<List<DetailsDataModel>> fetchSubDetailsData(String month, String deptInput,String group) async {
+    final url = Uri.parse("$baseUrl/sub-details-data?month=$month&dept=$deptInput&group=$group");
+    print("url: $url");
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body);
+        return data.map((json) => DetailsDataModel.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("Exception caught: $e");
+      return [];
+    }
+  }
 
   // Chuyển đổi JSON thành danh sách ToolCostModel
   List<ToolCostModel> parseToolCostList(List<dynamic> data) {
