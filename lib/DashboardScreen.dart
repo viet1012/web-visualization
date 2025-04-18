@@ -304,7 +304,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
       _fetchData(provider);
     });
 
-    _dailyTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
+    _dailyTimer = Timer.periodic(const Duration(minutes: 10), (timer) {
       final now = DateTime.now();
       print("[TIMER CHECK] Current Time: $now | Stored Time: $_currentDate");
 

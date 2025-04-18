@@ -54,7 +54,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     child: Row(
                       children: [
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * .1,
+                          width: MediaQuery.of(context).size.width * .13,
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [

@@ -112,6 +112,26 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
     final redData = data.where((e) => e.actual > e.target).toList();
 
     return <CartesianSeries<ToolCostDetailModel, String>>[
+      StackedColumnSeries<ToolCostDetailModel, String>(
+        dataSource: data,
+        xValueMapper: (item, _) => item.title,
+        yValueMapper: (item, _) => item.actual,
+        pointColorMapper: (item, _) =>
+        item.actual > item.target ? Colors.red : Colors.green,
+        name: 'Actual',
+        width: 0.5,
+        spacing: 0.2,
+        dataLabelSettings: const DataLabelSettings(
+          isVisible: true,
+          labelAlignment: ChartDataLabelAlignment.middle,
+          labelIntersectAction: LabelIntersectAction.shift,
+          textStyle: TextStyle(
+            fontSize: 20,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
       // 👉 Miền Target màu xám
       AreaSeries<ToolCostDetailModel, String>(
         dataSource: data,
@@ -141,25 +161,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
       ),
 
       // 👉 Cột Actual màu xanh nếu đạt, màu đỏ nếu vượt target
-      StackedColumnSeries<ToolCostDetailModel, String>(
-        dataSource: data,
-        xValueMapper: (item, _) => item.title,
-        yValueMapper: (item, _) => item.actual,
-        pointColorMapper: (item, _) =>
-        item.actual > item.target ? Colors.red : Colors.green,
-        name: 'Actual',
-        width: 0.5,
-        spacing: 0.2,
-        dataLabelSettings: const DataLabelSettings(
-          isVisible: true,
-          labelAlignment: ChartDataLabelAlignment.middle,
-          textStyle: TextStyle(
-            fontSize: 20,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+
     ];
   }
 

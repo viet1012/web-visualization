@@ -19,7 +19,7 @@ class MiniBarChart extends StatelessWidget {
       margin: const EdgeInsets.all(0),
       plotAreaBorderWidth: 0,
       primaryXAxis: CategoryAxis(
-        labelPlacement: LabelPlacement.onTicks,
+        labelPlacement: LabelPlacement.betweenTicks,
         labelStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
       primaryYAxis: NumericAxis(

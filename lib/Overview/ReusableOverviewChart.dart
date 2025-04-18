@@ -23,7 +23,6 @@
     int? selectedIndex;
     final apiService = ApiService();
     final numberFormat = NumberFormat("##0.0");
-    bool _isLoadingDetail = false;
 
     @override
     Widget build(BuildContext context) {
@@ -212,6 +211,38 @@
           .map((e) => e.actual > e.target ? e.actual : e.target)
           .reduce((a, b) => a > b ? a : b);
       return (maxVal / 5).ceilToDouble();
+    }
+    
+    List<CartesianSeries<ToolCostModel, String>> _buildSeries1(
+        List<ToolCostModel> data,
+        ) {
+      return <CartesianSeries<ToolCostModel, String>>[
+        StackedColumnSeries<ToolCostModel, String>(
+          dataSource: data,
+          xValueMapper: (item, _) => item.title,
+          yValueMapper: (item, _) => item.actual,
+          dataLabelMapper: (item, _) => numberFormat.format(item.actual),
+          pointColorMapper: (item, _) => item.actual > item.target ? Colors.red : Colors.green,
+          name: 'Actual',
+          dataLabelSettings: const DataLabelSettings(
+            isVisible: true,
+            textStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          ),
+        ),
+        StackedColumnSeries<ToolCostModel, String>(
+          dataSource: data,
+          xValueMapper: (item, _) => item.title,
+          // Target - Actual để hiển thị phần còn thiếu trong cột
+          yValueMapper: (item, _) => (item.target - item.actual).clamp(0, double.infinity),
+          dataLabelMapper: (item, _) => numberFormat.format(item.target),
+          name: 'Remaining to Target',
+          color: Colors.grey,
+          dataLabelSettings: const DataLabelSettings(
+            isVisible: true,
+            textStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          ),
+        ),
+      ];
     }
 
     Widget _buildLegend() {
