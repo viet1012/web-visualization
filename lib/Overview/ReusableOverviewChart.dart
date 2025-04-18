@@ -7,7 +7,8 @@
   import '../Common/ToolCostPopup.dart';
   import '../Detail/DetailScreen.dart';
   import '../Detail/ToolCostDetail.dart';
-  import '../Model/ToolCostModel.dart';
+  import '../Model/DetailsDataModel.dart';
+import '../Model/ToolCostModel.dart';
   import '../Provider/ToolCostProvider.dart';
 
   class ReusableOverviewChart extends StatefulWidget {
@@ -30,7 +31,7 @@
       return Column(
         children: [
           const Text(
-            "Tool Cost",
+            "Tools Cost",
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           SizedBox(
@@ -130,6 +131,7 @@
       );
     }
 
+
     List<CartesianSeries<ToolCostModel, String>> _buildSeries (
       List<ToolCostModel> data,
     ) {
@@ -153,37 +155,66 @@
             ),
           ),
 
-          onPointTap: (ChartPointDetails details) {
-            final index = details.pointIndex ?? -1;
-            showDialog(
-              context: context,
-              builder: (_) => ToolCostPopup(
-                title: 'Details Data',
-                data: [
-                  ToolCostDetail(
-                    div: 'IT',
-                    group: 'A1',
-                    tcode: 'TX01',
-                    name: 'Tool A',
-                    qty: 5,
-                    amount: 1250.0,
-                    usedDate: '2024-04-10',
-                  ),
-                  ToolCostDetail(
-                    div: 'QA',
-                    group: 'B2',
-                    tcode: 'TX02',
-                    name: 'Tool B',
-                    qty: 3,
-                    amount: 900.0,
-                    usedDate: '2024-04-12',
-                  ),
-                ],
-              ),
-            );
+            onPointTap: (ChartPointDetails details) async {
+              final index = details.pointIndex ?? -1;
+              final item = widget.data[index];
+
+              // Show loading dialog
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+
+              try {
+                // Gọi API để lấy dữ liệu
+                List<DetailsDataModel> detailsData =
+                await ApiService().fetchDetailsData(widget.month, item.title);
+
+                // Tắt loading
+                Navigator.of(context).pop();
+
+                if (detailsData.isNotEmpty) {
+                  // Hiển thị popup dữ liệu
+                  showDialog(
+                    context: context,
+                    builder: (_) => ToolCostPopup(
+                      title: 'Details Data',
+                      data: detailsData,
+                    ),
+                  );
+                } else {
+                  // Có thể thêm thông báo nếu không có dữ liệu
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          'No data available',
+                          style: TextStyle(
+                            fontSize: 22.0,  // Tăng kích thước font chữ
+                            fontWeight: FontWeight.bold,  // Tùy chọn để làm đậm
+                          ),
+                        ),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 20.0),  // Thêm khoảng cách trên/dưới
+                      behavior: SnackBarBehavior.fixed,  // Tùy chọn hiển thị phía trên thay vì ở dưới
+                    ),
+                  );
+
+                }
+              } catch (e) {
+                Navigator.of(context).pop(); // Đảm bảo tắt loading nếu lỗi
+                print("Error fetching data: $e");
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Error fetching data')),
+                );
+              }
+            }
 
 
-          },
         ),
         ColumnSeries<ToolCostModel, String>(
           dataSource: data,

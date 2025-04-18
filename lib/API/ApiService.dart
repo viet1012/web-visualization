@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../Model/DetailsDataModel.dart';
 import '../Model/ToolCostDetailModel.dart';
 import '../Model/ToolCostModel.dart';
 
@@ -54,6 +55,23 @@ class ApiService {
     }
   }
 
+  Future<List<DetailsDataModel>> fetchDetailsData(String month, String deptInput) async {
+    final url = Uri.parse("$baseUrl/details-data?month=$month&dept=$deptInput");
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body);
+        return data.map((json) => DetailsDataModel.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("Exception caught: $e");
+      return [];
+    }
+  }
 
 
   // Chuyển đổi JSON thành danh sách ToolCostModel

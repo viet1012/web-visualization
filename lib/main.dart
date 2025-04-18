@@ -23,14 +23,13 @@ class DashboardApp extends StatefulWidget {
   @override
   State<DashboardApp> createState() => _DashboardAppState();
 }
-
 class _DashboardAppState extends State<DashboardApp> {
-  bool isDarkMode = false;
+  bool isDarkMode = true; // 🔥 Mặc định bật chế độ tối
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      navigatorObservers: [routeObserver], // ✅ dùng biến global ở đây
+      navigatorObservers: [routeObserver],
       title: 'Cost Monitoring Web',
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark().copyWith(
