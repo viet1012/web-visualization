@@ -5,6 +5,7 @@ import 'package:visualization/Model/ToolCostDetailModel.dart';
 import '../Common/CustomAppBar.dart';
 import '../Common/DateDisplayWidget.dart';
 import '../Common/TimeInfoCard.dart';
+import '../Context/ToolCostContext.dart';
 import '../Model/StackBarData.dart';
 import '../Provider/ToolCostProvider.dart';
 import 'MiniBarDetailChart.dart';
@@ -13,11 +14,12 @@ import '../Model/ToolCostModel.dart';
 
 class DetailScreen extends StatefulWidget {
   final ToolCostModel item;
-  final String month;
-  final String dept;
-  final List<ToolCostDetailModel> detailData;
+  // final String month;
+  // final String dept;
+  // final List<ToolCostDetailModel> detailData;
+  final ToolCostContext context;
 
-  const DetailScreen({super.key, required this.item, required this.detailData, required this.month, required this.dept});
+  const DetailScreen({super.key, required this.item, required this.context});
 
   @override
   State<DetailScreen> createState() => _DetailScreenState();
@@ -92,7 +94,7 @@ class _DetailScreenState extends State<DetailScreen> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              OverviewDetailChart(data: widget.detailData, month: widget.month, dept: widget.dept),
+              OverviewDetailChart(context: widget.context,),
             ],
           ),
         ),

@@ -5,6 +5,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:visualization/API/ApiService.dart';
 
 import '../Common/ToolCostPopup.dart';
+import '../Context/ToolCostContext.dart';
 import '../Detail/DetailScreen.dart';
 import '../Detail/ToolCostDetail.dart';
 import '../Model/DetailsDataModel.dart';
@@ -117,13 +118,14 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
                   // Tắt dialog loading
                   Navigator.of(context).pop();
 
+                  var toolCostContext = ToolCostContext(month: widget.month, dept:item.title , data: detailData);
                   // Navigate sang màn hình chi tiết
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder:
                           (_) =>
-                              DetailScreen(item: item, detailData: detailData, month: widget.month, dept: item.title,),
+                              DetailScreen(item: item, context: toolCostContext,),
                     ),
                   );
                 } catch (e) {

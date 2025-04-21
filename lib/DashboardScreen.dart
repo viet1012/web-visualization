@@ -304,7 +304,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
       _fetchData(provider);
     });
 
-    _dailyTimer = Timer.periodic(const Duration(minutes: 10), (timer) {
+    _dailyTimer = Timer.periodic(const Duration(minutes: 20), (timer) {
       final now = DateTime.now();
       print("[TIMER CHECK] Current Time: $now | Stored Time: $_currentDate");
 
@@ -329,6 +329,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
             });
             _fetchData(provider);
           });
+          print("[UI UPDATED] setState triggered with new date: $selectedDate");
         }
       }
     });
@@ -337,7 +338,6 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
   @override
   void didPopNext() {
     super.didPopNext();
-
   }
 
   @override

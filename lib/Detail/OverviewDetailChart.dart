@@ -5,20 +5,17 @@ import 'package:visualization/Model/ToolCostDetailModel.dart';
 import '../API/ApiService.dart';
 import '../Common/NoDataWidget.dart';
 import '../Common/ToolCostPopup.dart';
+import '../Context/ToolCostContext.dart';
 import '../Model/DetailsDataModel.dart';
 import '../SubDetail/SubDetailScreen.dart';
 import '../Model/ToolCostModel.dart';
 
 class OverviewDetailChart extends StatefulWidget {
-  final List<ToolCostDetailModel> data;
-  final String month;
-  final String dept;
+  final ToolCostContext context;
 
   const OverviewDetailChart({
     super.key,
-    required this.data,
-    required this.month,
-    required this.dept,
+    required this.context
   });
 
   @override
@@ -30,7 +27,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.data.isEmpty) {
+    if (widget.context.data.isEmpty) {
       return const NoDataWidget(
         title: "No Data Available",
         message: "Please try again with a different time range.",
@@ -50,10 +47,10 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
               ),
               axisLabelFormatter: (AxisLabelRenderDetails details) {
                 final index = int.tryParse(details.text);
-                if (index != null && index < widget.data.length) {
+                if (index != null && index < widget.context.data.length) {
                   final isSelected = selectedIndex == index;
                   return ChartAxisLabel(
-                    widget.data[index].title,
+                    widget.context.data[index].title,
                     TextStyle(
                       color: isSelected ? Colors.blueAccent : Colors.black,
                       fontWeight:
@@ -74,7 +71,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
             ),
             primaryYAxis: NumericAxis(
               labelStyle: const TextStyle(fontSize: 18),
-              interval: _getInterval(widget.data),
+              interval: _getInterval(widget.context.data),
               title: AxisTitle(
                 text: 'K\$',
                 textStyle: TextStyle(
@@ -84,11 +81,11 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
                 ),
               ),
             ),
-            series: _buildSeries(widget.data),
+            series: _buildSeries(widget.context.data),
             onAxisLabelTapped: (AxisLabelTapArgs args) {
-              final index = widget.data.indexWhere((e) => e.title == args.text);
+              final index = widget.context.data.indexWhere((e) => e.title == args.text);
               if (index != -1) {
-                final item = widget.data[index];
+                final item = widget.context.data[index];
                 setState(() {
                   selectedIndex = index;
                 });
@@ -136,7 +133,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
         ),
         onPointTap: (ChartPointDetails details) async {
           final index = details.pointIndex ?? -1;
-          final item = widget.data[index];
+          final item = widget.context.data[index];
 
           // Show loading dialog
           showDialog(
@@ -148,7 +145,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
           try {
             // Gọi API để lấy dữ liệu
             List<DetailsDataModel> detailsData = await ApiService()
-                .fetchSubDetailsData(widget.month, widget.dept,item.title);
+                .fetchSubDetailsData(widget.context.month, widget.context.dept,item.title);
 
             // Tắt loading
             Navigator.of(context).pop();
