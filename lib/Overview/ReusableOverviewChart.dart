@@ -11,7 +11,7 @@ import '../Detail/ToolCostDetail.dart';
 import '../Model/DetailsDataModel.dart';
 import '../Model/ToolCostModel.dart';
 import '../Provider/ToolCostProvider.dart';
-
+import 'dart:html' as html;
 class ReusableOverviewChart extends StatefulWidget {
   final List<ToolCostModel> data;
   final String month;
@@ -128,6 +128,8 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
                               DetailScreen(item: item, context: toolCostContext,),
                     ),
                   );
+                  // redirectToPage(item.title);
+
                 } catch (e) {
                   // Nếu có lỗi, tắt dialog và show error
                   Navigator.of(context).pop();
@@ -143,6 +145,13 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
         _buildLegend(),
       ],
     );
+  }
+
+  // Navigator qua 1 trang mới
+  void redirectToPage(String page) {
+    final baseUrl = 'http://f2pc24017:9000/#';
+    final fullUrl = '$baseUrl/$page';
+    html.window.location.href = fullUrl;
   }
 
   List<CartesianSeries<ToolCostModel, String>> _buildSeries(

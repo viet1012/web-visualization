@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:visualization/Model/ToolCostDetailModel.dart';
+import '../Common/AnimatedShadowCard.dart';
 import '../Common/CustomAppBar.dart';
 import '../Common/DateDisplayWidget.dart';
 import '../Common/TimeInfoCard.dart';
@@ -46,12 +47,10 @@ class _DetailScreenState extends State<DetailScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Card(
+              AnimatedShadowCard(
+                glowColor: statusColor,
                 elevation: 10,
-                shadowColor: statusColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
+                borderRadius: 16,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: IntrinsicHeight(
@@ -94,7 +93,7 @@ class _DetailScreenState extends State<DetailScreen> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              OverviewDetailChart(context: widget.context,),
+              OverviewDetailChart(context: widget.context),
             ],
           ),
         ),

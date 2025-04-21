@@ -8,6 +8,7 @@ import 'API/ApiService.dart';
 import 'ChartDataProvider.dart';
 import 'Common/BlinkingText.dart';
 import 'Common/DateDisplayWidget.dart';
+import 'Common/MonthYearDropdown.dart';
 import 'Common/NoDataWidget.dart';
 import 'Common/TimeInfoCard.dart';
 import 'Overview/ReusableOverviewChart.dart';
@@ -357,7 +358,6 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
 
   void _fetchData(ToolCostProvider provider) {
     month = "$selectedYear-${selectedMonth.toString().padLeft(2, '0')}";
-    print("Month: $month");
     provider.clearData(); // 👈 Reset trước khi fetch
     provider.fetchToolCosts(month);
   }
@@ -379,9 +379,21 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
                   monthYearDropDown: SizedBox(
                     width: 140,
                     height: 40,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: _buildMonthYearDropdown(),
+                    child:  MonthYearDropdown(
+                      selectedDate: selectedDate,
+                      onDateChanged: (newDate) {
+                        setState(() {
+                          selectedDate = newDate;
+                          selectedMonth = newDate.month;
+                          selectedYear = newDate.year;
+                          month = "${selectedYear.toString()}-${selectedMonth.toString().padLeft(2, '0')}";
+                        });
+                        final provider = Provider.of<ToolCostProvider>(
+                          context,
+                          listen: false,
+                        );
+                        _fetchData(provider);
+                      },
                     ),
                   ),
                 ),
