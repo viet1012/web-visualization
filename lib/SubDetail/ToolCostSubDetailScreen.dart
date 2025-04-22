@@ -115,25 +115,6 @@ class _SubDetailScreenState extends State<SubDetailScreen> {
     );
   }
 
-  Widget _buildStatusCard(String status, Color color) {
-    return Card(
-      color: color.withOpacity(0.1),
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
-        leading: Icon(_getStatusIcon(status), color: color, size: 32),
-        title: Text(
-          'Status: $status',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
-        subtitle: const Text('Monitoring performance by day'),
-      ),
-    );
-  }
 
   List<StackBarData> _generateMonthlyData(int year, int month) {
     final daysInMonth = DateUtils.getDaysInMonth(year, month);

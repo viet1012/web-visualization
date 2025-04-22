@@ -3,11 +3,11 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../Model/TargetActualData.dart'; // hoặc sửa theo đường dẫn của bạn
 
-class MiniBarChart extends StatelessWidget {
+class ToolCostDetailMiniBarChart extends StatelessWidget {
   final double actual;
   final double target;
 
-  const MiniBarChart({
+  const ToolCostDetailMiniBarChart({
     super.key,
     required this.actual,
     required this.target,

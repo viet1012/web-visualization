@@ -11,7 +11,7 @@ import 'Common/DateDisplayWidget.dart';
 import 'Common/MonthYearDropdown.dart';
 import 'Common/NoDataWidget.dart';
 import 'Common/TimeInfoCard.dart';
-import 'Overview/ReusableOverviewChart.dart';
+import 'Overview/ToolCostOverviewChart.dart';
 import 'Provider/ToolCostProvider.dart';
 import 'main.dart';
 
@@ -446,7 +446,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(8),
-                          child: ReusableOverviewChart(
+                          child: ToolCostOverviewChart(
                             data: provider.data,
                             month: month,
                           ),

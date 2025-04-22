@@ -9,7 +9,7 @@ import '../Common/TimeInfoCard.dart';
 import '../Context/ToolCostContext.dart';
 import '../Model/StackBarData.dart';
 import '../Provider/ToolCostProvider.dart';
-import 'MiniBarDetailChart.dart';
+import 'ToolCostDetailMiniBarChart.dart';
 import 'OverviewDetailChart.dart';
 import '../Model/ToolCostModel.dart';
 
@@ -77,7 +77,7 @@ class _DetailScreenState extends State<DetailScreen> {
                         SizedBox(
                           height: 150,
                           width: MediaQuery.of(context).size.width * .8,
-                          child: MiniBarChart(
+                          child: ToolCostDetailMiniBarChart(
                             actual: selectedItem!.actual.toDouble(),
                             target: selectedItem.target.toDouble(),
                           ),

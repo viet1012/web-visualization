@@ -1,16 +1,37 @@
 import 'package:flutter/material.dart';
-import 'DashboardScreen.dart';
-import 'Provider/ToolCostProvider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+
+import 'DashboardScreen.dart';
+import 'Detail/ToolCostDetailOverviewScreen.dart';
+import 'Provider/ToolCostDetailProvider.dart';
+import 'Provider/ToolCostProvider.dart';
 
 /// ✅ Khai báo global: có thể dùng ở mọi nơi
 final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
+
+final GoRouter router = GoRouter(
+  routes: [
+    GoRoute(
+      path: '/',
+      builder: (context, state) => DashboardScreen(onToggleTheme: () {}),
+    ),
+    GoRoute(
+      path: '/:dept',
+      builder: (context, state) {
+        final dept = state.pathParameters['dept'] ?? 'Mold'; // Mặc định là 'Mold' nếu không có tham số
+        return ToolCostDetailOverviewScreen(onToggleTheme: () {}, dept: dept);
+      },
+    ),
+  ],
+);
 
 void main() {
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ToolCostProvider()),
+        ChangeNotifierProvider(create: (_) => ToolCostDetailProvider()),
       ],
       child: DashboardApp(),
     ),
@@ -23,13 +44,15 @@ class DashboardApp extends StatefulWidget {
   @override
   State<DashboardApp> createState() => _DashboardAppState();
 }
+
 class _DashboardAppState extends State<DashboardApp> {
   bool isDarkMode = true; // 🔥 Mặc định bật chế độ tối
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorObservers: [routeObserver],
+    return MaterialApp.router(
+      routerConfig: router, // Cấu hình router cho MaterialApp
+
       title: 'Cost Monitoring Web',
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark().copyWith(
@@ -45,13 +68,6 @@ class _DashboardAppState extends State<DashboardApp> {
         ),
       ),
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      home: DashboardScreen(
-        onToggleTheme: () {
-          setState(() {
-            isDarkMode = !isDarkMode;
-          });
-        },
-      ),
       debugShowCheckedModeBanner: false,
     );
   }

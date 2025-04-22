@@ -1,51 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:visualization/API/ApiService.dart';
 
+import '../API/ApiService.dart';
+import '../Common/NoDataWidget.dart';
 import '../Common/ToolCostPopup.dart';
 import '../Context/ToolCostContext.dart';
-import '../Detail/DetailScreen.dart';
-import '../Detail/ToolCostDetail.dart';
 import '../Model/DetailsDataModel.dart';
-import '../Model/ToolCostModel.dart';
-import '../Provider/ToolCostProvider.dart';
-import 'dart:html' as html;
-class ReusableOverviewChart extends StatefulWidget {
-  final List<ToolCostModel> data;
+import '../Model/ToolCostDetailModel.dart';
+import '../SubDetail/ToolCostSubDetailScreen.dart';
+
+class ToolCostDetailChart extends StatefulWidget {
+  final List<ToolCostDetailModel> data;
   final String month;
 
-  const ReusableOverviewChart({
+  const ToolCostDetailChart({
     super.key,
     required this.data,
     required this.month,
   });
 
   @override
-  State<ReusableOverviewChart> createState() => _ReusableOverviewChartState();
+  State<ToolCostDetailChart> createState() => _ToolCostDetailChartState();
 }
 
-class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
+class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
   int? selectedIndex;
-  final apiService = ApiService();
-  final numberFormat = NumberFormat("##0.0");
 
   @override
   Widget build(BuildContext context) {
+    if (widget.data.isEmpty) {
+      return const NoDataWidget(
+        title: "No Data Available",
+        message: "Please try again with a different time range.",
+        icon: Icons.error_outline,
+      );
+    }
+
     return Column(
       children: [
-        const Text(
-          "Tools Cost",
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-        ),
         SizedBox(
-          height: MediaQuery.of(context).size.height * .85,
+          height: MediaQuery.of(context).size.height * .65,
           child: SfCartesianChart(
-            plotAreaBorderColor: Colors.black45,
             primaryXAxis: CategoryAxis(
               labelStyle: const TextStyle(
-                fontSize: 16,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
               axisLabelFormatter: (AxisLabelRenderDetails details) {
@@ -68,15 +66,12 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
                 }
                 return ChartAxisLabel(
                   details.text,
-                  TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 );
               },
             ),
             primaryYAxis: NumericAxis(
-              labelStyle: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              labelStyle: const TextStyle(fontSize: 18),
               interval: _getInterval(widget.data),
               title: AxisTitle(
                 text: 'K\$',
@@ -88,95 +83,55 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
               ),
             ),
             series: _buildSeries(widget.data),
-            onAxisLabelTapped: (AxisLabelTapArgs args) async {
+            onAxisLabelTapped: (AxisLabelTapArgs args) {
               final index = widget.data.indexWhere((e) => e.title == args.text);
               if (index != -1) {
                 final item = widget.data[index];
-
-                // Hiển thị dialog loading
-                showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder:
-                      (_) => const Center(child: CircularProgressIndicator()),
+                setState(() {
+                  selectedIndex = index;
+                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => SubDetailScreen(item: item),
+                  ),
                 );
-
-                try {
-                  final detailData = await apiService.fetchToolCostsDetail(
-                    widget.month,
-                    item.title,
-                  );
-                  Provider.of<ToolCostProvider>(
-                    context,
-                    listen: false,
-                  ).setSelectedItem(item);
-
-                  setState(() {
-                    selectedIndex = index;
-                  });
-
-                  // Tắt dialog loading
-                  Navigator.of(context).pop();
-
-                  var toolCostContext = ToolCostContext(month: widget.month, dept:item.title , data: detailData);
-                  // Navigate sang màn hình chi tiết
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (_) =>
-                              DetailScreen(item: item, context: toolCostContext,),
-                    ),
-                  );
-                  // redirectToPage(item.title);
-
-                } catch (e) {
-                  // Nếu có lỗi, tắt dialog và show error
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Lỗi khi load dữ liệu: $e")),
-                  );
-                }
               }
             },
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 16),
         _buildLegend(),
       ],
     );
   }
 
-  // Navigator qua 1 trang mới
-  void redirectToPage(String page) {
-    final baseUrl = 'http://f2pc24017:9000/#';
-    final fullUrl = '$baseUrl/$page';
-    html.window.location.href = fullUrl;
-  }
-
-  List<CartesianSeries<ToolCostModel, String>> _buildSeries(
-    List<ToolCostModel> data,
+  List<CartesianSeries<ToolCostDetailModel, String>> _buildSeries(
+    List<ToolCostDetailModel> data,
   ) {
-    return <CartesianSeries<ToolCostModel, String>>[
-      ColumnSeries<ToolCostModel, String>(
+    final greenData = data.where((e) => e.actual <= e.target).toList();
+    final redData = data.where((e) => e.actual > e.target).toList();
+
+    return <CartesianSeries<ToolCostDetailModel, String>>[
+      StackedColumnSeries<ToolCostDetailModel, String>(
         dataSource: data,
         xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.actual,
-        dataLabelMapper: (item, _) => numberFormat.format(item.actual),
         pointColorMapper:
             (item, _) => item.actual > item.target ? Colors.red : Colors.green,
         name: 'Actual',
         width: 0.5,
-        spacing: 0.1,
-        // 👈 khoảng cách giữa các cột trong cùng nhóm
+        spacing: 0.2,
         dataLabelSettings: const DataLabelSettings(
           isVisible: true,
+          labelAlignment: ChartDataLabelAlignment.middle,
+          labelIntersectAction: LabelIntersectAction.shift,
           textStyle: TextStyle(
-            fontSize: 20, // 👈 Tùy chỉnh kích thước nếu cần
-            fontWeight: FontWeight.w600,
+            fontSize: 20,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
         ),
-
         onPointTap: (ChartPointDetails details) async {
           final index = details.pointIndex ?? -1;
           final item = widget.data[index];
@@ -191,7 +146,7 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
           try {
             // Gọi API để lấy dữ liệu
             List<DetailsDataModel> detailsData = await ApiService()
-                .fetchDetailsData(widget.month, item.title);
+                .fetchSubDetailsData(widget.month,"Mold",item.title);
 
             // Tắt loading
             Navigator.of(context).pop();
@@ -202,7 +157,7 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
                 context: context,
                 builder:
                     (_) =>
-                        ToolCostPopup(title: 'Details Data', data: detailsData),
+                    ToolCostPopup(title: 'Details Data', data: detailsData),
               );
             } else {
               // Có thể thêm thông báo nếu không có dữ liệu
@@ -221,8 +176,8 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
                   padding: EdgeInsets.symmetric(vertical: 20.0),
                   // Thêm khoảng cách trên/dưới
                   behavior:
-                      SnackBarBehavior
-                          .fixed, // Tùy chọn hiển thị phía trên thay vì ở dưới
+                  SnackBarBehavior
+                      .fixed, // Tùy chọn hiển thị phía trên thay vì ở dưới
                 ),
               );
             }
@@ -235,66 +190,81 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
           }
         },
       ),
-      ColumnSeries<ToolCostModel, String>(
+      // 👉 Miền Target màu xám
+      AreaSeries<ToolCostDetailModel, String>(
         dataSource: data,
         xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.target,
-        dataLabelMapper: (item, _) => numberFormat.format(item.target),
         name: 'Target',
-        color: Colors.grey,
-        width: 0.5,
-        spacing: 0.1,
+        gradient: LinearGradient(
+          colors: [Colors.grey.withOpacity(0.5), Colors.grey.withOpacity(0.1)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+        borderColor: Colors.grey,
+        borderWidth: 2,
+
+        dataLabelSettings: const DataLabelSettings(
+          labelAlignment: ChartDataLabelAlignment.top,
+          isVisible: true,
+          textStyle: TextStyle(
+            fontSize: 20,
+            color: Colors.grey,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+
+      // 👉 Cột Actual màu xanh nếu đạt, màu đỏ nếu vượt target
+    ];
+  }
+
+  List<CartesianSeries<ToolCostDetailModel, String>> _buildSeries1(
+    List<ToolCostDetailModel> data,
+  ) {
+    return <CartesianSeries<ToolCostDetailModel, String>>[
+      ColumnSeries<ToolCostDetailModel, String>(
+        dataSource: data,
+        xValueMapper: (item, _) => item.title,
+        yValueMapper: (item, _) => item.actual,
+        pointColorMapper:
+            (item, _) => item.actual > item.target ? Colors.red : Colors.green,
+        name: 'Actual',
+        width: 0.6,
+        spacing: 0.2,
         // 👈 khoảng cách giữa các cột trong cùng nhóm
         dataLabelSettings: const DataLabelSettings(
           isVisible: true,
           textStyle: TextStyle(
-            fontSize: 20, // 👈 Tùy chỉnh kích thước nếu cần
-            fontWeight: FontWeight.w600,
+            fontSize: 18, // 👈 Tùy chỉnh kích thước nếu cần
+          ),
+        ),
+      ),
+      ColumnSeries<ToolCostDetailModel, String>(
+        dataSource: data,
+        xValueMapper: (item, _) => item.title,
+        yValueMapper: (item, _) => item.target,
+        name: 'Target',
+        color: Colors.grey,
+        width: 0.6,
+        spacing: 0.2,
+
+        // 👈 khoảng cách giữa các cột trong cùng nhóm
+        dataLabelSettings: const DataLabelSettings(
+          isVisible: true,
+          textStyle: TextStyle(
+            fontSize: 16, // 👈 Tùy chỉnh kích thước nếu cần
           ),
         ),
       ),
     ];
   }
 
-  double _getInterval(List<ToolCostModel> data) {
+  double _getInterval(List<ToolCostDetailModel> data) {
     double maxVal = data
         .map((e) => e.actual > e.target ? e.actual : e.target)
         .reduce((a, b) => a > b ? a : b);
     return (maxVal / 5).ceilToDouble();
-  }
-
-  List<CartesianSeries<ToolCostModel, String>> _buildSeries1(
-    List<ToolCostModel> data,
-  ) {
-    return <CartesianSeries<ToolCostModel, String>>[
-      StackedColumnSeries<ToolCostModel, String>(
-        dataSource: data,
-        xValueMapper: (item, _) => item.title,
-        yValueMapper: (item, _) => item.actual,
-        dataLabelMapper: (item, _) => numberFormat.format(item.actual),
-        pointColorMapper:
-            (item, _) => item.actual > item.target ? Colors.red : Colors.green,
-        name: 'Actual',
-        dataLabelSettings: const DataLabelSettings(
-          isVisible: true,
-          textStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-        ),
-      ),
-      StackedColumnSeries<ToolCostModel, String>(
-        dataSource: data,
-        xValueMapper: (item, _) => item.title,
-        // Target - Actual để hiển thị phần còn thiếu trong cột
-        yValueMapper:
-            (item, _) => (item.target - item.actual).clamp(0, double.infinity),
-        dataLabelMapper: (item, _) => numberFormat.format(item.target),
-        name: 'Remaining to Target',
-        color: Colors.grey,
-        dataLabelSettings: const DataLabelSettings(
-          isVisible: true,
-          textStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-        ),
-      ),
-    ];
   }
 
   Widget _buildLegend() {
@@ -316,7 +286,7 @@ class _ReusableOverviewChartState extends State<ReusableOverviewChart> {
         const SizedBox(width: 6),
         Text(
           text,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ],
     );

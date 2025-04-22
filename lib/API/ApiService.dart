@@ -9,6 +9,30 @@ class ApiService {
   // final String baseUrl = "http://F2PC24017:8080/api";
   final String baseUrl = "http://192.168.122.15:9091/api";
 
+  Future<ToolCostModel?> fetchToolCostsByDept(String month, String dept) async {
+    final url = Uri.parse("$baseUrl/tool-cost/by-dept?month=$month&dept=$dept");
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = json.decode(response.body);
+
+        // Kiểm tra nếu act null hoặc tgt_WholeM == 0 => return null
+        if (jsonData['act'] == null || jsonData['tgt_WholeM'] == 0.0) {
+          return null;
+        }
+
+        return ToolCostModel.fromJson(jsonData); // Trả về 1 item duy nhất
+      } else {
+        print("Error: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("Exception caught: $e");
+      return null;
+    }
+  }
 
   Future<List<ToolCostModel>> fetchToolCosts(String month) async {
     final url = Uri.parse("$baseUrl/tool-cost?month=$month");

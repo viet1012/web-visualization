@@ -7,7 +7,7 @@ import '../Common/NoDataWidget.dart';
 import '../Common/ToolCostPopup.dart';
 import '../Context/ToolCostContext.dart';
 import '../Model/DetailsDataModel.dart';
-import '../SubDetail/SubDetailScreen.dart';
+import '../SubDetail/ToolCostSubDetailScreen.dart';
 import '../Model/ToolCostModel.dart';
 
 class OverviewDetailChart extends StatefulWidget {
