@@ -34,8 +34,16 @@ class DashboardApp extends StatefulWidget {
 class _DashboardAppState extends State<DashboardApp> {
   bool isDarkMode = true; // 🔥 Mặc định bật chế độ tối
 
+
+  void _toggleTheme() {
+    setState(() {
+      isDarkMode = !isDarkMode;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final router = createRouter(_toggleTheme); // Tạo router mới với chế độ tối
     return MaterialApp.router(
       routerConfig: router, // Cấu hình router cho MaterialApp
 

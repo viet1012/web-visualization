@@ -26,3 +26,30 @@ final GoRouter router = GoRouter(
     ),
   ],
 );
+
+GoRouter createRouter(VoidCallback onToggleTheme) {
+  final List<String> validDepts = ['Mold', 'Press', 'Guide', 'MA', 'PE', 'Common', 'MTC'];
+
+  return GoRouter(
+    routes: [
+      GoRoute(
+        path: '/',
+        builder: (context, state) => DashboardScreen(onToggleTheme: onToggleTheme),
+      ),
+      GoRoute(
+        path: '/:dept',
+        builder: (context, state) {
+          final dept = state.pathParameters['dept'] ?? 'Mold';
+          if (!validDepts.contains(dept)) {
+            return const NotFoundScreen();
+          }
+          return ToolCostDetailOverviewScreen(
+            onToggleTheme: onToggleTheme,
+            dept: dept,
+          );
+        },
+      ),
+    ],
+    errorBuilder: (context, state) => const NotFoundScreen(),
+  );
+}

@@ -169,12 +169,7 @@ class _ToolCostDetailOverviewScreenState extends State<ToolCostDetailOverviewScr
           ],
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.brightness_6),
-            onPressed: widget.onToggleTheme,
-          ),
-        ],
+
       ),
       body: Consumer<ToolCostDetailProvider>(
         builder: (context, provider, child) {
