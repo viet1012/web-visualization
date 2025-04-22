@@ -3,28 +3,30 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
-import '../Common/BlinkingText.dart';
 import '../Common/CustomToolCostAppBar.dart';
-import '../Common/DateDisplayWidget.dart';
-import '../Common/MonthYearDropdown.dart';
 import '../Common/NoDataWidget.dart';
-import '../Common/TimeInfoCard.dart';
 import '../Provider/ToolCostDetailProvider.dart';
-import 'DetailScreen.dart';
 import 'ToolCostDetailScreen.dart';
 import 'package:go_router/go_router.dart';
 
 class ToolCostDetailOverviewScreen extends StatefulWidget {
   final VoidCallback onToggleTheme;
   final String dept;
-  const ToolCostDetailOverviewScreen({super.key, required this.onToggleTheme, required this.dept});
+
+  const ToolCostDetailOverviewScreen({
+    super.key,
+    required this.onToggleTheme,
+    required this.dept,
+  });
 
   @override
-  State<ToolCostDetailOverviewScreen> createState() => _ToolCostDetailOverviewScreenState();
+  State<ToolCostDetailOverviewScreen> createState() =>
+      _ToolCostDetailOverviewScreenState();
 }
 
-class _ToolCostDetailOverviewScreenState extends State<ToolCostDetailOverviewScreen> with RouteAware {
+class _ToolCostDetailOverviewScreenState
+    extends State<ToolCostDetailOverviewScreen>
+    with RouteAware {
   int selectedMonth = DateTime.now().month;
   int selectedYear = DateTime.now().year;
   DateTime selectedDate = DateTime(
@@ -41,13 +43,14 @@ class _ToolCostDetailOverviewScreenState extends State<ToolCostDetailOverviewScr
   void didUpdateWidget(covariant ToolCostDetailOverviewScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.dept != widget.dept) {
-      print("oldWidget: ${oldWidget.dept}" );
-      WidgetsBinding.instance.addPostFrameCallback((_){
-        final provider = Provider.of<ToolCostDetailProvider>(context, listen: false);
+      print("oldWidget: ${oldWidget.dept}");
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final provider = Provider.of<ToolCostDetailProvider>(
+          context,
+          listen: false,
+        );
         _fetchData(provider); // Gọi lại API nếu dept thay đổi
-
       });
-
     }
   }
 
@@ -57,7 +60,10 @@ class _ToolCostDetailOverviewScreenState extends State<ToolCostDetailOverviewScr
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       print("After build - Current Date: $_currentDate");
-      final provider = Provider.of<ToolCostDetailProvider>(context, listen: false);
+      final provider = Provider.of<ToolCostDetailProvider>(
+        context,
+        listen: false,
+      );
       _fetchData(provider);
     });
 
@@ -90,7 +96,6 @@ class _ToolCostDetailOverviewScreenState extends State<ToolCostDetailOverviewScr
         }
       }
     });
-
   }
 
   @override
@@ -120,23 +125,26 @@ class _ToolCostDetailOverviewScreenState extends State<ToolCostDetailOverviewScr
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: CustomToolCostAppBar(
-          titleText: widget.dept,
-          selectedDate: selectedDate,
-          onDateChanged: (newDate) {
-            setState(() {
-              selectedDate = newDate;
-              selectedMonth = newDate.month;
-              selectedYear = newDate.year;
-              month = "$selectedYear-${selectedMonth.toString().padLeft(2, '0')}";
-            });
-            final provider = Provider.of<ToolCostDetailProvider>(context, listen: false);
-            _fetchData(provider);
-          },
-          currentDate: _currentDate,
-          showBackButton: true,
-          onBack: () => context.go('/'),
-        ),
+      appBar: CustomToolCostAppBar(
+        titleText: widget.dept,
+        selectedDate: selectedDate,
+        onDateChanged: (newDate) {
+          setState(() {
+            selectedDate = newDate;
+            selectedMonth = newDate.month;
+            selectedYear = newDate.year;
+            month = "$selectedYear-${selectedMonth.toString().padLeft(2, '0')}";
+          });
+          final provider = Provider.of<ToolCostDetailProvider>(
+            context,
+            listen: false,
+          );
+          _fetchData(provider);
+        },
+        currentDate: _currentDate,
+        showBackButton: true,
+        onBack: () => context.go('/'),
+      ),
       body: Consumer<ToolCostDetailProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {
@@ -158,33 +166,30 @@ class _ToolCostDetailOverviewScreenState extends State<ToolCostDetailOverviewScr
             child: Column(
               children: [
                 if (summary != null)
-                // 👇 Đây là phần hiện DetailScreen như trước
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: Card(
-                    elevation: 8,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      side: BorderSide(color: Colors.blue.shade100),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: ToolCostDetailScreen(
-                        data: provider.data,
-                        month: month,
-                        toolCostModel: summary,
+                  // 👇 Đây là phần hiện DetailScreen như trước
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: Card(
+                      elevation: 8,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        side: BorderSide(color: Colors.blue.shade100),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: ToolCostDetailScreen(
+                          data: provider.data,
+                          month: month,
+                          toolCostModel: summary,
+                        ),
                       ),
                     ),
                   ),
-                ),
               ],
             ),
           );
         },
       ),
-
     );
   }
-
-
 }

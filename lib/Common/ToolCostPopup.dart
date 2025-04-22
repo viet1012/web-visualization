@@ -4,17 +4,50 @@ import 'package:universal_html/html.dart' as html;
 import 'dart:typed_data';
 import '../Model/DetailsDataModel.dart';
 
-class ToolCostPopup extends StatelessWidget {
+class ToolCostPopup extends StatefulWidget {
   final String title;
   final List<DetailsDataModel> data;
 
-  ToolCostPopup({
-    Key? key,
-    required this.title,
-    required this.data,
-  }) : super(key: key);
+  ToolCostPopup({Key? key, required this.title, required this.data})
+    : super(key: key);
 
+  @override
+  State<ToolCostPopup> createState() => _ToolCostPopupState();
+}
+
+class _ToolCostPopupState extends State<ToolCostPopup> {
   final ScrollController _scrollController = ScrollController();
+
+  final TextEditingController _filterController = TextEditingController();
+  late List<DetailsDataModel> filteredData;
+
+  @override
+  void initState() {
+    super.initState();
+    filteredData = widget.data;
+    _filterController.addListener(_applyFilter);
+  }
+
+  void _applyFilter() {
+    final query = _filterController.text.toLowerCase();
+    setState(() {
+      filteredData =
+          widget.data.where((item) {
+            return item.dept.toLowerCase().contains(query) ||
+                item.maktx.toLowerCase().contains(query) ||
+                item.xblnr2.toLowerCase().contains(query) ||
+                item.bktxt.toLowerCase().contains(query) ||
+                item.matnr.toLowerCase().contains(query);
+          }).toList();
+    });
+  }
+
+  @override
+  void dispose() {
+    _filterController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +81,12 @@ class ToolCostPopup extends StatelessWidget {
   }
 
   Widget _buildHeader(ThemeData theme) {
+    // Tính tổng amount
+    final totalAmount = filteredData.fold<double>(
+      0,
+      (sum, item) => (sum + item.amount),
+    );
+
     return Column(
       children: [
         Row(
@@ -56,7 +95,7 @@ class ToolCostPopup extends StatelessWidget {
               child: Align(
                 alignment: Alignment.center,
                 child: Text(
-                  title,
+                  widget.title,
                   style: theme.textTheme.headlineSmall?.copyWith(
                     color: Colors.blueAccent,
                     fontWeight: FontWeight.w600,
@@ -65,32 +104,62 @@ class ToolCostPopup extends StatelessWidget {
                 ),
               ),
             ),
-            FilledButton.icon(
-              icon: Icon(Icons.download_rounded, size: 20),
-              label: Text('Export Excel'),
-              style: FilledButton.styleFrom(
-                backgroundColor: Colors.green.shade800,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
+            Row(
+              children: [
+                Text(
+                  "Total: ${(totalAmount / 1000).toStringAsFixed(2)}K\$",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                textStyle: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold),
-                elevation: 2,
-              ),
-              onPressed: () {
-                final excelBytes = createExcel(data);
-                downloadExcel(excelBytes, 'details_data.xlsx');
-              },
+                SizedBox(width: 16),
+                FilledButton.icon(
+                  icon: Icon(Icons.download_rounded, size: 20),
+                  label: Text('Export Excel'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Colors.green.shade800,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    textStyle: theme.textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    elevation: 2,
+                  ),
+                  onPressed: () {
+                    final excelBytes = createExcel(filteredData);
+                    downloadExcel(excelBytes, 'details_data.xlsx');
+                  },
+                ),
+              ],
             ),
           ],
         ),
         const SizedBox(height: 8),
         Divider(color: theme.dividerColor, thickness: 1),
+        Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: TextField(
+            controller: _filterController,
+            decoration: InputDecoration(
+              hintText: 'Search by Dept, Material No., Description, Note...',
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: theme.dividerColor),
+              ),
+              filled: true,
+              fillColor: theme.cardColor.withOpacity(.5),
+              contentPadding: EdgeInsets.symmetric(vertical: 14),
+            ),
+          ),
+        ),
       ],
     );
   }
-
 
   Widget _buildDataTable(BuildContext context, ThemeData theme) {
     return Column(
@@ -141,7 +210,9 @@ class ToolCostPopup extends StatelessWidget {
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Table(
-                  border: TableBorder.all(color: theme.dividerColor.withOpacity(0.8)),
+                  border: TableBorder.all(
+                    color: theme.dividerColor.withOpacity(0.8),
+                  ),
                   columnWidths: {
                     0: FixedColumnWidth(120),
                     1: FixedColumnWidth(150),
@@ -153,21 +224,22 @@ class ToolCostPopup extends StatelessWidget {
                     7: FixedColumnWidth(80),
                     8: FixedColumnWidth(120),
                   },
-                  children: data.map((item) {
-                    return TableRow(
-                      children: [
-                        _buildTableCell(item.dept),
-                        _buildTableCell(item.matnr),
-                        _buildTableCell(item.maktx),
-                        _buildTableCell(item.useDate),
-                        _buildTableCell(item.xblnr2),
-                        _buildTableCell(item.bktxt),
-                        _buildTableCell(item.qty.toString()),
-                        _buildTableCell(item.unit),
-                        _buildTableCell(item.amount.toStringAsFixed(2)),
-                      ],
-                    );
-                  }).toList(),
+                  children:
+                      filteredData.map((item) {
+                        return TableRow(
+                          children: [
+                            _buildTableCell(item.dept),
+                            _buildTableCell(item.matnr),
+                            _buildTableCell(item.maktx),
+                            _buildTableCell(item.useDate),
+                            _buildTableCell(item.xblnr2),
+                            _buildTableCell(item.bktxt),
+                            _buildTableCell(item.qty.toString()),
+                            _buildTableCell(item.unit),
+                            _buildTableCell(item.amount.toStringAsFixed(2)),
+                          ],
+                        );
+                      }).toList(),
                 ),
               ),
             ),
@@ -177,9 +249,12 @@ class ToolCostPopup extends StatelessWidget {
     );
   }
 
-
-  Widget _buildTableCell(String text,
-      {bool isHeader = false, bool numeric = false, bool highlight = false}) {
+  Widget _buildTableCell(
+    String text, {
+    bool isHeader = false,
+    bool numeric = false,
+    bool highlight = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Text(
@@ -188,7 +263,7 @@ class ToolCostPopup extends StatelessWidget {
         style: TextStyle(
           fontWeight: isHeader ? FontWeight.w600 : FontWeight.normal,
           color: highlight ? Colors.blue.shade700 : null,
-          fontSize: isHeader ?  18 : 16,
+          fontSize: isHeader ? 18 : 16,
         ),
       ),
     );
@@ -216,9 +291,7 @@ class ToolCostPopup extends StatelessWidget {
             }),
             foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(6),
-              ),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
             ),
             padding: MaterialStateProperty.all<EdgeInsets>(
               const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -237,13 +310,13 @@ class ToolCostPopup extends StatelessWidget {
     );
   }
 
-
   void downloadExcel(Uint8List bytes, String fileName) {
     final blob = html.Blob([bytes]);
     final url = html.Url.createObjectUrlFromBlob(blob);
-    final anchor = html.AnchorElement(href: url)
-      ..setAttribute('download', fileName)
-      ..click();
+    final anchor =
+        html.AnchorElement(href: url)
+          ..setAttribute('download', fileName)
+          ..click();
     html.Url.revokeObjectUrl(url);
   }
 
@@ -261,7 +334,7 @@ class ToolCostPopup extends StatelessWidget {
       'Note',
       'Qty',
       'Unit',
-      'Amount'
+      'Amount',
     ]);
 
     // Thêm dữ liệu

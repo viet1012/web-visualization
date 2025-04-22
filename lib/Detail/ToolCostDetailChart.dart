@@ -40,7 +40,7 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
     return Column(
       children: [
         SizedBox(
-          height: MediaQuery.of(context).size.height * .65,
+          height: MediaQuery.of(context).size.height * .66,
           child: SfCartesianChart(
             primaryXAxis: CategoryAxis(
               labelStyle: const TextStyle(

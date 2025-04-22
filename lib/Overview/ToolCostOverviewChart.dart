@@ -41,7 +41,9 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
           style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
         SizedBox(
+          // height: MediaQuery.of(context).size.height * .38,
           height: MediaQuery.of(context).size.height * .85,
+
           child: SfCartesianChart(
             plotAreaBorderColor: Colors.black45,
             primaryXAxis: CategoryAxis(

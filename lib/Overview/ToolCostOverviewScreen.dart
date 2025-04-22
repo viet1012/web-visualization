@@ -3,28 +3,23 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:visualization/Model/ToolCostModel.dart';
-
-import '../Common/BlinkingText.dart';
 import '../Common/CustomToolCostAppBar.dart';
-import '../Common/DateDisplayWidget.dart';
-import '../Common/MonthYearDropdown.dart';
 import '../Common/NoDataWidget.dart';
-import '../Common/TimeInfoCard.dart';
 import '../Provider/ToolCostProvider.dart';
 import '../main.dart';
 import 'ToolCostOverviewChart.dart';
 
 class ToolCostOverviewScreen extends StatefulWidget {
   final VoidCallback onToggleTheme;
-
-  const ToolCostOverviewScreen({super.key, required this.onToggleTheme});
+  final DateTime selectedDate; // 👈 Thêm dòng này
+  const ToolCostOverviewScreen({super.key, required this.onToggleTheme, required this.selectedDate});
 
   @override
   State<ToolCostOverviewScreen> createState() => _ToolCostOverviewScreenState();
 }
 
-class _ToolCostOverviewScreenState extends State<ToolCostOverviewScreen> with RouteAware {
+class _ToolCostOverviewScreenState extends State<ToolCostOverviewScreen>
+    with RouteAware {
   int selectedMonth = DateTime.now().month;
   int selectedYear = DateTime.now().year;
   DateTime selectedDate = DateTime(
@@ -37,6 +32,21 @@ class _ToolCostOverviewScreenState extends State<ToolCostOverviewScreen> with Ro
   Timer? _dailyTimer;
   final dayFormat = DateFormat('d-MMM-yyyy');
 
+
+  @override
+  void didUpdateWidget(covariant ToolCostOverviewScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.selectedDate != widget.selectedDate) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final provider = Provider.of<ToolCostProvider>(context, listen: false);
+        final newMonth = "${widget.selectedDate.year}-${widget.selectedDate.month.toString().padLeft(2, '0')}";
+        provider.fetchToolCosts(newMonth);
+      });
+    }
+  }
+
+
   @override
   void initState() {
     super.initState();
@@ -47,35 +57,35 @@ class _ToolCostOverviewScreenState extends State<ToolCostOverviewScreen> with Ro
       _fetchData(provider);
     });
 
-    _dailyTimer = Timer.periodic(const Duration(minutes: 20), (timer) {
-      final now = DateTime.now();
-      print("[TIMER CHECK] Current Time: $now | Stored Time: $_currentDate");
-
-      if (now.day != _currentDate.day ||
-          now.month != _currentDate.month ||
-          now.year != _currentDate.year) {
-        print("[DATE CHANGED] Detected date change! Refreshing...");
-
-        _currentDate = now;
-
-        if (mounted) {
-          final provider = Provider.of<ToolCostProvider>(
-            context,
-            listen: false,
-          );
-
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            setState(() {
-              selectedDate = DateTime(now.year, now.month, 1);
-              selectedMonth = now.month;
-              selectedYear = now.year;
-            });
-            _fetchData(provider);
-          });
-          print("[UI UPDATED] setState triggered with new date: $selectedDate");
-        }
-      }
-    });
+    // _dailyTimer = Timer.periodic(const Duration(minutes: 30), (timer) {
+    //   final now = DateTime.now();
+    //   print("[TIMER CHECK] Current Time: $now | Stored Time: $_currentDate");
+    //
+    //   if (now.day != _currentDate.day ||
+    //       now.month != _currentDate.month ||
+    //       now.year != _currentDate.year) {
+    //     print("[DATE CHANGED] Detected date change! Refreshing...");
+    //
+    //     _currentDate = now;
+    //
+    //     if (mounted) {
+    //       final provider = Provider.of<ToolCostProvider>(
+    //         context,
+    //         listen: false,
+    //       );
+    //
+    //       WidgetsBinding.instance.addPostFrameCallback((_) {
+    //         setState(() {
+    //           selectedDate = DateTime(now.year, now.month, 1);
+    //           selectedMonth = now.month;
+    //           selectedYear = now.year;
+    //         });
+    //         _fetchData(provider);
+    //       });
+    //       print("[UI UPDATED] setState triggered with new date: $selectedDate");
+    //     }
+    //   }
+    // });
   }
 
   @override
@@ -107,22 +117,25 @@ class _ToolCostOverviewScreenState extends State<ToolCostOverviewScreen> with Ro
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomToolCostAppBar(
-      titleText: "Cost Monitoring",
-      selectedDate: selectedDate,
-      onDateChanged: (newDate) {
-        setState(() {
-          selectedDate = newDate;
-          selectedMonth = newDate.month;
-          selectedYear = newDate.year;
-          month = "$selectedYear-${selectedMonth.toString().padLeft(2, '0')}";
-        });
-        final provider = Provider.of<ToolCostProvider>(context, listen: false);
-        _fetchData(provider);
-      },
-      currentDate: _currentDate,
-      onToggleTheme: widget.onToggleTheme,
-    ),
+      // appBar: CustomToolCostAppBar(
+      //   titleText: "Cost Monitoring",
+      //   selectedDate: selectedDate,
+      //   onDateChanged: (newDate) {
+      //     setState(() {
+      //       selectedDate = newDate;
+      //       selectedMonth = newDate.month;
+      //       selectedYear = newDate.year;
+      //       month = "$selectedYear-${selectedMonth.toString().padLeft(2, '0')}";
+      //     });
+      //     final provider = Provider.of<ToolCostProvider>(
+      //       context,
+      //       listen: false,
+      //     );
+      //     _fetchData(provider);
+      //   },
+      //   currentDate: _currentDate,
+      //   onToggleTheme: widget.onToggleTheme,
+      // ),
       body: Consumer<ToolCostProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {
@@ -163,6 +176,4 @@ class _ToolCostOverviewScreenState extends State<ToolCostOverviewScreen> with Ro
       ),
     );
   }
-
-
 }

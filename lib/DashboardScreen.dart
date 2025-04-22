@@ -7,6 +7,7 @@ import 'package:visualization/Model/ToolCostModel.dart';
 import 'API/ApiService.dart';
 import 'ChartDataProvider.dart';
 import 'Common/BlinkingText.dart';
+import 'Common/CustomToolCostAppBar.dart';
 import 'Common/DateDisplayWidget.dart';
 import 'Common/MonthYearDropdown.dart';
 import 'Common/NoDataWidget.dart';
@@ -24,13 +25,44 @@ class DashboardScreen extends StatefulWidget {
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
-class _DashboardScreenState extends State<DashboardScreen> {
 
+class _DashboardScreenState extends State<DashboardScreen> {
+  int selectedMonth = DateTime.now().month;
+  int selectedYear = DateTime.now().year;
+  DateTime selectedDate = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    1,
+  );
+
+  final dayFormat = DateFormat('d-MMM-yyyy');
+
+  @override
+  void initState() {
+    super.initState();
+
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final provider = context.watch<ToolCostProvider>(); // 👈 lấy dữ liệu từ Provider
 
+    return Scaffold(
+      appBar: CustomToolCostAppBar(
+        titleText: "Cost Monitoring",
+        selectedDate: selectedDate,
+
+        onDateChanged: (newDate) {
+          setState(() {
+            selectedDate = newDate;
+            selectedMonth = newDate.month;
+            selectedYear = newDate.year;
+          });
+        },
+
+        currentDate: provider.lastFetchedDate, // 👈 cập nhật ngày động
+        onToggleTheme: widget.onToggleTheme,
+      ),
       body: SingleChildScrollView(
         child: SizedBox(
           width: MediaQuery.of(context).size.width,
@@ -38,16 +70,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               // Hàng 1: Tổng quan
               SizedBox(
-                height:  MediaQuery.of(context).size.height ,
-                  width: MediaQuery.of(context).size.width  ,
+                height: MediaQuery.of(context).size.height * .95,
+                width: MediaQuery.of(context).size.width,
                 child: Card(
                   elevation: 8,
                   shadowColor: Colors.blue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      side: BorderSide(color: Colors.blue.shade100),
-                    ),
-                  child: ToolCostOverviewScreen(onToggleTheme: widget.onToggleTheme),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    side: BorderSide(color: Colors.blue.shade100),
+                  ),
+                  child: ToolCostOverviewScreen(
+                    onToggleTheme: widget.onToggleTheme,
+                    selectedDate: selectedDate,
+                  ),
                 ),
               ),
 
@@ -167,9 +202,4 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
-
-
-
-
 }
-

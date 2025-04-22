@@ -36,7 +36,7 @@ class ApiService {
 
   Future<List<ToolCostModel>> fetchToolCosts(String month) async {
     final url = Uri.parse("$baseUrl/tool-cost?month=$month");
-
+    print("Url: $url");
     try {
       final response = await http.get(url);
 

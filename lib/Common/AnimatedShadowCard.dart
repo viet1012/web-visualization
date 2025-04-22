@@ -50,15 +50,29 @@ class _AnimatedShadowCardState extends State<AnimatedShadowCard>
     return AnimatedBuilder(
       animation: _glowAnimation,
       builder: (context, _) {
-        return Card(
-          elevation: widget.elevation,
-          shadowColor: widget.glowColor.withOpacity(_glowAnimation.value),
-          shape: RoundedRectangleBorder(
+        final glow = widget.glowColor.withOpacity(_glowAnimation.value * .7);
+
+        return Container(
+          decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(widget.borderRadius),
+            boxShadow: [
+              BoxShadow(
+                color: glow,
+                blurRadius: 22 * _glowAnimation.value,
+                spreadRadius: 2 * _glowAnimation.value,
+              ),
+            ],
           ),
-          child: widget.child,
+          child: Card(
+            elevation: widget.elevation,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(widget.borderRadius),
+            ),
+            child: widget.child,
+          ),
         );
       },
     );
+
   }
 }
