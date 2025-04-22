@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../Common/BlinkingText.dart';
+import '../Common/CustomToolCostAppBar.dart';
 import '../Common/DateDisplayWidget.dart';
 import '../Common/MonthYearDropdown.dart';
 import '../Common/NoDataWidget.dart';
@@ -119,58 +120,23 @@ class _ToolCostDetailOverviewScreenState extends State<ToolCostDetailOverviewScr
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 4,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            // Điều hướng quay lại
-            context.go('/');
+        appBar: CustomToolCostAppBar(
+          titleText: widget.dept,
+          selectedDate: selectedDate,
+          onDateChanged: (newDate) {
+            setState(() {
+              selectedDate = newDate;
+              selectedMonth = newDate.month;
+              selectedYear = newDate.year;
+              month = "$selectedYear-${selectedMonth.toString().padLeft(2, '0')}";
+            });
+            final provider = Provider.of<ToolCostDetailProvider>(context, listen: false);
+            _fetchData(provider);
           },
+          currentDate: _currentDate,
+          showBackButton: true,
+          onBack: () => context.go('/'),
         ),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                BlinkingText(text: '${widget.dept}'),
-                SizedBox(width: 16),
-                DateDisplayWidget(
-                  selectedDate: selectedDate,
-                  monthYearDropDown: SizedBox(
-                    width: 140,
-                    height: 40,
-                    child:  MonthYearDropdown(
-                      selectedDate: selectedDate,
-                      onDateChanged: (newDate) {
-                        setState(() {
-                          selectedDate = newDate;
-                          selectedMonth = newDate.month;
-                          selectedYear = newDate.year;
-                          month = "${selectedYear.toString()}-${selectedMonth.toString().padLeft(2, '0')}";
-                        });
-                        final provider = Provider.of<ToolCostDetailProvider>(
-                          context,
-                          listen: false,
-                        );
-                        _fetchData(provider);
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            TimeInfoCard(
-              finalTime: dayFormat.format(_currentDate), // Ngày hiện tại
-              nextTime: dayFormat.format(
-                _currentDate.add(const Duration(days: 1)),
-              ), // Ngày kế tiếp
-            ),
-          ],
-        ),
-        centerTitle: true,
-
-      ),
       body: Consumer<ToolCostDetailProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {

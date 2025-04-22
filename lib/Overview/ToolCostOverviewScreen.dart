@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:visualization/Model/ToolCostModel.dart';
 
 import '../Common/BlinkingText.dart';
+import '../Common/CustomToolCostAppBar.dart';
 import '../Common/DateDisplayWidget.dart';
 import '../Common/MonthYearDropdown.dart';
 import '../Common/NoDataWidget.dart';
@@ -106,56 +107,22 @@ class _ToolCostOverviewScreenState extends State<ToolCostOverviewScreen> with Ro
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 4,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                BlinkingText(text: 'Cost Monitoring'),
-                SizedBox(width: 16),
-                DateDisplayWidget(
-                  selectedDate: selectedDate,
-                  monthYearDropDown: SizedBox(
-                    width: 140,
-                    height: 40,
-                    child:  MonthYearDropdown(
-                      selectedDate: selectedDate,
-                      onDateChanged: (newDate) {
-                        setState(() {
-                          selectedDate = newDate;
-                          selectedMonth = newDate.month;
-                          selectedYear = newDate.year;
-                          month = "${selectedYear.toString()}-${selectedMonth.toString().padLeft(2, '0')}";
-                        });
-                        final provider = Provider.of<ToolCostProvider>(
-                          context,
-                          listen: false,
-                        );
-                        _fetchData(provider);
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            TimeInfoCard(
-              finalTime: dayFormat.format(_currentDate), // Ngày hiện tại
-              nextTime: dayFormat.format(
-                _currentDate.add(const Duration(days: 1)),
-              ), // Ngày kế tiếp
-            ),
-          ],
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.brightness_6),
-            onPressed: widget.onToggleTheme,
-          ),
-        ],
-      ),
+      appBar: CustomToolCostAppBar(
+      titleText: "Cost Monitoring",
+      selectedDate: selectedDate,
+      onDateChanged: (newDate) {
+        setState(() {
+          selectedDate = newDate;
+          selectedMonth = newDate.month;
+          selectedYear = newDate.year;
+          month = "$selectedYear-${selectedMonth.toString().padLeft(2, '0')}";
+        });
+        final provider = Provider.of<ToolCostProvider>(context, listen: false);
+        _fetchData(provider);
+      },
+      currentDate: _currentDate,
+      onToggleTheme: widget.onToggleTheme,
+    ),
       body: Consumer<ToolCostProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {
