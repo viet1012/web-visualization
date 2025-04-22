@@ -179,18 +179,11 @@ class _ToolCostOverviewScreenState extends State<ToolCostOverviewScreen> with Ro
                   children: [
                     SizedBox(
                       width: MediaQuery.of(context).size.width,
-                      child: Card(
-                        elevation: 8,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          side: BorderSide(color: Colors.blue.shade100),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: ToolCostOverviewChart(
-                            data: provider.data,
-                            month: month,
-                          ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: ToolCostOverviewChart(
+                          data: provider.data,
+                          month: month,
                         ),
                       ),
                     ),

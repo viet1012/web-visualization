@@ -46,7 +46,6 @@ class _DashboardAppState extends State<DashboardApp> {
     final router = createRouter(_toggleTheme); // Tạo router mới với chế độ tối
     return MaterialApp.router(
       routerConfig: router, // Cấu hình router cho MaterialApp
-
       title: 'Cost Monitoring Web',
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark().copyWith(
