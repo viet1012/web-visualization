@@ -18,7 +18,7 @@ class DetailScreen extends StatefulWidget {
   // final String month;
   // final String dept;
   // final List<ToolCostDetailModel> detailData;
-  final ToolCostContext context;
+  final ToolCostDetailContext context;
 
   const DetailScreen({super.key, required this.item, required this.context});
 

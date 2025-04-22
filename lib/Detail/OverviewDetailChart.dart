@@ -11,7 +11,7 @@ import '../SubDetail/ToolCostSubDetailScreen.dart';
 import '../Model/ToolCostModel.dart';
 
 class OverviewDetailChart extends StatefulWidget {
-  final ToolCostContext context;
+  final ToolCostDetailContext context;
 
   const OverviewDetailChart({
     super.key,
@@ -145,7 +145,7 @@ class _OverviewDetailChartState extends State<OverviewDetailChart> {
           try {
             // Gọi API để lấy dữ liệu
             List<DetailsDataModel> detailsData = await ApiService()
-                .fetchSubDetailsData(widget.context.month, widget.context.dept,item.title);
+                .fetchSubDetailsData(widget.context.month, widget.context.dept, item.title);
 
             // Tắt loading
             Navigator.of(context).pop();

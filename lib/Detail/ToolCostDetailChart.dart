@@ -12,10 +12,11 @@ import '../SubDetail/ToolCostSubDetailScreen.dart';
 class ToolCostDetailChart extends StatefulWidget {
   final List<ToolCostDetailModel> data;
   final String month;
-
+  final String dept;
   const ToolCostDetailChart({
     super.key,
     required this.data,
+    required this.dept,
     required this.month,
   });
 
@@ -146,7 +147,7 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
           try {
             // Gọi API để lấy dữ liệu
             List<DetailsDataModel> detailsData = await ApiService()
-                .fetchSubDetailsData(widget.month,"Mold",item.title);
+                .fetchSubDetailsData(widget.month,  widget.dept ,item.title);
 
             // Tắt loading
             Navigator.of(context).pop();

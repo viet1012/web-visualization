@@ -6,25 +6,11 @@ import 'DashboardScreen.dart';
 import 'Detail/ToolCostDetailOverviewScreen.dart';
 import 'Provider/ToolCostDetailProvider.dart';
 import 'Provider/ToolCostProvider.dart';
+import 'Routes/GoRouter.dart';
 
 /// ✅ Khai báo global: có thể dùng ở mọi nơi
 final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
 
-final GoRouter router = GoRouter(
-  routes: [
-    GoRoute(
-      path: '/',
-      builder: (context, state) => DashboardScreen(onToggleTheme: () {}),
-    ),
-    GoRoute(
-      path: '/:dept',
-      builder: (context, state) {
-        final dept = state.pathParameters['dept'] ?? 'Mold'; // Mặc định là 'Mold' nếu không có tham số
-        return ToolCostDetailOverviewScreen(onToggleTheme: () {}, dept: dept);
-      },
-    ),
-  ],
-);
 
 void main() {
   runApp(

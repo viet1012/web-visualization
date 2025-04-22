@@ -17,7 +17,6 @@ class ToolCostDetailScreen extends StatefulWidget {
   final ToolCostModel toolCostModel;
   final List<ToolCostDetailModel> data;
   final String month;
-
   const ToolCostDetailScreen({
     super.key,
     required this.data,
@@ -89,7 +88,7 @@ class _ToolCostDetailScreenState extends State<ToolCostDetailScreen> {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-          ToolCostDetailChart(data: widget.data, month: widget.month),
+          ToolCostDetailChart(data: widget.data, dept: widget.toolCostModel.title ,month: widget.month),
         ],
       ),
     );

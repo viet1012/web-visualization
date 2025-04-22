@@ -119,7 +119,7 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                   // Tắt dialog loading
                   Navigator.of(context).pop();
 
-                  var toolCostContext = ToolCostContext(month: widget.month, dept:item.title , data: detailData);
+                  var toolCostContext = ToolCostDetailContext(month: widget.month, dept:item.title , data: detailData);
                   // Navigate sang màn hình chi tiết
                   // Navigator.push(
                   //   context,

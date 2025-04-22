@@ -12,6 +12,7 @@ import '../Common/TimeInfoCard.dart';
 import '../Provider/ToolCostDetailProvider.dart';
 import 'DetailScreen.dart';
 import 'ToolCostDetailScreen.dart';
+import 'package:go_router/go_router.dart';
 
 class ToolCostDetailOverviewScreen extends StatefulWidget {
   final VoidCallback onToggleTheme;
@@ -34,6 +35,20 @@ class _ToolCostDetailOverviewScreenState extends State<ToolCostDetailOverviewScr
   DateTime _currentDate = DateTime.now(); // Initialize directly
   Timer? _dailyTimer;
   final dayFormat = DateFormat('d-MMM-yyyy');
+
+  @override
+  void didUpdateWidget(covariant ToolCostDetailOverviewScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.dept != widget.dept) {
+      print("oldWidget: ${oldWidget.dept}" );
+      WidgetsBinding.instance.addPostFrameCallback((_){
+        final provider = Provider.of<ToolCostDetailProvider>(context, listen: false);
+        _fetchData(provider); // Gọi lại API nếu dept thay đổi
+
+      });
+
+    }
+  }
 
   @override
   void initState() {
@@ -106,6 +121,13 @@ class _ToolCostDetailOverviewScreenState extends State<ToolCostDetailOverviewScr
     return Scaffold(
       appBar: AppBar(
         elevation: 4,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            // Điều hướng quay lại
+            context.go('/');
+          },
+        ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

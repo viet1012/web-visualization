@@ -1,9 +1,9 @@
 import '../Model/ToolCostDetailModel.dart';
 
-class ToolCostContext {
+class ToolCostDetailContext {
   final String month;
   final String dept;
   final List<ToolCostDetailModel> data;
 
-  ToolCostContext({required this.month, required this.dept, required this.data});
+  ToolCostDetailContext({required this.month, required this.dept, required this.data});
 }
