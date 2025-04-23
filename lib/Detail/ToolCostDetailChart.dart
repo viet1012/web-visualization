@@ -46,6 +46,8 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
           height: MediaQuery.of(context).size.height * .66,
           child: SfCartesianChart(
             primaryXAxis: CategoryAxis(
+              majorGridLines: const MajorGridLines(width: 0),
+              majorTickLines: const MajorTickLines(width: 0),
               labelStyle: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -77,6 +79,8 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
             primaryYAxis: NumericAxis(
               labelStyle: const TextStyle(fontSize: 18),
               interval: _getInterval(widget.data),
+              majorGridLines: const MajorGridLines(width: 0),
+              minorGridLines: const MinorGridLines(width: 0),
               title: AxisTitle(
                 text: 'K\$',
                 textStyle: TextStyle(
@@ -207,7 +211,6 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
         ),
         borderColor: Colors.grey,
         borderWidth: 2,
-
         dataLabelSettings: const DataLabelSettings(
           labelAlignment: ChartDataLabelAlignment.top,
           isVisible: true,

@@ -43,6 +43,8 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
           child: SfCartesianChart(
             plotAreaBorderColor: Colors.black45,
             primaryXAxis: CategoryAxis(
+              majorGridLines: const MajorGridLines(width: 0),
+              majorTickLines: const MajorTickLines(width: 0),
               labelStyle: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -72,6 +74,8 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
               },
             ),
             primaryYAxis: NumericAxis(
+              majorGridLines: const MajorGridLines(width: 0),
+              majorTickLines: const MajorTickLines(width: 0),
               labelStyle: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,

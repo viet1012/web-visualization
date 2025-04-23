@@ -7,7 +7,6 @@ import '../Common/DateDisplayWidget.dart';
 import '../Common/TimeInfoCard.dart';
 import '../Common/ToolCostStatusHelper.dart';
 import '../Context/ToolCostContext.dart';
-import '../Model/StackBarData.dart';
 import '../Model/ToolCostDetailModel.dart';
 import 'ToolCostDetailMiniBarChart.dart';
 import 'OverviewDetailChart.dart';
@@ -99,37 +98,5 @@ class _ToolCostDetailScreenState extends State<ToolCostDetailScreen> {
         ],
       ),
     );
-  }
-}
-
-String _getStatus(ToolCostModel item) {
-  if (item.actual > item.target) return 'Over Target';
-  if (item.actual < item.target) return 'Under Target';
-  return 'Target Achieved';
-}
-
-Color _getStatusColor(String status) {
-  switch (status) {
-    case 'Over Target':
-      return Colors.red;
-    case 'Target Achieved':
-      return Colors.green;
-    case 'Under Target':
-      return Colors.green;
-    default:
-      return Colors.grey;
-  }
-}
-
-IconData _getStatusIcon(String status) {
-  switch (status) {
-    case 'Over Target':
-      return Icons.trending_up;
-    case 'Target Achieved':
-      return Icons.check_circle;
-    case 'Under Target':
-      return Icons.trending_down;
-    default:
-      return Icons.help_outline;
   }
 }
