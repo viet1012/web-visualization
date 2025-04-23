@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../Model/ToolCostModel.dart';
 import '../API/ApiService.dart';
+import '../Model/ToolCostSubDetailModel.dart';
 class ToolCostProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();
 
@@ -69,10 +70,42 @@ class ToolCostProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  List<ToolCostSubDetailModel> _subDetailData = [];
+
+  List<ToolCostSubDetailModel> get subDetailData => _subDetailData;
+
+  Future<void> fetchToolCostsSubDetail(String month, String dept, String group) async {
+    final now = DateTime.now();
+
+    // Sửa điều kiện: nếu đã tải hôm nay VÀ cùng tháng thì không cần gọi lại
+    if (_lastLoadedDate != null &&
+        _lastLoadedMonth == month &&
+        _lastLoadedDate!.day == now.day &&
+        _lastLoadedDate!.month == now.month &&
+        _lastLoadedDate!.year == now.year) {
+      return;
+    }
+
+    _isLoading = true;
+    notifyListeners();
+
+    final result = await _apiService.fetchToolCostsSubDetail(month,dept,group);
+    _subDetailData = result;
+    _lastLoadedDate = now;
+    _lastLoadedMonth = month; // Cập nhật tháng
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+
+
+
   void setSelectedItem(ToolCostModel item) {
     selectedItem = item;
     notifyListeners(); // Thông báo rằng có sự thay đổi dữ liệu
   }
+
 
   void clearData() {
     _data = [];

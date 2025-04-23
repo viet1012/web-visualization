@@ -4,11 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:visualization/API/ApiService.dart';
-
 import '../Common/ToolCostPopup.dart';
 import '../Context/ToolCostContext.dart';
-import '../Detail/DetailScreen.dart';
-import '../Detail/ToolCostDetailOverviewScreen.dart';
 import '../Model/DetailsDataModel.dart';
 import '../Model/ToolCostModel.dart';
 import '../Provider/ToolCostProvider.dart';
@@ -43,7 +40,6 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
         SizedBox(
           // height: MediaQuery.of(context).size.height * .38,
           height: MediaQuery.of(context).size.height * .85,
-
           child: SfCartesianChart(
             plotAreaBorderColor: Colors.black45,
             primaryXAxis: CategoryAxis(
@@ -121,7 +117,7 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                   // Tắt dialog loading
                   Navigator.of(context).pop();
 
-                  var toolCostContext = ToolCostDetailContext(month: widget.month, dept:item.title , data: detailData);
+                  //var toolCostContext = ToolCostDetailContext(month: widget.month, dept:item.title , data: detailData);
                   // Navigate sang màn hình chi tiết
                   // Navigator.push(
                   //   context,
@@ -159,6 +155,7 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
     List<ToolCostModel> data,
   ) {
     return <CartesianSeries<ToolCostModel, String>>[
+
       ColumnSeries<ToolCostModel, String>(
         dataSource: data,
         xValueMapper: (item, _) => item.title,
@@ -236,24 +233,27 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
           }
         },
       ),
-      ColumnSeries<ToolCostModel, String>(
-        dataSource: data,
-        xValueMapper: (item, _) => item.title,
-        yValueMapper: (item, _) => item.target,
-        dataLabelMapper: (item, _) => numberFormat.format(item.target),
-        name: 'Target',
-        color: Colors.grey,
-        width: 0.5,
-        spacing: 0.1,
-        // 👈 khoảng cách giữa các cột trong cùng nhóm
-        dataLabelSettings: const DataLabelSettings(
-          isVisible: true,
-          textStyle: TextStyle(
-            fontSize: 20, // 👈 Tùy chỉnh kích thước nếu cần
-            fontWeight: FontWeight.w600,
+
+
+
+        ColumnSeries<ToolCostModel, String>(
+          dataSource: data,
+          xValueMapper: (item, _) => item.title,
+          yValueMapper: (item, _) => item.target,
+          dataLabelMapper: (item, _) => numberFormat.format(item.target),
+          name: 'Target',
+          color: Colors.grey,
+          width: 0.5,
+          spacing: 0.1,
+          // 👈 khoảng cách giữa các cột trong cùng nhóm
+          dataLabelSettings: const DataLabelSettings(
+            isVisible: true,
+            textStyle: TextStyle(
+              fontSize: 20, // 👈 Tùy chỉnh kích thước nếu cần
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
-      ),
     ];
   }
 

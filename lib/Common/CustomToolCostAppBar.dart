@@ -28,7 +28,7 @@ class CustomToolCostAppBar extends StatelessWidget implements PreferredSizeWidge
 
   @override
   Widget build(BuildContext context) {
-    final dayFormat = DateFormat('d-MMM-yyyy');
+    final dayFormat = DateFormat('d/MMM/yyyy');
     return AppBar(
       elevation: 4,
       leading: showBackButton

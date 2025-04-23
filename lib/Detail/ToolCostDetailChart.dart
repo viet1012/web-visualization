@@ -7,14 +7,17 @@ import '../Common/ToolCostPopup.dart';
 import '../Context/ToolCostContext.dart';
 import '../Model/DetailsDataModel.dart';
 import '../Model/ToolCostDetailModel.dart';
+import '../Model/ToolCostModel.dart';
 import '../SubDetail/ToolCostSubDetailScreen.dart';
 
 class ToolCostDetailChart extends StatefulWidget {
+  final ToolCostModel toolCost;
   final List<ToolCostDetailModel> data;
   final String month;
   final String dept;
   const ToolCostDetailChart({
     super.key,
+    required this.toolCost,
     required this.data,
     required this.dept,
     required this.month,
@@ -94,7 +97,7 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => SubDetailScreen(item: item),
+                    builder: (_) => ToolCostSubDetailScreen(item: widget.toolCost, detail: item,),
                   ),
                 );
               }

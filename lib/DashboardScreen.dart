@@ -1,21 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:visualization/Model/ToolCostModel.dart';
-import 'API/ApiService.dart';
-import 'ChartDataProvider.dart';
-import 'Common/BlinkingText.dart';
 import 'Common/CustomToolCostAppBar.dart';
-import 'Common/DateDisplayWidget.dart';
-import 'Common/MonthYearDropdown.dart';
-import 'Common/NoDataWidget.dart';
-import 'Common/TimeInfoCard.dart';
-import 'Overview/ToolCostOverviewChart.dart';
 import 'Overview/ToolCostOverviewScreen.dart';
 import 'Provider/ToolCostProvider.dart';
-import 'main.dart';
 
 class DashboardScreen extends StatefulWidget {
   final VoidCallback onToggleTheme;
@@ -40,12 +28,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<ToolCostProvider>(); // 👈 lấy dữ liệu từ Provider
+    final provider =
+        context.watch<ToolCostProvider>(); // 👈 lấy dữ liệu từ Provider
 
     return Scaffold(
       appBar: CustomToolCostAppBar(
@@ -60,7 +48,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
           });
         },
 
-        currentDate: provider.lastFetchedDate, // 👈 cập nhật ngày động
+        currentDate: provider.lastFetchedDate,
+        // 👈 cập nhật ngày động
         onToggleTheme: widget.onToggleTheme,
       ),
       body: SingleChildScrollView(
@@ -71,7 +60,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               // Hàng 1: Tổng quan
               SizedBox(
                 height: MediaQuery.of(context).size.height * .95,
-                width: MediaQuery.of(context).size.width,
+                // height: MediaQuery.of(context).size.height /2 -20,
+                width: MediaQuery.of(context).size.width ,
                 child: Card(
                   elevation: 8,
                   shadowColor: Colors.blue,
@@ -85,7 +75,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
               ),
-
               // SizedBox(
               //   width: MediaQuery.of(context).size.width / 2 - 24,
               //   child: AspectRatio(

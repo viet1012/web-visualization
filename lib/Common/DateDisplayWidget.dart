@@ -9,8 +9,8 @@ class DateDisplayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final monthFormat = DateFormat('MMM-yyyy');
-    final dayFormat = DateFormat('d-MMM-yyyy');
+    final monthFormat = DateFormat('MMM/yyyy');
+    final dayFormat = DateFormat('d/MMM/yyyy');
 
     // Kiểm tra xem tháng đã chọn có phải là tháng hiện tại không
     DateTime startOfMonth;

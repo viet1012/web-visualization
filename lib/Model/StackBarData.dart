@@ -1,7 +1,7 @@
 class StackBarData {
   final String day;
-  final int target;
-  final int actual;
+  final double target;
+  final double actual;
 
   StackBarData({
     required this.day,

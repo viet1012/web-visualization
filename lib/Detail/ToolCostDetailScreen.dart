@@ -5,6 +5,7 @@ import '../Common/AnimatedShadowCard.dart';
 import '../Common/CustomAppBar.dart';
 import '../Common/DateDisplayWidget.dart';
 import '../Common/TimeInfoCard.dart';
+import '../Common/ToolCostStatusHelper.dart';
 import '../Context/ToolCostContext.dart';
 import '../Model/StackBarData.dart';
 import '../Model/ToolCostDetailModel.dart';
@@ -17,6 +18,7 @@ class ToolCostDetailScreen extends StatefulWidget {
   final ToolCostModel toolCostModel;
   final List<ToolCostDetailModel> data;
   final String month;
+
   const ToolCostDetailScreen({
     super.key,
     required this.data,
@@ -31,9 +33,9 @@ class ToolCostDetailScreen extends StatefulWidget {
 class _ToolCostDetailScreenState extends State<ToolCostDetailScreen> {
   @override
   Widget build(BuildContext context) {
-    final status = _getStatus(widget.toolCostModel);
-    final statusColor = _getStatusColor(status);
-    final statusIcon = _getStatusIcon(status);
+    final status = ToolCostStatusHelper.getStatus(widget.toolCostModel);
+    final statusColor = ToolCostStatusHelper.getStatusColor(status);
+    final statusIcon = ToolCostStatusHelper.getStatusIcon(status);
 
     return Padding(
       padding: const EdgeInsets.all(8),
@@ -88,7 +90,12 @@ class _ToolCostDetailScreenState extends State<ToolCostDetailScreen> {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-          ToolCostDetailChart(data: widget.data, dept: widget.toolCostModel.title ,month: widget.month),
+          ToolCostDetailChart(
+            toolCost: widget.toolCostModel,
+            data: widget.data,
+            dept: widget.toolCostModel.title,
+            month: widget.month,
+          ),
         ],
       ),
     );
