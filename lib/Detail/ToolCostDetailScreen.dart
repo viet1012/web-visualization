@@ -74,7 +74,7 @@ class _ToolCostDetailScreenState extends State<ToolCostDetailScreen> {
                         width: MediaQuery.of(context).size.width * .8,
                         child: ToolCostDetailMiniBarChart(
                           actual: widget.toolCostModel.actual.toDouble(),
-                          target: widget.toolCostModel.target.toDouble(),
+                          target: widget.toolCostModel.target_ORG.toDouble(),
                         ),
                       ),
                     ],

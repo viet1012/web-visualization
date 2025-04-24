@@ -22,10 +22,9 @@ class ToolCostSubDetailModel {
   factory ToolCostSubDetailModel.fromJson(Map<String, dynamic> json) {
     return ToolCostSubDetailModel(
       date: DateTime.parse(json['date']),
-      targetDemo: (json['fc_ORG'] ?? 0).toDouble(),
-      // targetAdjust: (json['fc_Adjust'] ?? 0).toDouble(),
-      targetAdjust: double.parse(((json['fc_Adjust'] ?? 0.0).toDouble() ).toStringAsFixed(1))    ,
-      act: double.parse(((json['act'] ?? 0.0).toDouble() ).toStringAsFixed(1)),
+      targetDemo: (json['fc_ORG'] ?? 0.0)/1000  ,
+      targetAdjust: (json['fc_Adjust'] ?? 0.0)/1000    ,
+      act:  (json['act'] ?? 0.0).toDouble()/1000,
       fcUSD: (json['fc_USD'] ?? 0).toDouble(),
       countDay: (json['countDay'] ?? 0).toDouble(),
       divAdj: (json['div_adj'] ?? 0).toDouble(),

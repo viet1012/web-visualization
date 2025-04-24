@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../Model/TargetActualData.dart'; // hoặc sửa theo đường dẫn của bạn
@@ -12,9 +13,10 @@ class ToolCostDetailMiniBarChart extends StatelessWidget {
     required this.actual,
     required this.target,
   });
-
   @override
   Widget build(BuildContext context) {
+    final numberFormat = NumberFormat("#,##0.0");
+
     return SfCartesianChart(
       margin: const EdgeInsets.all(0),
       plotAreaBorderWidth: 0,
@@ -33,6 +35,7 @@ class ToolCostDetailMiniBarChart extends StatelessWidget {
             TargetActualData('Actual', actual),
             TargetActualData('Target', target),
           ],
+          dataLabelMapper: (item, _) => numberFormat.format(item.value),
           xValueMapper: (data, _) => data.label,
           yValueMapper: (data, _) => data.value,
           pointColorMapper: (data, _) => data.label == 'Actual'

@@ -30,9 +30,9 @@ class ChartDataProvider {
     int notAchievedCount = 0;
 
     for (var item in data) {
-      if (item.actual > item.target) {
+      if (item.actual > item.target_ORG) {
         negativeCount++;
-      } else if (item.actual == item.target) {
+      } else if (item.actual == item.target_ORG) {
         achievedCount++;
       } else {
         notAchievedCount++;

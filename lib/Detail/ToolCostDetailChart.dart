@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../API/ApiService.dart';
@@ -29,6 +30,8 @@ class ToolCostDetailChart extends StatefulWidget {
 
 class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
   int? selectedIndex;
+
+  final numberFormat = NumberFormat("##0.0");
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +104,7 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => ToolCostSubDetailScreen(item: widget.toolCost, detail: item,),
+                    builder: (_) => ToolCostSubDetailScreen(item: widget.toolCost, detail: item, month: widget.month,),
                   ),
                 );
               }
@@ -117,16 +120,17 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
   List<CartesianSeries<ToolCostDetailModel, String>> _buildSeries(
     List<ToolCostDetailModel> data,
   ) {
-    final greenData = data.where((e) => e.actual <= e.target).toList();
-    final redData = data.where((e) => e.actual > e.target).toList();
+    final greenData = data.where((e) => e.actual <= e.target_ORG).toList();
+    final redData = data.where((e) => e.actual > e.target_ORG).toList();
 
     return <CartesianSeries<ToolCostDetailModel, String>>[
       StackedColumnSeries<ToolCostDetailModel, String>(
         dataSource: data,
         xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.actual,
+        dataLabelMapper: (item, _) => numberFormat.format(item.actual),
         pointColorMapper:
-            (item, _) => item.actual > item.target ? Colors.red : Colors.green,
+            (item, _) => item.actual > item.target_Adjust ? Colors.red : Colors.green,
         name: 'Actual',
         width: 0.5,
         spacing: 0.2,
@@ -202,7 +206,8 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
       AreaSeries<ToolCostDetailModel, String>(
         dataSource: data,
         xValueMapper: (item, _) => item.title,
-        yValueMapper: (item, _) => item.target,
+        yValueMapper: (item, _) => item.target_ORG,
+        dataLabelMapper: (item, _) => numberFormat.format(item.target_ORG),
         name: 'Target',
         gradient: LinearGradient(
           colors: [Colors.grey.withOpacity(0.5), Colors.grey.withOpacity(0.1)],
@@ -221,7 +226,29 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
           ),
         ),
       ),
-
+      AreaSeries<ToolCostDetailModel, String>(
+        dataSource: data,
+        xValueMapper: (item, _) => item.title,
+        yValueMapper: (item, _) => item.target_Adjust,
+        dataLabelMapper: (item, _) => numberFormat.format(item.target_Adjust),
+        name: 'Target Adjust',
+        gradient: LinearGradient(
+          colors: [Colors.orange.withOpacity(0.5), Colors.orange.withOpacity(0.1)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+        borderColor: Colors.orange,
+        borderWidth: 2,
+        dataLabelSettings: const DataLabelSettings(
+          labelAlignment: ChartDataLabelAlignment.bottom,
+          isVisible: true,
+          textStyle: TextStyle(
+            fontSize: 20,
+            color: Colors.orange,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
       // 👉 Cột Actual màu xanh nếu đạt, màu đỏ nếu vượt target
     ];
   }
@@ -235,7 +262,7 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
         xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.actual,
         pointColorMapper:
-            (item, _) => item.actual > item.target ? Colors.red : Colors.green,
+            (item, _) => item.actual > item.target_ORG ? Colors.red : Colors.green,
         name: 'Actual',
         width: 0.6,
         spacing: 0.2,
@@ -250,7 +277,7 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
       ColumnSeries<ToolCostDetailModel, String>(
         dataSource: data,
         xValueMapper: (item, _) => item.title,
-        yValueMapper: (item, _) => item.target,
+        yValueMapper: (item, _) => item.target_ORG,
         name: 'Target',
         color: Colors.grey,
         width: 0.6,
@@ -260,7 +287,7 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
         dataLabelSettings: const DataLabelSettings(
           isVisible: true,
           textStyle: TextStyle(
-            fontSize: 16, // 👈 Tùy chỉnh kích thước nếu cần
+            fontSize: 18, // 👈 Tùy chỉnh kích thước nếu cần
           ),
         ),
       ),
@@ -269,7 +296,7 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
 
   double _getInterval(List<ToolCostDetailModel> data) {
     double maxVal = data
-        .map((e) => e.actual > e.target ? e.actual : e.target)
+        .map((e) => e.actual > e.target_ORG ? e.actual : e.target_ORG)
         .reduce((a, b) => a > b ? a : b);
     return (maxVal / 5).ceilToDouble();
   }

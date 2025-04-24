@@ -10,6 +10,7 @@ import '../Model/DetailsDataModel.dart';
 import '../Model/ToolCostModel.dart';
 import '../Provider/ToolCostProvider.dart';
 import 'dart:html' as html;
+
 class ToolCostOverviewChart extends StatefulWidget {
   final List<ToolCostModel> data;
   final String month;
@@ -136,7 +137,6 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                   context.go('/${item.title}');
 
                   // redirectToPage(item.title);
-
                 } catch (e) {
                   // Nếu có lỗi, tắt dialog và show error
                   Navigator.of(context).pop();
@@ -154,31 +154,32 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
     );
   }
 
-
   List<CartesianSeries<ToolCostModel, String>> _buildSeries(
     List<ToolCostModel> data,
   ) {
     return <CartesianSeries<ToolCostModel, String>>[
-
       ColumnSeries<ToolCostModel, String>(
         dataSource: data,
         xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.actual,
         dataLabelMapper: (item, _) => numberFormat.format(item.actual),
         pointColorMapper:
-            (item, _) => item.actual > item.target ? Colors.red : Colors.green,
+            (item, _) =>
+                item.actual > item.target_ORG ? Colors.red : Colors.green,
         name: 'Actual',
         width: 0.5,
         spacing: 0.1,
         // 👈 khoảng cách giữa các cột trong cùng nhóm
         dataLabelSettings: const DataLabelSettings(
+          labelAlignment: ChartDataLabelAlignment.top,
           isVisible: true,
           textStyle: TextStyle(
             fontSize: 20, // 👈 Tùy chỉnh kích thước nếu cần
             fontWeight: FontWeight.w600,
+            color: Colors.white,
           ),
-        ),
 
+        ),
         onPointTap: (ChartPointDetails details) async {
           final index = details.pointIndex ?? -1;
           final item = widget.data[index];
@@ -239,33 +240,84 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
       ),
 
 
-
-        ColumnSeries<ToolCostModel, String>(
-          dataSource: data,
-          xValueMapper: (item, _) => item.title,
-          yValueMapper: (item, _) => item.target,
-          dataLabelMapper: (item, _) => numberFormat.format(item.target),
-          name: 'Target',
-          color: Colors.grey,
-          width: 0.5,
-          spacing: 0.1,
-          // 👈 khoảng cách giữa các cột trong cùng nhóm
-          dataLabelSettings: const DataLabelSettings(
-            isVisible: true,
-            textStyle: TextStyle(
-              fontSize: 20, // 👈 Tùy chỉnh kích thước nếu cần
-              fontWeight: FontWeight.w600,
-            ),
+      // Cột gốc ORG (nét đứt)
+      StackedColumnSeries<ToolCostModel, String>(
+        dataSource: data,
+        dataLabelMapper: (item, _) => numberFormat.format(item.target_Adjust),
+        xValueMapper: (item, _) => item.title,
+        yValueMapper: (item, _) => item.target_Adjust,
+        name: 'TGT_Adjust',
+        color: Colors.grey,
+        width: 0.5,
+        spacing: 0.2,
+        dataLabelSettings: const DataLabelSettings(
+          isVisible: true,
+          textStyle: TextStyle(
+            fontSize: 20, // 👈 Tùy chỉnh kích thước nếu cần
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
           ),
         ),
+
+      ),
+
+      StackedColumnSeries<ToolCostModel, String>(
+        dataSource: data,
+        xValueMapper: (item, _) => item.title,
+        yValueMapper: (item, _) =>
+        (item.target_ORG > item.target_Adjust)
+            ? item.target_ORG - item.target_Adjust
+            : 0,
+        name: 'TGT_ORG border',
+        color: Colors.transparent,
+        borderColor: Colors.blue,
+        borderWidth: 2,
+        dashArray: [5, 5],
+        width: 0.5,
+        spacing: 0.2,
+        dataLabelSettings: const DataLabelSettings(isVisible: false),
+
+      ),
+
+
+      // Cột chồng thêm nếu Adjust > ORG
+      StackedColumnSeries<ToolCostModel, String>(
+        dataSource: data,
+        xValueMapper: (item, _) => item.title,
+        yValueMapper: (item, _) => item.target_Adjust > item.target_ORG
+            ? item.target_Adjust - item.target_ORG
+            : 0,
+        dataLabelMapper: (item, _) =>
+        item.target_Adjust > item.target_ORG ? numberFormat.format(item.target_Adjust) : '',
+        name: 'Target Adjust (extra)',
+        color: Colors.grey, // Màu khác xíu để dễ nhìn phần chồng thêm
+        width: 0.5,
+        spacing: 0.2,
+        dataLabelSettings: const DataLabelSettings(
+          isVisible: true,
+          labelAlignment: ChartDataLabelAlignment.top,
+          textStyle: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+      ),
+
+
     ];
   }
 
   double _getInterval(List<ToolCostModel> data) {
+    if (data.isEmpty) return 1;
+
     double maxVal = data
-        .map((e) => e.actual > e.target ? e.actual : e.target)
+        .map((e) => e.actual > e.target_ORG ? e.actual : e.target_ORG)
         .reduce((a, b) => a > b ? a : b);
-    return (maxVal / 5).ceilToDouble();
+
+    // Tránh chia ra 0
+    final interval = (maxVal / 5).ceilToDouble();
+    return interval > 0 ? interval : 1;
   }
 
   List<CartesianSeries<ToolCostModel, String>> _buildSeries1(
@@ -278,7 +330,8 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
         yValueMapper: (item, _) => item.actual,
         dataLabelMapper: (item, _) => numberFormat.format(item.actual),
         pointColorMapper:
-            (item, _) => item.actual > item.target ? Colors.red : Colors.green,
+            (item, _) =>
+                item.actual > item.target_ORG ? Colors.red : Colors.green,
         name: 'Actual',
         dataLabelSettings: const DataLabelSettings(
           isVisible: true,
@@ -290,8 +343,9 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
         xValueMapper: (item, _) => item.title,
         // Target - Actual để hiển thị phần còn thiếu trong cột
         yValueMapper:
-            (item, _) => (item.target - item.actual).clamp(0, double.infinity),
-        dataLabelMapper: (item, _) => numberFormat.format(item.target),
+            (item, _) =>
+                (item.target_ORG - item.actual).clamp(0, double.infinity),
+        dataLabelMapper: (item, _) => numberFormat.format(item.target_ORG),
         name: 'Remaining to Target',
         color: Colors.grey,
         dataLabelSettings: const DataLabelSettings(

@@ -11,7 +11,7 @@ class GroupPerformanceCard extends StatelessWidget {
 
     // Sắp xếp theo actual / target giảm dần
     data.sort((a, b) =>
-    ((b.actual / b.target).compareTo(a.actual / a.target)));
+    ((b.actual / b.target_ORG).compareTo(a.actual / a.target_ORG)));
 
     return Column(
       children: [
@@ -29,15 +29,15 @@ class GroupPerformanceCard extends StatelessWidget {
             itemCount: data.length,
             itemBuilder: (context, index) {
               final item = data[index];
-              final status = item.actual > item.target
+              final status = item.actual > item.target_ORG
                   ? 'Over'
-                  : item.actual == item.target
+                  : item.actual == item.target_ORG
                   ? 'Met'
                   : 'Below';
 
-              final statusColor = item.actual > item.target
+              final statusColor = item.actual > item.target_ORG
                   ? Colors.red
-                  : item.actual == item.target
+                  : item.actual == item.target_ORG
                   ? Colors.green
                   : Colors.orange;
 
@@ -62,7 +62,7 @@ class GroupPerformanceCard extends StatelessWidget {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: LinearProgressIndicator(
-                            value: (item.actual / item.target).clamp(0.0, 1.5),
+                            value: (item.actual / item.target_ORG).clamp(0.0, 1.5),
                             backgroundColor: Colors.grey.shade300,
                             valueColor: AlwaysStoppedAnimation<Color>(statusColor),
                           ),
@@ -85,7 +85,7 @@ class GroupPerformanceCard extends StatelessWidget {
                     SizedBox(
                       width: 50, // 👈 Thêm phần hiển thị %
                       child: Text(
-                        "${((item.actual / item.target) * 100).toStringAsFixed(1)}%", // làm tròn 1 số thập phân
+                        "${((item.actual / item.target_ORG) * 100).toStringAsFixed(1)}%", // làm tròn 1 số thập phân
                         style: TextStyle(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.bold),
                       ),
                     ),
