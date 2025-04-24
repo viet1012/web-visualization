@@ -11,14 +11,40 @@ class ToolCostModel {
     required this.actual,
   });
 
+  double adjustMinusOrg = 0;
+  double orgMinusAdjust = 0;
+
+  void calculateDiff() {
+    if (target_Adjust > target_ORG) {
+      adjustMinusOrg = target_Adjust - target_ORG;
+      print("item.adjustMinusOrg " + adjustMinusOrg.toString());
+
+      orgMinusAdjust = 0;
+    } else {
+      orgMinusAdjust = target_ORG - target_Adjust;
+      adjustMinusOrg = 0;
+    }
+  }
+
   // Factory constructor to create a ToolCostModel from JSON
+  // factory ToolCostModel.fromJson(Map<String, dynamic> json) {
+  //   return ToolCostModel(
+  //     title: json['dept'] ?? '',
+  //     target_ORG: (json['tgt_ORG'] ?? 0) / 1000,
+  //     actual: (json['act'] ?? 0) / 1000,
+  //     target_Adjust: (json['tgt_Adjust'] ?? 0) / 1000,
+  //   );
+  // }
+
   factory ToolCostModel.fromJson(Map<String, dynamic> json) {
-    return ToolCostModel(
+    final model = ToolCostModel(
       title: json['dept'] ?? '',
       target_ORG: (json['tgt_ORG'] ?? 0) / 1000,
       actual: (json['act'] ?? 0) / 1000,
       target_Adjust: (json['tgt_Adjust'] ?? 0) / 1000,
     );
+    model.calculateDiff();
+    return model;
   }
 
   // Method to convert ToolCostModel to JSON (if needed)

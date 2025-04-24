@@ -242,6 +242,59 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
 
 
       // Cột gốc ORG (nét đứt)
+      // StackedColumnSeries<ToolCostModel, String>(
+      //   dataSource: data,
+      //   dataLabelMapper: (item, _) => numberFormat.format(item.target_Adjust),
+      //   xValueMapper: (item, _) => item.title,
+      //   yValueMapper: (item, _) => item.target_Adjust,
+      //   name: 'TGT_Adjust',
+      //   color: Colors.grey,
+      //   width: 0.5,
+      //   spacing: 0.2,
+      //   dataLabelSettings: const DataLabelSettings(
+      //     isVisible: true,
+      //     textStyle: TextStyle(
+      //       fontSize: 20, // 👈 Tùy chỉnh kích thước nếu cần
+      //       fontWeight: FontWeight.w600,
+      //       color: Colors.white,
+      //     ),
+      //   ),
+      //
+      // ),
+      //
+      // StackedColumnSeries<ToolCostModel, String>(
+      //   dataSource: data,
+      //   xValueMapper: (item, _) => item.title,
+      //   yValueMapper: (item, _) =>
+      //   (item.target_ORG > item.target_Adjust)
+      //       ? item.target_ORG - item.target_Adjust
+      //       : 0,
+      //   name: 'TGT_ORG border',
+      //   color: Colors.transparent,
+      //   borderColor: Colors.grey.shade700,
+      //   borderWidth: 2,
+      //   dashArray: [5, 5],
+      //   width: 0.5,
+      //   spacing: 0.2,
+      //   dataLabelSettings: const DataLabelSettings(isVisible: false),
+      //
+      // ),
+      // StackedColumnSeries<ToolCostModel, String>(
+      //   dataSource: data,
+      //   xValueMapper: (item, _) => item.title,
+      //   yValueMapper: (item, _) => item.target_Adjust > item.target_ORG
+      //         ? item.adjustMinusOrg
+      //         : 0,
+      //   name: 'TGT_ORG border',
+      //   color: Colors.grey,
+      //   borderWidth: 2,
+      //   dashArray: [5, 5],
+      //   width: 0.5,
+      //   spacing: 0.2,
+      //   dataLabelSettings: const DataLabelSettings(isVisible: false),
+      //
+      // ),
+// 1. Cột target_Adjust (màu xám)
       StackedColumnSeries<ToolCostModel, String>(
         dataSource: data,
         dataLabelMapper: (item, _) => numberFormat.format(item.target_Adjust),
@@ -254,21 +307,18 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
         dataLabelSettings: const DataLabelSettings(
           isVisible: true,
           textStyle: TextStyle(
-            fontSize: 20, // 👈 Tùy chỉnh kích thước nếu cần
+            fontSize: 20,
             fontWeight: FontWeight.w600,
             color: Colors.white,
           ),
         ),
-
       ),
 
+// 2. Nếu ORG > Adjust → vẽ phần chênh lệch bằng nét đứt phía trên Adjust
       StackedColumnSeries<ToolCostModel, String>(
         dataSource: data,
         xValueMapper: (item, _) => item.title,
-        yValueMapper: (item, _) =>
-        (item.target_ORG > item.target_Adjust)
-            ? item.target_ORG - item.target_Adjust
-            : 0,
+        yValueMapper: (item, _) => item.orgMinusAdjust,
         name: 'TGT_ORG border',
         color: Colors.transparent,
         borderColor: Colors.grey.shade700,
@@ -277,47 +327,22 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
         width: 0.5,
         spacing: 0.2,
         dataLabelSettings: const DataLabelSettings(isVisible: false),
-
       ),
 
+// 3. Nếu Adjust > ORG → vẽ phần dư (adjustMinusOrg) đè lên Adjust
       StackedColumnSeries<ToolCostModel, String>(
         dataSource: data,
         xValueMapper: (item, _) => item.title,
-        yValueMapper: (item, _) => item.target_Adjust > item.target_ORG
-              ? item.target_Adjust - item.target_ORG
-              : 0,
-        name: 'TGT_ORG border',
-        color: Colors.transparent,
-        borderWidth: 2,
-        dashArray: [5, 5],
+        yValueMapper: (item, _) => item.adjustMinusOrg,
+        name: 'Adjust > ORG',
+        color: Colors.grey,
         width: 0.5,
         spacing: 0.2,
         dataLabelSettings: const DataLabelSettings(isVisible: false),
-
       ),
-      // Cột chồng thêm nếu Adjust > ORG
-      // StackedColumnSeries<ToolCostModel, String>(
-      //   dataSource: data,
-      //   xValueMapper: (item, _) => item.title,
-      //   yValueMapper: (item, _) => item.target_Adjust > item.target_ORG
-      //       ? item.target_Adjust - item.target_ORG
-      //       : 0,
-      //   dataLabelMapper: (item, _) =>
-      //   item.target_Adjust > item.target_ORG ? numberFormat.format(item.target_Adjust) : '',
-      //   name: 'Target Adjust (extra)',
-      //   color: Colors.grey, // Màu khác xíu để dễ nhìn phần chồng thêm
-      //   width: 0.5,
-      //   spacing: 0.2,
-      //   dataLabelSettings: const DataLabelSettings(
-      //     isVisible: true,
-      //     labelAlignment: ChartDataLabelAlignment.top,
-      //     textStyle: TextStyle(
-      //       fontSize: 18,
-      //       fontWeight: FontWeight.w600,
-      //       color: Colors.white,
-      //     ),
-      //   ),
-      // ),
+
+
+
 
 
     ];
