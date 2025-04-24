@@ -117,9 +117,17 @@ class ApiService {
     }
   }
 
-  Future<List<ToolCostSubDetailModel>> fetchToolCostsSubDetail(String month, String deptInput,String group) async {
-    final url = Uri.parse("$baseUrl/tool-cost-sub-detail?month=$month&dept=$deptInput&group=$group");
+  Future<List<ToolCostSubDetailModel>> fetchToolCostsSubDetail(
+      String month,
+      String deptInput,
+      String group,
+      ) async {
+    final encodedGroup = Uri.encodeComponent(group); // 👈 Encode group
+    final url = Uri.parse(
+        "$baseUrl/tool-cost-sub-detail?month=$month&dept=$deptInput&group=$encodedGroup");
+
     print("url: $url");
+
     try {
       final response = await http.get(url);
 

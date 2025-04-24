@@ -4,8 +4,8 @@ import '../Model/ToolCostModel.dart'; // hoặc ToolCostDetailModel nếu bạn 
 
 class ToolCostStatusHelper {
   static String getStatus(ToolCostModel item) {
-    if (item.actual > item.target_ORG) return 'Over Target';
-    if (item.actual < item.target_ORG) return 'Under Target';
+    if (item.actual > item.target_Adjust) return 'Over Target';
+    if (item.actual < item.target_Adjust) return 'Under Target';
     return 'Target Achieved';
   }
 

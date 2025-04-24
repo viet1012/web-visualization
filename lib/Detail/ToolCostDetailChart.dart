@@ -1,3 +1,4 @@
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -124,6 +125,52 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
     final redData = data.where((e) => e.actual > e.target_ORG).toList();
 
     return <CartesianSeries<ToolCostDetailModel, String>>[
+      AreaSeries<ToolCostDetailModel, String>(
+        dataSource: data,
+        xValueMapper: (item, _) => item.title,
+        yValueMapper: (item, _) => item.target_ORG,
+        dataLabelMapper: (item, _) => numberFormat.format(item.target_ORG),
+        name: 'Target',
+        gradient: LinearGradient(
+          colors: [Colors.grey.withOpacity(0.2), Colors.grey.withOpacity(0.1)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+        borderColor: Colors.grey.withOpacity(.5),
+        borderWidth: 2,
+        dataLabelSettings: const DataLabelSettings(
+          labelAlignment: ChartDataLabelAlignment.top,
+          isVisible: true,
+          textStyle: TextStyle(
+            fontSize: 20,
+            color: Colors.grey,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      AreaSeries<ToolCostDetailModel, String>(
+        dataSource: data,
+        xValueMapper: (item, _) => item.title,
+        yValueMapper: (item, _) => item.target_Adjust,
+        dataLabelMapper: (item, _) => numberFormat.format(item.target_Adjust),
+        name: 'Target Adjust',
+        gradient: LinearGradient(
+          colors: [Colors.orange.withOpacity(0.1), Colors.orange.withOpacity(0.1)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+        borderColor: Colors.orange.withOpacity(0.5),
+        borderWidth: 2,
+        dataLabelSettings:  DataLabelSettings(
+          labelAlignment: ChartDataLabelAlignment.bottom,
+          isVisible: true,
+          textStyle: TextStyle(
+            fontSize: 20,
+            color: Colors.orange.withOpacity(0.9),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
       StackedColumnSeries<ToolCostDetailModel, String>(
         dataSource: data,
         xValueMapper: (item, _) => item.title,
@@ -203,52 +250,7 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
         },
       ),
       // 👉 Miền Target màu xám
-      AreaSeries<ToolCostDetailModel, String>(
-        dataSource: data,
-        xValueMapper: (item, _) => item.title,
-        yValueMapper: (item, _) => item.target_ORG,
-        dataLabelMapper: (item, _) => numberFormat.format(item.target_ORG),
-        name: 'Target',
-        gradient: LinearGradient(
-          colors: [Colors.grey.withOpacity(0.5), Colors.grey.withOpacity(0.1)],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-        borderColor: Colors.grey,
-        borderWidth: 2,
-        dataLabelSettings: const DataLabelSettings(
-          labelAlignment: ChartDataLabelAlignment.top,
-          isVisible: true,
-          textStyle: TextStyle(
-            fontSize: 20,
-            color: Colors.grey,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-      AreaSeries<ToolCostDetailModel, String>(
-        dataSource: data,
-        xValueMapper: (item, _) => item.title,
-        yValueMapper: (item, _) => item.target_Adjust,
-        dataLabelMapper: (item, _) => numberFormat.format(item.target_Adjust),
-        name: 'Target Adjust',
-        gradient: LinearGradient(
-          colors: [Colors.orange.withOpacity(0.5), Colors.orange.withOpacity(0.1)],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-        borderColor: Colors.orange,
-        borderWidth: 2,
-        dataLabelSettings: const DataLabelSettings(
-          labelAlignment: ChartDataLabelAlignment.bottom,
-          isVisible: true,
-          textStyle: TextStyle(
-            fontSize: 20,
-            color: Colors.orange,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+
       // 👉 Cột Actual màu xanh nếu đạt, màu đỏ nếu vượt target
     ];
   }
@@ -307,22 +309,35 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
       children: [
         _legendItem(Colors.red, 'Actual > Target (Negative)'),
         _legendItem(Colors.green, 'Target Achieved'),
-        _legendItem(Colors.grey, 'Target'),
+        _legendItem(Colors.grey, 'Target_Org'),
+        _legendItem(Colors.orange.withOpacity(.5), 'Target_Adjust'),
       ],
     );
   }
 
-  Widget _legendItem(Color color, String text) {
+  Widget _legendItem(Color color, String text, {bool dashed = false}) {
+    final box = dashed
+        ? DottedBorder(
+      color: color,
+      strokeWidth: 2,
+      dashPattern: [4, 3],
+      borderType: BorderType.RRect,
+      radius: const Radius.circular(2),
+      child: SizedBox(width: 16, height: 16),
+    )
+        : Container(width: 16, height: 16, color: color);
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(width: 16, height: 16, color: color),
+        box,
         const SizedBox(width: 6),
         Text(
           text,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ],
     );
   }
+
 }

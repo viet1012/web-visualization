@@ -10,6 +10,7 @@ import '../Model/DetailsDataModel.dart';
 import '../Model/ToolCostModel.dart';
 import '../Provider/ToolCostProvider.dart';
 import 'dart:html' as html;
+import 'package:dotted_border/dotted_border.dart';
 
 class ToolCostOverviewChart extends StatefulWidget {
   final List<ToolCostModel> data;
@@ -165,7 +166,7 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
         dataLabelMapper: (item, _) => numberFormat.format(item.actual),
         pointColorMapper:
             (item, _) =>
-                item.actual > item.target_ORG ? Colors.red : Colors.green,
+                item.actual > item.target_Adjust ? Colors.red : Colors.green,
         name: 'Actual',
         width: 0.5,
         spacing: 0.1,
@@ -270,7 +271,7 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
             : 0,
         name: 'TGT_ORG border',
         color: Colors.transparent,
-        borderColor: Colors.blue,
+        borderColor: Colors.grey.shade700,
         borderWidth: 2,
         dashArray: [5, 5],
         width: 0.5,
@@ -279,30 +280,44 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
 
       ),
 
-
-      // Cột chồng thêm nếu Adjust > ORG
       StackedColumnSeries<ToolCostModel, String>(
         dataSource: data,
         xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.target_Adjust > item.target_ORG
-            ? item.target_Adjust - item.target_ORG
-            : 0,
-        dataLabelMapper: (item, _) =>
-        item.target_Adjust > item.target_ORG ? numberFormat.format(item.target_Adjust) : '',
-        name: 'Target Adjust (extra)',
-        color: Colors.grey, // Màu khác xíu để dễ nhìn phần chồng thêm
+              ? item.target_Adjust - item.target_ORG
+              : 0,
+        name: 'TGT_ORG border',
+        color: Colors.transparent,
+        borderWidth: 2,
+        dashArray: [5, 5],
         width: 0.5,
         spacing: 0.2,
-        dataLabelSettings: const DataLabelSettings(
-          isVisible: true,
-          labelAlignment: ChartDataLabelAlignment.top,
-          textStyle: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
+        dataLabelSettings: const DataLabelSettings(isVisible: false),
+
       ),
+      // Cột chồng thêm nếu Adjust > ORG
+      // StackedColumnSeries<ToolCostModel, String>(
+      //   dataSource: data,
+      //   xValueMapper: (item, _) => item.title,
+      //   yValueMapper: (item, _) => item.target_Adjust > item.target_ORG
+      //       ? item.target_Adjust - item.target_ORG
+      //       : 0,
+      //   dataLabelMapper: (item, _) =>
+      //   item.target_Adjust > item.target_ORG ? numberFormat.format(item.target_Adjust) : '',
+      //   name: 'Target Adjust (extra)',
+      //   color: Colors.grey, // Màu khác xíu để dễ nhìn phần chồng thêm
+      //   width: 0.5,
+      //   spacing: 0.2,
+      //   dataLabelSettings: const DataLabelSettings(
+      //     isVisible: true,
+      //     labelAlignment: ChartDataLabelAlignment.top,
+      //     textStyle: TextStyle(
+      //       fontSize: 18,
+      //       fontWeight: FontWeight.w600,
+      //       color: Colors.white,
+      //     ),
+      //   ),
+      // ),
 
 
     ];
@@ -362,16 +377,29 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
       children: [
         _legendItem(Colors.red, 'Actual > Target (Negative)'),
         _legendItem(Colors.green, 'Target Achieved'),
-        _legendItem(Colors.grey, 'Target'),
+        _legendItem(Colors.grey, 'Target_Adjust'),
+        _legendItem(Colors.grey, 'Target_Org',dashed: true),
+
       ],
     );
   }
 
-  Widget _legendItem(Color color, String text) {
+  Widget _legendItem(Color color, String text, {bool dashed = false}) {
+    final box = dashed
+        ? DottedBorder(
+      color: color,
+      strokeWidth: 2,
+      dashPattern: [4, 3],
+      borderType: BorderType.RRect,
+      radius: const Radius.circular(2),
+      child: SizedBox(width: 16, height: 16),
+    )
+        : Container(width: 16, height: 16, color: color);
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(width: 16, height: 16, color: color),
+        box,
         const SizedBox(width: 6),
         Text(
           text,
@@ -380,4 +408,6 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
       ],
     );
   }
+
+
 }
