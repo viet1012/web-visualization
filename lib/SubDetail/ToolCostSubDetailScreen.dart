@@ -96,104 +96,114 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
           isLoading
               ? const Center(child: CircularProgressIndicator())
               : SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                child: Card(
+                  elevation: 8,
+                  shadowColor: Colors.blue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    side: BorderSide(color: Colors.blue.shade100),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Target vs Actual (by day)',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Target vs Actual (by day)',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Icon(statusIcon, color: statusColor, size: 24),
+                          ],
+                        ),
+                        const SizedBox(height: 22),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * .8,
+                          child: SfCartesianChart(
+                            margin: const EdgeInsets.all(0),
+                            plotAreaBorderWidth: 0,
+                            primaryXAxis: CategoryAxis(
+                              labelStyle: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              labelRotation: -45,
+                              majorGridLines: const MajorGridLines(width: 0),
+                              majorTickLines: const MajorTickLines(width: 0),
+                            ),
+                            primaryYAxis: NumericAxis(
+                              labelStyle: const TextStyle(fontSize: 18),
+                              // interval: _getInterval(monthlyData),
+                              minimum: 0,
+                              // maximum: _getInterval(monthlyData),
+                              interval: _getInterval(monthlyData),
+                              majorGridLines: const MajorGridLines(width: 0),
+                              minorGridLines: const MinorGridLines(width: 0),
+                              title: AxisTitle(
+                                text: 'K\$',
+                                textStyle: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            ),
+                            axes: <ChartAxis>[
+                              NumericAxis(
+                                name: 'CumulativeAxis',
+                                opposedPosition: true,
+                                minimum: 0,
+                                maximum: _getMaxCumulativeYAxis(monthlyData),
+                                interval: 1,
+                                majorGridLines: const MajorGridLines(width: 0),
+                                minorGridLines: const MinorGridLines(width: 0),
+                                // 👈 thêm dòng này
+                                majorTickLines: const MajorTickLines(width: 0),
+                                minorTickLines: const MinorTickLines(width: 0),
+                                // 👈 thêm nếu cần
+                                // Tắt lưới chính ,
+                                labelStyle: const TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ],
+                            series: _buildStackedSeries(monthlyData),
                           ),
                         ),
-                        SizedBox(width: 8),
-                        Icon(statusIcon, color: statusColor, size: 24),
+                        const SizedBox(height: 16),
+                        Center(
+                          child: Wrap(
+                            spacing: 16,
+                            runSpacing: 8,
+                            children: [
+                              _buildLegendItem(
+                                color: Colors.green,
+                                label: 'Target Achieved',
+                                isActual: true,
+                              ),
+                              _buildLegendItem(
+                                color: Colors.red,
+                                label: 'Actual > Target (Negative)',
+                              ),
+                              _buildLegendItem(color: Colors.blue, label: 'ACT'),
+                              _buildLegendItem(
+                                color: Colors.orange,
+                                label: 'FC_Adjust',
+                              ),
+                              _buildLegendItem(color: Colors.grey, label: 'FC_ORG'),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 22),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * .8,
-                      child: SfCartesianChart(
-                        margin: const EdgeInsets.all(0),
-                        plotAreaBorderWidth: 0,
-                        primaryXAxis: CategoryAxis(
-                          labelStyle: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          labelRotation: -45,
-                          majorGridLines: const MajorGridLines(width: 0),
-                          majorTickLines: const MajorTickLines(width: 0),
-                        ),
-                        primaryYAxis: NumericAxis(
-                          labelStyle: const TextStyle(fontSize: 18),
-                          // interval: _getInterval(monthlyData),
-                          minimum: 0,
-                          // maximum: _getInterval(monthlyData),
-                          interval: _getInterval(monthlyData),
-                          majorGridLines: const MajorGridLines(width: 0),
-                          minorGridLines: const MinorGridLines(width: 0),
-                          title: AxisTitle(
-                            text: 'K\$',
-                            textStyle: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                        ),
-                        axes: <ChartAxis>[
-                          NumericAxis(
-                            name: 'CumulativeAxis',
-                            opposedPosition: true,
-                            minimum: 0,
-                            maximum: _getMaxCumulativeYAxis(monthlyData),
-                            interval: 1,
-                            majorGridLines: const MajorGridLines(width: 0),
-                            minorGridLines: const MinorGridLines(width: 0),
-                            // 👈 thêm dòng này
-                            majorTickLines: const MajorTickLines(width: 0),
-                            minorTickLines: const MinorTickLines(width: 0),
-                            // 👈 thêm nếu cần
-                            // Tắt lưới chính ,
-                            labelStyle: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.blue,
-                            ),
-                          ),
-                        ],
-                        series: _buildStackedSeries(monthlyData),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Center(
-                      child: Wrap(
-                        spacing: 16,
-                        runSpacing: 8,
-                        children: [
-                          _buildLegendItem(
-                            color: Colors.green,
-                            label: 'Target Achieved',
-                            isActual: true,
-                          ),
-                          _buildLegendItem(
-                            color: Colors.red,
-                            label: 'Actual > Target (Negative)',
-                          ),
-                          _buildLegendItem(color: Colors.blue, label: 'ACT'),
-                          _buildLegendItem(
-                            color: Colors.orange,
-                            label: 'FC_Adjust',
-                          ),
-                          _buildLegendItem(color: Colors.grey, label: 'FC_ORG'),
-                        ],
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
     );
