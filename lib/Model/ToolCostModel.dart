@@ -13,18 +13,20 @@ class ToolCostModel {
 
   double adjustMinusOrg = 0;
   double orgMinusAdjust = 0;
+  double borderInsideAdjust = 0; // 👈 NEW: để vẽ nét đứt trong Adjust
 
   void calculateDiff() {
     if (target_Adjust > target_ORG) {
       adjustMinusOrg = target_Adjust - target_ORG;
-      print("item.adjustMinusOrg " + adjustMinusOrg.toString());
-
       orgMinusAdjust = 0;
+      borderInsideAdjust = target_ORG;
     } else {
       orgMinusAdjust = target_ORG - target_Adjust;
       adjustMinusOrg = 0;
+      borderInsideAdjust = 0;
     }
   }
+
 
   // Factory constructor to create a ToolCostModel from JSON
   // factory ToolCostModel.fromJson(Map<String, dynamic> json) {

@@ -160,6 +160,8 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
   ) {
     return <CartesianSeries<ToolCostModel, String>>[
       ColumnSeries<ToolCostModel, String>(
+        animationDuration: 0,
+        // 👈 Tắt animation
         dataSource: data,
         xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.actual,
@@ -179,7 +181,6 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
             fontWeight: FontWeight.w600,
             color: Colors.white,
           ),
-
         ),
         onPointTap: (ChartPointDetails details) async {
           final index = details.pointIndex ?? -1;
@@ -240,8 +241,7 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
         },
       ),
 
-
-      // Cột gốc ORG (nét đứt)
+      // // Cột gốc ORG (nét đứt)
       // StackedColumnSeries<ToolCostModel, String>(
       //   dataSource: data,
       //   dataLabelMapper: (item, _) => numberFormat.format(item.target_Adjust),
@@ -294,12 +294,18 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
       //   dataLabelSettings: const DataLabelSettings(isVisible: false),
       //
       // ),
-// 1. Cột target_Adjust (màu xám)
+      
       StackedColumnSeries<ToolCostModel, String>(
+        animationDuration: 0,
+        // 👈 Tắt animation
         dataSource: data,
-        dataLabelMapper: (item, _) => numberFormat.format(item.target_Adjust),
         xValueMapper: (item, _) => item.title,
-        yValueMapper: (item, _) => item.target_Adjust,
+        yValueMapper:
+            (item, _) =>
+                (item.target_Adjust < item.target_ORG)
+                    ? item.target_Adjust
+                    : item.target_ORG,
+        dataLabelMapper: (item, _) => numberFormat.format(item.target_Adjust),
         name: 'TGT_Adjust',
         color: Colors.grey,
         width: 0.5,
@@ -314,12 +320,13 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
         ),
       ),
 
-// 2. Nếu ORG > Adjust → vẽ phần chênh lệch bằng nét đứt phía trên Adjust
       StackedColumnSeries<ToolCostModel, String>(
+        animationDuration: 0,
+        // 👈 Tắt animation
         dataSource: data,
         xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.orgMinusAdjust,
-        name: 'TGT_ORG border',
+        name: 'Thiếu ORG',
         color: Colors.transparent,
         borderColor: Colors.grey.shade700,
         borderWidth: 2,
@@ -329,22 +336,30 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
         dataLabelSettings: const DataLabelSettings(isVisible: false),
       ),
 
-// 3. Nếu Adjust > ORG → vẽ phần dư (adjustMinusOrg) đè lên Adjust
       StackedColumnSeries<ToolCostModel, String>(
+        animationDuration: 0,
+        // 👈 Tắt animation
         dataSource: data,
         xValueMapper: (item, _) => item.title,
-        yValueMapper: (item, _) => item.adjustMinusOrg,
-        name: 'Adjust > ORG',
+        yValueMapper:
+            (item, _) =>
+                (item.target_Adjust > item.target_ORG)
+                    ? item.adjustMinusOrg
+                    : 0,
+        name: 'TGT_Adjust',
         color: Colors.grey,
+        borderWidth: 4,
         width: 0.5,
         spacing: 0.2,
-        dataLabelSettings: const DataLabelSettings(isVisible: false),
+        dataLabelSettings: const DataLabelSettings(
+          isVisible: true,
+          textStyle: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
       ),
-
-
-
-
-
     ];
   }
 
@@ -403,23 +418,23 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
         _legendItem(Colors.red, 'Actual > Target (Negative)'),
         _legendItem(Colors.green, 'Target Achieved'),
         _legendItem(Colors.grey, 'Target_Adjust'),
-        _legendItem(Colors.grey, 'Target_Org',dashed: true),
-
+        _legendItem(Colors.grey, 'Target_Org', dashed: true),
       ],
     );
   }
 
   Widget _legendItem(Color color, String text, {bool dashed = false}) {
-    final box = dashed
-        ? DottedBorder(
-      color: color,
-      strokeWidth: 2,
-      dashPattern: [4, 3],
-      borderType: BorderType.RRect,
-      radius: const Radius.circular(2),
-      child: SizedBox(width: 16, height: 16),
-    )
-        : Container(width: 16, height: 16, color: color);
+    final box =
+        dashed
+            ? DottedBorder(
+              color: color,
+              strokeWidth: 2,
+              dashPattern: [4, 3],
+              borderType: BorderType.RRect,
+              radius: const Radius.circular(2),
+              child: SizedBox(width: 16, height: 16),
+            )
+            : Container(width: 16, height: 16, color: color);
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -433,6 +448,4 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
       ],
     );
   }
-
-
 }
