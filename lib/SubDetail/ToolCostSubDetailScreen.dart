@@ -431,7 +431,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
           isVisible: true,
           textStyle: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Colors.blue,
             fontSize: 18,
           ),
         ),
@@ -457,7 +457,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
           labelAlignment: ChartDataLabelAlignment.bottom,
           textStyle: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Colors.orange,
             fontSize: 18,
           ),
         ),
@@ -482,7 +482,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
           isVisible: true,
           textStyle: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Colors.grey,
             fontSize: 18,
           ),
         ),
