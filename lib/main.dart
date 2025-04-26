@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import 'DashboardScreen.dart';
+import 'Dashboard/DashboardScreen.dart';
 import 'Detail/ToolCostDetailOverviewScreen.dart';
 import 'Provider/ToolCostDetailProvider.dart';
 import 'Provider/ToolCostProvider.dart';

@@ -9,7 +9,6 @@ import '../Common/ToolCostStatusHelper.dart';
 import '../Context/ToolCostContext.dart';
 import '../Model/ToolCostDetailModel.dart';
 import 'ToolCostDetailMiniBarChart.dart';
-import 'OverviewDetailChart.dart';
 import '../Model/ToolCostModel.dart';
 import 'ToolCostDetailChart.dart';
 

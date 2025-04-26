@@ -180,7 +180,6 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
                                 interval: 1,
                                 majorGridLines: const MajorGridLines(width: 0),
                                 minorGridLines: const MinorGridLines(width: 0),
-                                // 👈 thêm dòng này
                                 majorTickLines: const MajorTickLines(width: 0),
                                 minorTickLines: const MinorTickLines(width: 0),
                                 // 👈 thêm nếu cần

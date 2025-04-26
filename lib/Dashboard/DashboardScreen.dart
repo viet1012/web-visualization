@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'Common/CustomToolCostAppBar.dart';
-import 'Overview/ToolCostOverviewScreen.dart';
-import 'Provider/ToolCostProvider.dart';
+import '../Common/CustomToolCostAppBar.dart';
+import '../Overview/ToolCostOverviewScreen.dart';
+import '../Provider/ToolCostProvider.dart';
 
 class DashboardScreen extends StatefulWidget {
   final VoidCallback onToggleTheme;

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../Common/NotFoundScreen.dart';
-import '../DashboardScreen.dart';
+import '../Dashboard/DashboardScreen.dart';
 import '../Detail/ToolCostDetailOverviewScreen.dart';
 
 // ✅ Danh sách các phòng ban hợp lệ
@@ -24,6 +24,7 @@ final GoRouter router = GoRouter(
         return ToolCostDetailOverviewScreen(onToggleTheme: () {}, dept: dept);
       },
     ),
+
   ],
 );
 
