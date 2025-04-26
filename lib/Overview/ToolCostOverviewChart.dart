@@ -359,6 +359,7 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
           ),
         ),
       ),
+
     ];
   }
 

@@ -75,13 +75,26 @@ class _ToolCostDetailScreenState extends State<ToolCostDetailScreen> {
                             SizedBox(height: 8),
                             if (widget.toolCostModel.actual >
                                 widget.toolCostModel.target_Adjust)
-                              Text(
-                                'Exceeded by ${NumberFormat("#,##0.0").format(widget.toolCostModel.actual - widget.toolCostModel.target_Adjust)}K\$',
-                                style:  TextStyle(
-                                  color: Colors.red.withOpacity(0.6),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                ),
+                              Row(
+                                children: [
+                                  Text(
+                                    'Exceeded by ',
+                                    style:  TextStyle(
+                                      color: Colors.red.withOpacity(0.6),
+                                      fontStyle: FontStyle.italic,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${NumberFormat("#,##0.0").format(widget.toolCostModel.actual - widget.toolCostModel.target_Adjust)}K\$',
+                                    style:  TextStyle(
+                                      color: Colors.red.withOpacity(0.8),
+                                      fontStyle: FontStyle.italic,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
                           ],
                         ),

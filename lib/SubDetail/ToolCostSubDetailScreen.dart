@@ -196,8 +196,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
                               header: '',
                               canShowMarker: true,
                               textStyle: TextStyle(
-                                fontSize: 18,
-                                color: Colors.black,
+                                fontSize: 20,
                               ),
 
                             ),
@@ -427,7 +426,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
         enableTooltip: true,
         markerSettings: const MarkerSettings(isVisible: true),
         dataLabelSettings: const DataLabelSettings(
-          labelAlignment: ChartDataLabelAlignment.outer,
+          labelAlignment: ChartDataLabelAlignment.auto,
           isVisible: true,
           textStyle: TextStyle(
             fontWeight: FontWeight.bold,

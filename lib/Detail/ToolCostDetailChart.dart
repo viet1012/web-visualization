@@ -114,8 +114,7 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
               header: '',
               canShowMarker: true,
               textStyle: TextStyle(
-                fontSize: 18,
-                color: Colors.black,
+                fontSize: 20,
               ),
             ),
             series: _buildSeries(widget.data),
