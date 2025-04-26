@@ -23,8 +23,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     1,
   );
 
-  final dayFormat = DateFormat('d-MMM-yyyy');
-
   @override
   void initState() {
     super.initState();
@@ -39,7 +37,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: CustomToolCostAppBar(
         titleText: "Cost Monitoring",
         selectedDate: selectedDate,
-
         onDateChanged: (newDate) {
           setState(() {
             selectedDate = newDate;
@@ -47,7 +44,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             selectedYear = newDate.year;
           });
         },
-
         currentDate: provider.lastFetchedDate,
         // 👈 cập nhật ngày động
         onToggleTheme: widget.onToggleTheme,
@@ -61,7 +57,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               SizedBox(
                 height: MediaQuery.of(context).size.height * .95,
                 // height: MediaQuery.of(context).size.height /2 -20,
-                width: MediaQuery.of(context).size.width ,
+                width: MediaQuery.of(context).size.width,
                 child: Card(
                   elevation: 8,
                   shadowColor: Colors.blue,

@@ -94,7 +94,6 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
                 ),
               ),
             ),
-            series: _buildSeries(widget.data),
             onAxisLabelTapped: (AxisLabelTapArgs args) {
               final index = widget.data.indexWhere((e) => e.title == args.text);
               if (index != -1) {
@@ -110,7 +109,19 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
                 );
               }
             },
+            tooltipBehavior: TooltipBehavior(
+              enable: true,
+              header: '',
+              canShowMarker: true,
+              textStyle: TextStyle(
+                fontSize: 18,
+                color: Colors.black,
+              ),
+            ),
+            series: _buildSeries(widget.data),
+
           ),
+
         ),
         const SizedBox(height: 16),
         _buildLegend(),
@@ -130,7 +141,7 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
         xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.target_ORG,
         dataLabelMapper: (item, _) => numberFormat.format(item.target_ORG),
-        name: 'Target',
+        name: 'Target ORG',
         gradient: LinearGradient(
           colors: [Colors.grey.withOpacity(0.2), Colors.grey.withOpacity(0.1)],
           begin: Alignment.topCenter,
@@ -140,7 +151,7 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
         borderWidth: 2,
         dataLabelSettings: const DataLabelSettings(
           labelAlignment: ChartDataLabelAlignment.top,
-          isVisible: true,
+          isVisible: false,
           textStyle: TextStyle(
             fontSize: 20,
             color: Colors.grey,
@@ -162,7 +173,7 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
         borderColor: Colors.orange.withOpacity(0.5),
         borderWidth: 2,
         dataLabelSettings:  DataLabelSettings(
-          labelAlignment: ChartDataLabelAlignment.bottom,
+          labelAlignment: ChartDataLabelAlignment.top,
           isVisible: true,
           textStyle: TextStyle(
             fontSize: 20,
@@ -255,46 +266,6 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
     ];
   }
 
-  List<CartesianSeries<ToolCostDetailModel, String>> _buildSeries1(
-    List<ToolCostDetailModel> data,
-  ) {
-    return <CartesianSeries<ToolCostDetailModel, String>>[
-      ColumnSeries<ToolCostDetailModel, String>(
-        dataSource: data,
-        xValueMapper: (item, _) => item.title,
-        yValueMapper: (item, _) => item.actual,
-        pointColorMapper:
-            (item, _) => item.actual > item.target_ORG ? Colors.red : Colors.green,
-        name: 'Actual',
-        width: 0.6,
-        spacing: 0.2,
-        // 👈 khoảng cách giữa các cột trong cùng nhóm
-        dataLabelSettings: const DataLabelSettings(
-          isVisible: true,
-          textStyle: TextStyle(
-            fontSize: 18, // 👈 Tùy chỉnh kích thước nếu cần
-          ),
-        ),
-      ),
-      ColumnSeries<ToolCostDetailModel, String>(
-        dataSource: data,
-        xValueMapper: (item, _) => item.title,
-        yValueMapper: (item, _) => item.target_ORG,
-        name: 'Target',
-        color: Colors.grey,
-        width: 0.6,
-        spacing: 0.2,
-
-        // 👈 khoảng cách giữa các cột trong cùng nhóm
-        dataLabelSettings: const DataLabelSettings(
-          isVisible: true,
-          textStyle: TextStyle(
-            fontSize: 18, // 👈 Tùy chỉnh kích thước nếu cần
-          ),
-        ),
-      ),
-    ];
-  }
 
   double _getInterval(List<ToolCostDetailModel> data) {
     double maxVal = data

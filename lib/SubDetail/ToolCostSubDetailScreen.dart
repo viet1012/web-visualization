@@ -7,6 +7,7 @@ import 'package:visualization/Model/ToolCostSubDetailModel.dart';
 import '../API/ApiService.dart';
 import '../Common/CustomAppBar.dart';
 import '../Common/CustomToolCostAppBar.dart';
+import '../Common/NoDataWidget.dart';
 import '../Common/ToolCostPopup.dart';
 import '../Common/ToolCostStatusHelper.dart';
 import '../Model/DetailsDataModel.dart';
@@ -75,6 +76,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
     final statusColor = ToolCostStatusHelper.getStatusColor(status);
     final statusIcon = ToolCostStatusHelper.getStatusIcon(status);
 
+
     return Scaffold(
       appBar: CustomToolCostAppBar(
         titleText: '${widget.detail.title} ',
@@ -134,14 +136,21 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
                                 fontWeight: FontWeight.bold,
                               ),
                               labelRotation: -45,
+                              title: AxisTitle(
+                                text: 'Day',
+                                alignment: ChartAlignment.far,
+                                textStyle: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
                               majorGridLines: const MajorGridLines(width: 0),
                               majorTickLines: const MajorTickLines(width: 0),
                             ),
                             primaryYAxis: NumericAxis(
                               labelStyle: const TextStyle(fontSize: 18),
-                              // interval: _getInterval(monthlyData),
                               minimum: 0,
-                              // maximum: _getInterval(monthlyData),
                               interval: _getInterval(monthlyData),
                               majorGridLines: const MajorGridLines(width: 0),
                               minorGridLines: const MinorGridLines(width: 0),
@@ -156,6 +165,14 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
                             ),
                             axes: <ChartAxis>[
                               NumericAxis(
+                                title: AxisTitle(
+                                  text: 'K\$',
+                                  textStyle: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
                                 name: 'CumulativeAxis',
                                 opposedPosition: true,
                                 minimum: 0,
@@ -174,6 +191,16 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
                                 ),
                               ),
                             ],
+                            tooltipBehavior: TooltipBehavior(
+                              enable: true,
+                              header: '',
+                              canShowMarker: true,
+                              textStyle: TextStyle(
+                                fontSize: 18,
+                                color: Colors.black,
+                              ),
+
+                            ),
                             series: _buildStackedSeries(monthlyData),
                           ),
                         ),
@@ -346,24 +373,6 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
         },
       ),
 
-      // LineSeries<ToolCostSubDetailModel, String>(
-      //   dataSource: data,
-      //   xValueMapper: (d, _) => DateFormat('dd').format(d.date),
-      //   yValueMapper: (d, _) => d.targetAdjust,
-      //   name: 'Exceeded Line',
-      //   color: Colors.grey,
-      //   markerSettings: const MarkerSettings(isVisible: true),
-      //   width: 4,
-      //   dataLabelSettings: const DataLabelSettings(
-      //     isVisible: true,
-      //     labelAlignment: ChartDataLabelAlignment.top,
-      //     textStyle: TextStyle(
-      //       fontWeight: FontWeight.bold,
-      //       color: Colors.grey,
-      //       fontSize: 18,
-      //     ),
-      //   ),
-      // ),
       AreaSeries<ToolCostSubDetailModel, String>(
         dataSource: data,
         dataLabelMapper: (item, _) => numberFormat.format(item.targetAdjust),
@@ -377,17 +386,17 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
         ),
         borderColor: Colors.grey,
         borderWidth: 2,
-
         dataLabelSettings: const DataLabelSettings(
           labelAlignment: ChartDataLabelAlignment.top,
           isVisible: true,
           textStyle: TextStyle(
-            fontSize: 20,
+            fontSize: 18,
             color: Colors.grey,
             fontWeight: FontWeight.bold,
           ),
         ),
       ),
+
       LineSeries<ToolCostSubDetailModel, String>(
         dataSource: filteredData,
         xValueMapper: (d, index) => DateFormat('dd').format(d.date),
@@ -396,6 +405,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
         name: 'Cumulative Actual',
         color: Colors.blue,
         width: 4,
+        enableTooltip: true,
         markerSettings: const MarkerSettings(isVisible: true),
         dataLabelSettings: const DataLabelSettings(
           labelAlignment: ChartDataLabelAlignment.outer,
@@ -439,6 +449,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
               : '';
         },
       ),
+
       LineSeries<ToolCostSubDetailModel, String>(
         dataSource: data,
         xValueMapper: (d, index) => DateFormat('dd').format(d.date),

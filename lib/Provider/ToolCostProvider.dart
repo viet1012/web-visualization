@@ -26,7 +26,7 @@ class ToolCostProvider with ChangeNotifier {
   }
 
   void _initTimer() {
-    _dailyTimer = Timer.periodic(Duration(seconds: 5), (timer) {
+    _dailyTimer = Timer.periodic(Duration(minutes: 30), (timer) {
       final now = DateTime.now();
       if (!_isSameDate(now, _lastFetchedDate)) {
         print("[DATE CHANGED] Detected date change! Refreshing...");

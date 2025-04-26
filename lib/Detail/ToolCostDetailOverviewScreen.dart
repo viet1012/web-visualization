@@ -42,7 +42,7 @@ class _ToolCostDetailOverviewScreenState
   @override
   void didUpdateWidget(covariant ToolCostDetailOverviewScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.dept != widget.dept) {
+    if (oldWidget.dept != widget.dept ) {
       print("oldWidget: ${oldWidget.dept}");
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final provider = Provider.of<ToolCostDetailProvider>(
@@ -67,35 +67,7 @@ class _ToolCostDetailOverviewScreenState
       _fetchData(provider);
     });
 
-    _dailyTimer = Timer.periodic(const Duration(seconds: 20), (timer) {
-      final now = DateTime.now();
-      print("[TIMER CHECK] Current Time: $now | Stored Time: $_currentDate");
 
-      if (now.day != _currentDate.day ||
-          now.month != _currentDate.month ||
-          now.year != _currentDate.year) {
-        print("[DATE CHANGED] Detected date change! Refreshing...");
-
-        _currentDate = now;
-
-        if (mounted) {
-          final provider = Provider.of<ToolCostDetailProvider>(
-            context,
-            listen: false,
-          );
-
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            setState(() {
-              selectedDate = DateTime(now.year, now.month, 1);
-              selectedMonth = now.month;
-              selectedYear = now.year;
-            });
-            _fetchData(provider);
-          });
-          print("[UI UPDATED] setState triggered with new date: $selectedDate");
-        }
-      }
-    });
   }
 
   @override
@@ -124,6 +96,7 @@ class _ToolCostDetailOverviewScreenState
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<ToolCostDetailProvider>(context);
     return Scaffold(
       appBar: CustomToolCostAppBar(
         titleText: widget.dept,
@@ -135,16 +108,15 @@ class _ToolCostDetailOverviewScreenState
             selectedYear = newDate.year;
             month = "$selectedYear-${selectedMonth.toString().padLeft(2, '0')}";
           });
-          final provider = Provider.of<ToolCostDetailProvider>(
-            context,
-            listen: false,
-          );
+          // 👉 Gọi lại API
+          final provider = Provider.of<ToolCostDetailProvider>(context, listen: false);
           _fetchData(provider);
         },
-        currentDate: _currentDate,
+        currentDate: provider.lastFetchedDate,
         showBackButton: true,
         onBack: () => context.go('/'),
       ),
+
       body: Consumer<ToolCostDetailProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {

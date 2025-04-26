@@ -37,7 +37,11 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
                 item.maktx.toLowerCase().contains(query) ||
                 item.xblnr2.toLowerCase().contains(query) ||
                 item.bktxt.toLowerCase().contains(query) ||
-                item.matnr.toLowerCase().contains(query);
+                item.matnr.toLowerCase().contains(query) ||
+                item.useDate.toLowerCase().contains(query) ||
+                item.unit.toLowerCase().contains(query) ||
+                item.qty.toString().toLowerCase().contains(query) ||
+                item.amount.toString().toLowerCase().contains(query);
           }).toList();
     });
   }
@@ -84,7 +88,6 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
     );
   }
 
-
   void _resetFilter() {
     setState(() {
       _filterController.clear();
@@ -92,6 +95,10 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
       selectedMaktx = null;
       selectedMatnr = null;
       selectedDept = null;
+      selectedUnit = null;
+      selectedDept = null;
+      selectedUsedDate = null;
+      selectedNote = null;
       filteredData = widget.data;
     });
   }
@@ -197,6 +204,9 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
   String? selectedMatnr;
   String? selectedMaktx;
   String? selectedXblnr2;
+  String? selectedUnit;
+  String? selectedUsedDate;
+  String? selectedNote;
 
   void _applyFilter() {
     final query = _filterController.text.toLowerCase();
@@ -208,7 +218,11 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
                 item.maktx.toLowerCase().contains(query) ||
                 item.xblnr2.toLowerCase().contains(query) ||
                 item.bktxt.toLowerCase().contains(query) ||
-                item.matnr.toLowerCase().contains(query);
+                item.matnr.toLowerCase().contains(query) ||
+                item.useDate.toLowerCase().contains(query) ||
+                item.unit.toLowerCase().contains(query) ||
+                item.qty.toString().toLowerCase().contains(query) ||
+                item.amount.toString().toLowerCase().contains(query);
 
             final matchesDept =
                 selectedDept == null || item.dept == selectedDept;
@@ -218,8 +232,21 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
                 selectedMaktx == null || item.maktx == selectedMaktx;
             final matchesXblnr2 =
                 selectedXblnr2 == null || item.xblnr2 == selectedXblnr2;
+            final matchesUnit =
+                selectedUnit == null || item.unit == selectedUnit;
+            final matchesUsedDate =
+                selectedUsedDate == null || item.useDate == selectedUsedDate;
+            final matchesNote =
+                selectedNote == null || item.bktxt == selectedNote;
 
-            return matchesSearch && matchesDept && matchesMatnr && matchesMaktx && matchesXblnr2;
+            return matchesSearch &&
+                matchesDept &&
+                matchesMatnr &&
+                matchesMaktx &&
+                matchesXblnr2 &&
+                matchesUnit &&
+                matchesUsedDate &&
+                matchesNote;
           }).toList();
     });
   }
@@ -241,11 +268,14 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
               DropdownMenuItem<String>(
                 value: '__reset__',
                 child: Padding(
-                  padding:  EdgeInsets.only(left: 8) ,
+                  padding: EdgeInsets.only(left: 8),
                   child: Center(
                     child: Text(
                       title,
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
                   ),
                 ),
@@ -306,9 +336,28 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
                       });
                     },
                   ),
-                  _buildTableCell('Description', isHeader: true),
-                  _buildTableCell('Used Date', isHeader: true),
-                  // _buildTableCell('Doc Number', isHeader: true),
+                  _buildDropdownHeader(
+                    title: 'Description',
+                    selectedValue: selectedMaktx,
+                    values: _getUniqueValues((e) => e.maktx),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedMaktx = value;
+                        _applyFilter();
+                      });
+                    },
+                  ),
+                  _buildDropdownHeader(
+                    title: 'Used Date',
+                    selectedValue: selectedUsedDate,
+                    values: _getUniqueValues((e) => e.useDate),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedUsedDate = value;
+                        _applyFilter();
+                      });
+                    },
+                  ),
                   _buildDropdownHeader(
                     title: 'Doc Number',
                     selectedValue: selectedXblnr2,
@@ -320,7 +369,17 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
                       });
                     },
                   ),
-                  _buildTableCell('Note', isHeader: true),
+                  _buildDropdownHeader(
+                    title: 'Note',
+                    selectedValue: selectedNote,
+                    values: _getUniqueValues((e) => e.bktxt),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedNote = value;
+                        _applyFilter();
+                      });
+                    },
+                  ),
                   _buildTableCell('Qty', isHeader: true),
                   _buildTableCell('Unit', isHeader: true),
                   _buildTableCell('Amount', isHeader: true),
@@ -365,9 +424,9 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
                               _buildTableCell(item.useDate),
                               _buildTableCell(item.xblnr2),
                               _buildTableCell(item.bktxt),
-                              _buildTableCell(item.qty.toString()),
+                              _buildTableCell(item.qty.toString(), isNumber: true),
                               _buildTableCell(item.unit),
-                              _buildTableCell(item.amount.toStringAsFixed(2)),
+                              _buildTableCell(item.amount.toStringAsFixed(2), isNumber: true),
                             ],
                           );
                         }).toList(),
@@ -385,21 +444,21 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
     String text, {
     bool isHeader = false,
     bool highlight = false,
+    bool isNumber = false,
   }) {
-    return Center(
-      child: Container(
-        padding: isHeader ? EdgeInsets.only(top: 8) : null,
-        // color: Colors.green,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            text,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: isHeader ? FontWeight.w600 : FontWeight.normal,
-              color: highlight ? Colors.blue.shade700 : null,
-              fontSize: isHeader ? 18 : 16,
-            ),
+    return Container(
+      padding: isHeader ? EdgeInsets.only(top: 8) : null,
+      // color: Colors.green,
+alignment: isHeader ? Alignment.center : null,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          text,
+          textAlign: isNumber ? TextAlign.right : TextAlign.left,
+          style: TextStyle(
+            fontWeight: isHeader ? FontWeight.w600 : FontWeight.normal,
+            color: highlight ? Colors.blue.shade700 : null,
+            fontSize: isHeader ? 18 : 16,
           ),
         ),
       ),
