@@ -53,19 +53,36 @@ class _ToolCostDetailScreenState extends State<ToolCostDetailScreen> {
                     children: [
                       SizedBox(
                         width: MediaQuery.of(context).size.width * .13,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(statusIcon, color: statusColor, size: 30),
-                            const SizedBox(width: 10),
-                            Text(
-                              status,
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: statusColor,
-                              ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(statusIcon, color: statusColor, size: 30),
+                                const SizedBox(width: 10),
+                                Text(
+                                  status,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: statusColor,
+                                  ),
+                                ),
+                              ],
                             ),
+                            SizedBox(height: 8),
+                            if (widget.toolCostModel.actual >
+                                widget.toolCostModel.target_Adjust)
+                              Text(
+                                'Exceeded by ${NumberFormat("#,##0.0").format(widget.toolCostModel.actual - widget.toolCostModel.target_Adjust)}K\$',
+                                style:  TextStyle(
+                                  color: Colors.red.withOpacity(0.6),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                              ),
                           ],
                         ),
                       ),

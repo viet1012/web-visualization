@@ -236,6 +236,16 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
     );
   }
 
+  int getLastNonZeroIndex(List<ToolCostSubDetailModel> data) {
+    for (int i = data.length - 1; i >= 0; i--) {
+      if (data[i].targetAdjust != 0) {
+        return i;
+      }
+    }
+    return -1; // Trường hợp toàn bộ là 0
+  }
+
+
   List<CartesianSeries<ToolCostSubDetailModel, String>> _buildStackedSeries(
     List<ToolCostSubDetailModel> data,
   ) {
@@ -286,6 +296,8 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
     // Cập nhật cumulativeActual theo filteredData
     final filteredCumulativeActual =
         cumulativeActual.take(filteredData.length).toList();
+
+    final int lastNonZeroIndex = getLastNonZeroIndex(data);
 
     return <CartesianSeries<ToolCostSubDetailModel, String>>[
       StackedColumnSeries<ToolCostSubDetailModel, String>(
@@ -375,7 +387,12 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
 
       AreaSeries<ToolCostSubDetailModel, String>(
         dataSource: data,
-        dataLabelMapper: (item, _) => numberFormat.format(item.targetAdjust),
+        dataLabelMapper: (item, index) {
+          return index == lastNonZeroIndex
+              ? numberFormat.format(item.targetAdjust)
+              : null;
+        },
+        // dataLabelMapper: (item, _) => numberFormat.format(item.targetAdjust),
         xValueMapper: (item, _) => DateFormat('dd').format(item.date),
         yValueMapper: (item, _) => item.targetAdjust,
         name: 'Target',
@@ -394,7 +411,9 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
             color: Colors.grey,
             fontWeight: FontWeight.bold,
           ),
+
         ),
+
       ),
 
       LineSeries<ToolCostSubDetailModel, String>(

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'BlinkingText.dart';
-import 'DateDisplayWidget.dart';
-import 'TimeInfoCard.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String titleText;

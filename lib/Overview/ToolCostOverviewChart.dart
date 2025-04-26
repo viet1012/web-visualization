@@ -352,7 +352,6 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
         width: 0.5,
         spacing: 0.2,
         dataLabelSettings: const DataLabelSettings(
-          isVisible: true,
           textStyle: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,

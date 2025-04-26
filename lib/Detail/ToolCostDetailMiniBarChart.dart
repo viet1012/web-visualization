@@ -28,6 +28,7 @@ class ToolCostDetailMiniBarChart extends StatelessWidget {
         labelStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         minimum: 0,
         maximum: actual > target ? actual * 1.2 : target * 1.2,
+
       ),
       series: <CartesianSeries<TargetActualData, String>>[
         BarSeries<TargetActualData, String>(

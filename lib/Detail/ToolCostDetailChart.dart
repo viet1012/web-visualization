@@ -182,7 +182,7 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
           ),
         ),
       ),
-      StackedColumnSeries<ToolCostDetailModel, String>(
+      ColumnSeries<ToolCostDetailModel, String>(
         dataSource: data,
         xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.actual,
@@ -195,9 +195,8 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
         dataLabelSettings: const DataLabelSettings(
           isVisible: true,
           labelAlignment: ChartDataLabelAlignment.middle,
-          labelIntersectAction: LabelIntersectAction.shift,
           textStyle: TextStyle(
-            fontSize: 20,
+            fontSize: 18,
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
