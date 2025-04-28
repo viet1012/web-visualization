@@ -6,7 +6,7 @@ class ToolCostDetailModel {
   final double actual;
 
   ToolCostDetailModel({
-    required   this.target_Adjust,
+    required this.target_Adjust,
     required this.title,
     required this.target_ORG,
     required this.actual,
@@ -22,13 +22,12 @@ class ToolCostDetailModel {
     );
   }
 
-
   // Method to convert ToolCostModel to JSON (if needed)
   Map<String, dynamic> toJson() {
     return {
       'dept': title,
-      'tgt_MTD': target_ORG * 1000,  // Chuyển đổi lại nếu cần
-      'act': actual * 1000,       // Chuyển đổi lại nếu cần
+      'tgt_MTD': target_ORG * 1000, // Chuyển đổi lại nếu cần
+      'act': actual * 1000, // Chuyển đổi lại nếu cần
     };
   }
 }

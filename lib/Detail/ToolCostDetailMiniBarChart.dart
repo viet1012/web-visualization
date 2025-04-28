@@ -36,7 +36,7 @@ class ToolCostDetailMiniBarChart extends StatelessWidget {
             TargetActualData('Actual', actual),
             TargetActualData('Target', target),
           ],
-          dataLabelMapper: (item, _) => numberFormat.format(item.value),
+          dataLabelMapper: (item, _) => '${numberFormat.format(item.value)}K\$',
           xValueMapper: (data, _) => data.label,
           yValueMapper: (data, _) => data.value,
           pointColorMapper: (data, _) => data.label == 'Actual'

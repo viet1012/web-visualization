@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../Common/CustomToolCostAppBar.dart';
 import '../Overview/ToolCostOverviewScreen.dart';
+import '../Provider/DateProvider.dart';
 import '../Provider/ToolCostProvider.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -30,22 +31,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final provider =
+    final toolCostProvider =
         context.watch<ToolCostProvider>(); // 👈 lấy dữ liệu từ Provider
-
+    final dateProvider =
+        context.watch<DateProvider>(); // 👈 lấy ngày từ Provider
     return Scaffold(
       appBar: CustomToolCostAppBar(
         titleText: "Cost Monitoring",
-        selectedDate: selectedDate,
+        selectedDate: dateProvider.selectedDate,
+        // 👈 lấy selectedDate từ Provider
         onDateChanged: (newDate) {
-          setState(() {
-            selectedDate = newDate;
-            selectedMonth = newDate.month;
-            selectedYear = newDate.year;
-          });
+          context.read<DateProvider>().updateDate(
+            newDate,
+          ); // 👈 chỉ cần gọi update
         },
-        currentDate: provider.lastFetchedDate,
-        // 👈 cập nhật ngày động
+        currentDate: toolCostProvider.lastFetchedDate,
         onToggleTheme: widget.onToggleTheme,
       ),
       body: SingleChildScrollView(
@@ -67,7 +67,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   child: ToolCostOverviewScreen(
                     onToggleTheme: widget.onToggleTheme,
-                    selectedDate: selectedDate,
+                    selectedDate: dateProvider.selectedDate,
                   ),
                 ),
               ),

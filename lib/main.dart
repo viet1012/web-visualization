@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:visualization/Provider/DateProvider.dart';
 
 import 'Dashboard/DashboardScreen.dart';
 import 'Detail/ToolCostDetailOverviewScreen.dart';
@@ -18,6 +19,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => ToolCostProvider()),
         ChangeNotifierProvider(create: (_) => ToolCostDetailProvider()),
+        ChangeNotifierProvider(create: (_) => DateProvider()),
       ],
       child: DashboardApp(),
     ),

@@ -43,7 +43,6 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
         icon: Icons.error_outline,
       );
     }
-
     return Column(
       children: [
         SizedBox(
@@ -131,9 +130,6 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
   List<CartesianSeries<ToolCostDetailModel, String>> _buildSeries(
     List<ToolCostDetailModel> data,
   ) {
-    final greenData = data.where((e) => e.actual <= e.target_ORG).toList();
-    final redData = data.where((e) => e.actual > e.target_ORG).toList();
-
     return <CartesianSeries<ToolCostDetailModel, String>>[
       AreaSeries<ToolCostDetailModel, String>(
         dataSource: data,

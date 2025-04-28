@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:visualization/API/ApiService.dart';
 import '../Common/ToolCostPopup.dart';
-import '../Context/ToolCostContext.dart';
+import '../Common/ToolCostStatusHelper.dart';
 import '../Model/DetailsDataModel.dart';
 import '../Model/ToolCostModel.dart';
 import '../Provider/ToolCostProvider.dart';
@@ -33,6 +33,8 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
 
   @override
   Widget build(BuildContext context) {
+
+
     return Column(
       children: [
         const Text(
@@ -42,6 +44,7 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
         SizedBox(
           // height: MediaQuery.of(context).size.height * .38,
           height: MediaQuery.of(context).size.height * .85,
+
           child: SfCartesianChart(
             plotAreaBorderColor: Colors.black45,
             primaryXAxis: CategoryAxis(
@@ -107,35 +110,24 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                 );
 
                 try {
-                  final detailData = await apiService.fetchToolCostsDetail(
-                    widget.month,
-                    item.title,
-                  );
-                  Provider.of<ToolCostProvider>(
-                    context,
-                    listen: false,
-                  ).setSelectedItem(item);
-
-                  setState(() {
-                    selectedIndex = index;
-                  });
+                  // final detailData = await apiService.fetchToolCostsDetail(
+                  //   widget.month,
+                  //   item.title,
+                  // );
+                  // Provider.of<ToolCostProvider>(
+                  //   context,
+                  //   listen: false,
+                  // ).setSelectedItem(item);
+                  //
+                  // setState(() {
+                  //   selectedIndex = index;
+                  // });
 
                   // Tắt dialog loading
                   Navigator.of(context).pop();
 
-                  //var toolCostContext = ToolCostDetailContext(month: widget.month, dept:item.title , data: detailData);
-                  // Navigate sang màn hình chi tiết
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder:
-                  //         (_) =>
-                  //             ToolCostDetailOverviewScreen(onToggleTheme: () {  }, dept: item.title,),
-                  //   ),
-                  // );
-
-                  print('Navigating to /${item.title}');
-                  context.go('/${item.title}');
+                  print('Navigating to /${item.title}/${widget.month}');
+                  context.go('/${item.title}?month=${widget.month}');
 
                   // redirectToPage(item.title);
                 } catch (e) {
@@ -147,6 +139,95 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                 }
               }
             },
+            tooltipBehavior: TooltipBehavior(
+              enable: true,
+              header: '',
+              canShowMarker: true,
+              builder: (dynamic data, dynamic point, dynamic series, int pointIndex, int seriesIndex) {
+                final item = data as ToolCostModel;
+                final status = ToolCostStatusHelper.getStatus(item);
+                final statusColor = ToolCostStatusHelper.getStatusColor(status);
+
+                if (series.name == 'Thừa ORG') {
+                  // 👉 Nếu là series "TGT_Adjust" thì custom
+                  return Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.all(
+                          Radius.circular(8)
+                      ),
+                      border: Border.all(
+                        width: 2, // Độ dày của border
+                      ),
+                    ),
+                    child: Text(
+                      'Target_Org: ${numberFormat.format(item.target_ORG)}', // 👈 hiện target_ORG
+                      style: const TextStyle(fontSize: 20, color: Colors.white),
+                    ),
+                  );
+                }
+                if (series.name == 'Actual') {
+                  // 👉 Nếu là series "TGT_Adjust" thì custom
+                  return Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: statusColor,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8)
+                      ),
+                      border: Border.all(
+                        width: 2, // Độ dày của border
+                      ),
+                    ),
+                    child: Text(
+                      'Actual: ${numberFormat.format(item.actual)}', // 👈 hiện target_ORG
+                      style: const TextStyle(fontSize: 20, color: Colors.white),
+                    ),
+                  );
+                }
+                if (series.name == 'Thiếu ORG') {
+                  // 👉 Nếu là series "TGT_Adjust" thì custom
+                  return Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.all(
+                          Radius.circular(8)
+                      ),
+                      border: Border.all(
+                        width: 2, // Độ dày của border
+                      ),
+                    ),
+                    child: Text(
+                      'Target_Adjust: ${numberFormat.format(item.target_Adjust)}', // 👈 hiện target_ORG
+                      style: const TextStyle(fontSize: 20, color: Colors.white),
+                    ),
+                  );
+                }else {
+                  // 👉 Các series khác, hiện tooltip mặc định
+                  return Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.all(
+                          Radius.circular(8)
+                      ),
+                      border: Border.all(
+                        width: 2, // Độ dày của border
+                      ),
+                    ),
+                    child: Text(
+                      item.target_ORG > item.target_Adjust ?
+                    'Target_Adjust: ${numberFormat.format(point.y)}' :
+                    'Target_Org: ${numberFormat.format(point.y)}', // 👈 hiện y value bình thường
+                      style: const TextStyle( fontSize: 20, color: Colors.white),
+                    ),
+                  );
+                }
+              },
+            ),
+
           ),
         ),
         const SizedBox(height: 8),
@@ -160,7 +241,7 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
   ) {
     return <CartesianSeries<ToolCostModel, String>>[
       ColumnSeries<ToolCostModel, String>(
-        animationDuration: 0,
+        animationDuration: 500,
         // 👈 Tắt animation
         dataSource: data,
         xValueMapper: (item, _) => item.title,
@@ -241,62 +322,9 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
         },
       ),
 
-      // // Cột gốc ORG (nét đứt)
-      // StackedColumnSeries<ToolCostModel, String>(
-      //   dataSource: data,
-      //   dataLabelMapper: (item, _) => numberFormat.format(item.target_Adjust),
-      //   xValueMapper: (item, _) => item.title,
-      //   yValueMapper: (item, _) => item.target_Adjust,
-      //   name: 'TGT_Adjust',
-      //   color: Colors.grey,
-      //   width: 0.5,
-      //   spacing: 0.2,
-      //   dataLabelSettings: const DataLabelSettings(
-      //     isVisible: true,
-      //     textStyle: TextStyle(
-      //       fontSize: 20, // 👈 Tùy chỉnh kích thước nếu cần
-      //       fontWeight: FontWeight.w600,
-      //       color: Colors.white,
-      //     ),
-      //   ),
-      //
-      // ),
-      //
-      // StackedColumnSeries<ToolCostModel, String>(
-      //   dataSource: data,
-      //   xValueMapper: (item, _) => item.title,
-      //   yValueMapper: (item, _) =>
-      //   (item.target_ORG > item.target_Adjust)
-      //       ? item.target_ORG - item.target_Adjust
-      //       : 0,
-      //   name: 'TGT_ORG border',
-      //   color: Colors.transparent,
-      //   borderColor: Colors.grey.shade700,
-      //   borderWidth: 2,
-      //   dashArray: [5, 5],
-      //   width: 0.5,
-      //   spacing: 0.2,
-      //   dataLabelSettings: const DataLabelSettings(isVisible: false),
-      //
-      // ),
-      // StackedColumnSeries<ToolCostModel, String>(
-      //   dataSource: data,
-      //   xValueMapper: (item, _) => item.title,
-      //   yValueMapper: (item, _) => item.target_Adjust > item.target_ORG
-      //         ? item.adjustMinusOrg
-      //         : 0,
-      //   name: 'TGT_ORG border',
-      //   color: Colors.grey,
-      //   borderWidth: 2,
-      //   dashArray: [5, 5],
-      //   width: 0.5,
-      //   spacing: 0.2,
-      //   dataLabelSettings: const DataLabelSettings(isVisible: false),
-      //
-      // ),
-      
+      // / / // / / / / / / / / // // / // // / / / / // / /  / / / / / // / / / / / /
       StackedColumnSeries<ToolCostModel, String>(
-        animationDuration: 0,
+        animationDuration: 500,
         // 👈 Tắt animation
         dataSource: data,
         xValueMapper: (item, _) => item.title,
@@ -321,12 +349,12 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
       ),
 
       StackedColumnSeries<ToolCostModel, String>(
-        animationDuration: 0,
+        animationDuration: 500,
         // 👈 Tắt animation
         dataSource: data,
         xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.orgMinusAdjust,
-        name: 'Thiếu ORG',
+        name: 'Thừa ORG',
         color: Colors.transparent,
         borderColor: Colors.grey.shade700,
         borderWidth: 2,
@@ -337,7 +365,7 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
       ),
 
       StackedColumnSeries<ToolCostModel, String>(
-        animationDuration: 0,
+        animationDuration: 500,
         // 👈 Tắt animation
         dataSource: data,
         xValueMapper: (item, _) => item.title,
@@ -346,7 +374,9 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                 (item.target_Adjust > item.target_ORG)
                     ? item.adjustMinusOrg
                     : 0,
-        name: 'TGT_Adjust',
+        // name: 'TGT_Adjust',
+        name: 'Thiếu ORG',
+
         color: Colors.grey,
         borderWidth: 4,
         width: 0.5,
@@ -359,7 +389,6 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
           ),
         ),
       ),
-
     ];
   }
 

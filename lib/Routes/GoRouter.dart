@@ -6,50 +6,59 @@ import '../Dashboard/DashboardScreen.dart';
 import '../Detail/ToolCostDetailOverviewScreen.dart';
 
 // ✅ Danh sách các phòng ban hợp lệ
-final List<String> validDepts = ['Mold', 'Press', 'Guide', 'MA', 'PE', 'Common', 'MTC'];
+final List<String> validDepts = [
+  'Mold',
+  'Press',
+  'Guide',
+  'MA',
+  'PE',
+  'Common',
+  'MTC',
+];
 
-final GoRouter router = GoRouter(
-  routes: [
-    GoRoute(
-      path: '/',
-      builder: (context, state) => DashboardScreen(onToggleTheme: () {}),
-    ),
-    GoRoute(
-      path: '/:dept',
-      builder: (context, state) {
-        final dept = state.pathParameters['dept'] ?? 'Mold';
-        if (!validDepts.contains(dept)) {
-          return const NotFoundScreen(); // Trang không tìm thấy
-        }
-        return ToolCostDetailOverviewScreen(onToggleTheme: () {}, dept: dept);
-      },
-    ),
 
-  ],
-);
+String _getCurrentMonth() {
+  final now = DateTime.now();
+  return "${now.year}-${now.month.toString().padLeft(2, '0')}";
+}
+
 
 GoRouter createRouter(VoidCallback onToggleTheme) {
-  final List<String> validDepts = ['Mold', 'Press', 'Guide', 'MA', 'PE', 'Common', 'MTC'];
+  final List<String> validDepts = [
+    'Mold',
+    'Press',
+    'Guide',
+    'MA',
+    'PE',
+    'Common',
+    'MTC',
+  ];
 
   return GoRouter(
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) => DashboardScreen(onToggleTheme: onToggleTheme),
+        builder:
+            (context, state) => DashboardScreen(onToggleTheme: onToggleTheme),
       ),
       GoRoute(
         path: '/:dept',
         builder: (context, state) {
           final dept = state.pathParameters['dept'] ?? 'Mold';
+          final monthString = state.uri.queryParameters['month'];
+          final month = monthString ?? _getCurrentMonth(); // Gọn gàng
+
           if (!validDepts.contains(dept)) {
             return const NotFoundScreen();
           }
           return ToolCostDetailOverviewScreen(
-            onToggleTheme: onToggleTheme,
+            onToggleTheme: () {},
             dept: dept,
+            month: month,
           );
         },
       ),
+
     ],
     errorBuilder: (context, state) => const NotFoundScreen(),
   );
