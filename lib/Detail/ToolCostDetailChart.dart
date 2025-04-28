@@ -36,13 +36,6 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.data.isEmpty) {
-      return const NoDataWidget(
-        title: "No Data Available",
-        message: "Please try again with a different time range.",
-        icon: Icons.error_outline,
-      );
-    }
     return Column(
       children: [
         SizedBox(

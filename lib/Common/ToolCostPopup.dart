@@ -131,7 +131,7 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
             Row(
               children: [
                 Text(
-                  "Total: ${(totalAmount / 1000).toStringAsFixed(1)}K\$",
+                  "Total: ${(totalAmount / 1000).toStringAsFixed(2)}K\$",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 SizedBox(width: 16),
@@ -424,9 +424,15 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
                               _buildTableCell(item.useDate),
                               _buildTableCell(item.xblnr2),
                               _buildTableCell(item.bktxt),
-                              _buildTableCell(item.qty.toString(), isNumber: true),
+                              _buildTableCell(
+                                item.qty.toString(),
+                                isNumber: true,
+                              ),
                               _buildTableCell(item.unit),
-                              _buildTableCell(item.amount.toStringAsFixed(2), isNumber: true),
+                              _buildTableCell(
+                                item.amount.toStringAsFixed(2),
+                                isNumber: true,
+                              ),
                             ],
                           );
                         }).toList(),
@@ -449,7 +455,7 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
     return Container(
       padding: isHeader ? EdgeInsets.only(top: 8) : null,
       // color: Colors.green,
-alignment: isHeader ? Alignment.center : null,
+      alignment: isHeader ? Alignment.center : null,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Text(

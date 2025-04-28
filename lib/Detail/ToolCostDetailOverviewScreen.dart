@@ -68,11 +68,11 @@ class _ToolCostDetailOverviewScreenState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       print("After build - Current Date: $_currentDate");
       //_updateDateFromUrl();
-      final provider = Provider.of<ToolCostDetailProvider>(
+      final toolCostDetailProvider = Provider.of<ToolCostDetailProvider>(
         context,
         listen: false,
       );
-      _fetchData(provider);
+      _fetchData(toolCostDetailProvider);
     });
   }
 
