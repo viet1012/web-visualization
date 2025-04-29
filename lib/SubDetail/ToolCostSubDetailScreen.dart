@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -12,18 +13,23 @@ import '../Common/ToolCostPopup.dart';
 import '../Common/ToolCostStatusHelper.dart';
 import '../Model/DetailsDataModel.dart';
 import '../Model/ToolCostModel.dart';
-import '../Provider/ToolCostProvider.dart';
+import '../Provider/DateProvider.dart';
+import '../Provider/ToolCostSubDetailProvider.dart';
 
 class ToolCostSubDetailScreen extends StatefulWidget {
-  final ToolCostModel item;
-  final ToolCostDetailModel detail;
+  // final ToolCostModel item;
+  // final ToolCostDetailModel detail;
+  final String dept;
+  final String group;
   final String month;
 
   const ToolCostSubDetailScreen({
     super.key,
-    required this.item,
-    required this.detail,
+    //required this.item,
+    // required this.detail,
     required this.month,
+    required this.dept,
+    required this.group,
   });
 
   @override
@@ -32,7 +38,6 @@ class ToolCostSubDetailScreen extends StatefulWidget {
 }
 
 class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
-  List<ToolCostSubDetailModel> monthlyData = [];
   int selectedMonth = DateTime.now().month;
   int selectedYear = DateTime.now().year;
   DateTime selectedDate = DateTime(
@@ -42,195 +47,250 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
   );
 
   final numberFormat = NumberFormat("##0.0");
+  late String _currentGroup;
 
   @override
   void initState() {
     super.initState();
-    _loadDetailData();
+
+    _currentGroup = widget.group;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<ToolCostSubDetailProvider>(
+        context,
+        listen: false,
+      );
+      _fetchData(provider);
+    });
   }
 
-  bool isLoading = true;
+  @override
+  void didUpdateWidget(covariant ToolCostSubDetailScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _updateDateFromUrl();
+  }
 
-  Future<void> _loadDetailData() async {
-    setState(() {
-      isLoading = true;
-    });
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   // Lắng nghe thay đổi URL trong `GoRouter`
+  //   _updateDateFromUrl();
+  // }
 
-    final month = DateFormat('yyyy-MM').format(selectedDate);
+  void _updateDateFromUrl() {
+    final currentPath =
+        GoRouter.of(context).routerDelegate.currentConfiguration;
 
-    List<ToolCostSubDetailModel> detailsData = await ApiService()
-        .fetchToolCostsSubDetail(month, widget.item.title, widget.detail.title);
+    final provider = Provider.of<ToolCostSubDetailProvider>(
+      context,
+      listen: false,
+    );
 
-    setState(() {
-      monthlyData = detailsData;
-      isLoading = false;
-    });
+    final segments = currentPath.uri.pathSegments;
+
+    final groupFromUrl = segments.length >= 2 ? segments[1] : null;
+
+    if (groupFromUrl != null && groupFromUrl != _currentGroup) {
+      setState(() {
+        _currentGroup = groupFromUrl;
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _fetchData(provider);
+      });
+    }
+  }
+
+
+  void _fetchData(ToolCostSubDetailProvider provider) {
+    final dateProvider = context.read<DateProvider>();
+    final month =
+        "${dateProvider.selectedDate.year}-${dateProvider.selectedDate.month.toString().padLeft(2, '0')}";
+    provider.clearData(); // 👈 Reset trước khi fetch
+    provider.fetchToolCostsSubDetail(
+      month,
+      widget.dept,
+      widget.group,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final provider =
-        context.watch<ToolCostProvider>(); // 👈 lấy dữ liệu từ Provider
+        context
+            .watch<ToolCostSubDetailProvider>(); // 👈 lấy dữ liệu từ Provider
 
-    final status = ToolCostStatusHelper.getStatus(widget.item);
-    final statusColor = ToolCostStatusHelper.getStatusColor(status);
-    final statusIcon = ToolCostStatusHelper.getStatusIcon(status);
-
+    final dateProvider =
+        context.watch<DateProvider>(); // 👈 lấy ngày từ Provider
 
     return Scaffold(
       appBar: CustomToolCostAppBar(
-        titleText: '${widget.detail.title} ',
-        selectedDate: selectedDate,
-
+        titleText: '${widget.group} ',
+        selectedDate: dateProvider.selectedDate,
         onDateChanged: (newDate) async {
-          setState(() {
-            selectedDate = newDate;
-            selectedMonth = newDate.month;
-            selectedYear = newDate.year;
+          context.read<DateProvider>().updateDate(newDate);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final provider = Provider.of<ToolCostSubDetailProvider>(
+              context,
+              listen: false,
+            );
+            _fetchData(provider);
           });
-
-          await _loadDetailData();
         },
-
-        currentDate: provider.lastFetchedDate,
+        showBackButton: true,
+        onBack: () => context.go('/${widget.dept}'),
+        currentDate:
+            provider.lastFetchedDate, // Điều này sẽ được thay bằng Consumer
       ),
-      body:
-          isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : SingleChildScrollView(
-                child: Card(
-                  elevation: 8,
-                  shadowColor: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    side: BorderSide(color: Colors.blue.shade100),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text(
-                              'Target vs Actual (by day)',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Icon(statusIcon, color: statusColor, size: 24),
-                          ],
-                        ),
-                        const SizedBox(height: 22),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * .8,
-                          child: SfCartesianChart(
-                            margin: const EdgeInsets.all(0),
-                            plotAreaBorderWidth: 0,
-                            primaryXAxis: CategoryAxis(
-                              labelStyle: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              labelRotation: -45,
-                              title: AxisTitle(
-                                text: 'Day',
-                                alignment: ChartAlignment.far,
-                                textStyle: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                              ),
-                              majorGridLines: const MajorGridLines(width: 0),
-                              majorTickLines: const MajorTickLines(width: 0),
-                            ),
-                            primaryYAxis: NumericAxis(
-                              labelStyle: const TextStyle(fontSize: 18),
-                              minimum: 0,
-                              interval: _getInterval(monthlyData),
-                              majorGridLines: const MajorGridLines(width: 0),
-                              minorGridLines: const MinorGridLines(width: 0),
-                              title: AxisTitle(
-                                text: 'K\$',
-                                textStyle: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                              ),
-                            ),
-                            axes: <ChartAxis>[
-                              NumericAxis(
-                                title: AxisTitle(
-                                  text: 'K\$',
-                                  textStyle: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                    fontStyle: FontStyle.italic,
-                                  ),
-                                ),
-                                name: 'CumulativeAxis',
-                                opposedPosition: true,
-                                minimum: 0,
-                                maximum: _getMaxCumulativeYAxis(monthlyData),
-                                interval: 1,
-                                majorGridLines: const MajorGridLines(width: 0),
-                                minorGridLines: const MinorGridLines(width: 0),
-                                majorTickLines: const MajorTickLines(width: 0),
-                                minorTickLines: const MinorTickLines(width: 0),
-                                // 👈 thêm nếu cần
-                                // Tắt lưới chính ,
-                                labelStyle: const TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.blue,
-                                ),
-                              ),
-                            ],
-                            tooltipBehavior: TooltipBehavior(
-                              enable: true,
-                              header: '',
-                              canShowMarker: true,
-                              textStyle: TextStyle(
-                                fontSize: 20,
-                              ),
+      body: Consumer<ToolCostSubDetailProvider>(
+        // Bọc phần cần sử dụng provider bằng Consumer
+        builder: (context, provider, child) {
+          // final status = ToolCostStatusHelper.getStatus(widget.item);
+          // final statusColor = ToolCostStatusHelper.getStatusColor(status);
+          // final statusIcon = ToolCostStatusHelper.getStatusIcon(status);
+          if (provider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-                            ),
-                            series: _buildStackedSeries(monthlyData),
+          if (provider.subDetails.isEmpty) {
+            return const NoDataWidget(
+              title: "No Data Available",
+              message: "Please try again with a different time range.",
+              icon: Icons.error_outline,
+            );
+          }
+          return SingleChildScrollView(
+            child: Card(
+              elevation: 8,
+              shadowColor: Colors.blue,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(color: Colors.blue.shade100),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Target vs Actual (by day)',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        Center(
-                          child: Wrap(
-                            spacing: 16,
-                            runSpacing: 8,
-                            children: [
-                              _buildLegendItem(
-                                color: Colors.green,
-                                label: 'Target Achieved',
-                                isActual: true,
-                              ),
-                              _buildLegendItem(
-                                color: Colors.red,
-                                label: 'Actual > Target (Negative)',
-                              ),
-                              _buildLegendItem(color: Colors.blue, label: 'ACT'),
-                              _buildLegendItem(
-                                color: Colors.orange,
-                                label: 'FC_Adjust',
-                              ),
-                              _buildLegendItem(color: Colors.grey, label: 'FC_ORG'),
-                            ],
-                          ),
-                        ),
+                        SizedBox(width: 8),
+                        // Icon(statusIcon, color: statusColor, size: 24),
                       ],
                     ),
-                  ),
+                    const SizedBox(height: 22),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * .8,
+                      child: SfCartesianChart(
+                        margin: const EdgeInsets.all(0),
+                        plotAreaBorderWidth: 0,
+                        primaryXAxis: CategoryAxis(
+                          labelStyle: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          labelRotation: -45,
+                          title: AxisTitle(
+                            text: 'Day',
+                            alignment: ChartAlignment.far,
+                            textStyle: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                          majorGridLines: const MajorGridLines(width: 0),
+                          majorTickLines: const MajorTickLines(width: 0),
+                        ),
+                        primaryYAxis: NumericAxis(
+                          labelStyle: const TextStyle(fontSize: 18),
+                          minimum: 0,
+                          interval: _getInterval(provider.subDetails),
+                          majorGridLines: const MajorGridLines(width: 0),
+                          minorGridLines: const MinorGridLines(width: 0),
+                          title: AxisTitle(
+                            text: 'K\$',
+                            textStyle: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ),
+                        axes: <ChartAxis>[
+                          NumericAxis(
+                            title: AxisTitle(
+                              text: 'K\$',
+                              textStyle: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                            name: 'CumulativeAxis',
+                            opposedPosition: true,
+                            minimum: 0,
+                            maximum: _getMaxCumulativeYAxis(
+                              provider.subDetails,
+                            ),
+                            interval: 1,
+                            majorGridLines: const MajorGridLines(width: 0),
+                            minorGridLines: const MinorGridLines(width: 0),
+                            majorTickLines: const MajorTickLines(width: 0),
+                            minorTickLines: const MinorTickLines(width: 0),
+                            labelStyle: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                        tooltipBehavior: TooltipBehavior(
+                          enable: true,
+                          header: '',
+                          canShowMarker: true,
+                          textStyle: TextStyle(fontSize: 20),
+                        ),
+                        series: _buildStackedSeries(provider.subDetails),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Center(
+                      child: Wrap(
+                        spacing: 16,
+                        runSpacing: 8,
+                        children: [
+                          _buildLegendItem(
+                            color: Colors.green,
+                            label: 'Target Achieved',
+                            isActual: true,
+                          ),
+                          _buildLegendItem(
+                            color: Colors.red,
+                            label: 'Actual > Target (Negative)',
+                          ),
+                          _buildLegendItem(color: Colors.blue, label: 'ACT'),
+                          _buildLegendItem(
+                            color: Colors.orange,
+                            label: 'FC_Adjust',
+                          ),
+                          _buildLegendItem(color: Colors.grey, label: 'FC_ORG'),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -242,7 +302,6 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
     }
     return -1; // Trường hợp toàn bộ là 0
   }
-
 
   List<CartesianSeries<ToolCostSubDetailModel, String>> _buildStackedSeries(
     List<ToolCostSubDetailModel> data,
@@ -265,7 +324,8 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
     }
 
     final now = DateTime.now();
-
+    final dateProvider =
+        context.read<DateProvider>(); // 👈 lấy DateProvider ở đây
     // Xác định ngày bắt đầu của tháng
     DateTime startOfMonth;
     if (selectedDate.year == now.year && selectedDate.month == now.month) {
@@ -273,7 +333,11 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
       startOfMonth = DateTime(now.year, now.month, 1);
     } else {
       // Nếu không phải tháng hiện tại, lấy ngày 1 của tháng đã chọn
-      startOfMonth = DateTime(selectedDate.year, selectedDate.month, 1);
+      startOfMonth = DateTime(
+        dateProvider.selectedDate.year,
+        dateProvider.selectedDate.month,
+        1,
+      );
     }
 
     // Xác định ngày hôm qua (không cộng thêm ngày)
@@ -300,7 +364,8 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
     return <CartesianSeries<ToolCostSubDetailModel, String>>[
       StackedColumnSeries<ToolCostSubDetailModel, String>(
         dataSource: data,
-        dataLabelMapper: (item, _) => numberFormat.format(item.act),
+        dataLabelMapper:
+            (item, _) => item.act == 0 ? null : numberFormat.format(item.act),
         xValueMapper: (d, _) => DateFormat('dd').format(d.date),
         yValueMapper: (d, _) => d.act,
         pointColorMapper:
@@ -336,8 +401,10 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
             List<DetailsDataModel> detailsData = await ApiService()
                 .fetchToolCostsSubSubDetail(
                   month,
-                  widget.item.title,
-                  widget.detail.title,
+                  // widget.item.title,
+                  // widget.detail.title,
+                  widget.dept,
+                  widget.group,
                 );
 
             // Tắt loading
@@ -390,7 +457,6 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
               ? numberFormat.format(item.targetAdjust)
               : null;
         },
-        // dataLabelMapper: (item, _) => numberFormat.format(item.targetAdjust),
         xValueMapper: (item, _) => DateFormat('dd').format(item.date),
         yValueMapper: (item, _) => item.targetAdjust,
         name: 'Target',
@@ -409,13 +475,12 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
             color: Colors.grey,
             fontWeight: FontWeight.bold,
           ),
-
         ),
-
       ),
 
       LineSeries<ToolCostSubDetailModel, String>(
         dataSource: filteredData,
+
         xValueMapper: (d, index) => DateFormat('dd').format(d.date),
         yValueMapper: (d, index) => filteredCumulativeActual[index],
         yAxisName: 'CumulativeAxis',
@@ -503,17 +568,6 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
 
     double interval = (maxVal / 5).ceilToDouble();
     return interval < 1.0 ? 1.0 : interval; // tránh interval quá nhỏ
-  }
-
-  double _getMaxYAxis(List<ToolCostSubDetailModel> data) {
-    if (data.isEmpty)
-      return 100; // hoặc 0, hoặc 1 — tuỳ bạn muốn hiển thị gì khi không có dữ liệu
-
-    final maxVal = data
-        .map((e) => e.act > e.targetAdjust ? e.act : e.targetAdjust)
-        .reduce((a, b) => a > b ? a : b);
-
-    return (maxVal * 1.3).ceilToDouble();
   }
 
   double _getMaxCumulativeYAxis(List<ToolCostSubDetailModel> data) {

@@ -324,7 +324,17 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
             children: [
               TableRow(
                 children: [
-                  _buildTableCell('Dept', isHeader: true),
+                  _buildDropdownHeader(
+                    title: 'Dept',
+                    selectedValue: selectedDept,
+                    values: _getUniqueValues((e) => e.dept),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedDept = value;
+                        _applyFilter();
+                      });
+                    },
+                  ),
                   _buildDropdownHeader(
                     title: 'Material No',
                     selectedValue: selectedMatnr,

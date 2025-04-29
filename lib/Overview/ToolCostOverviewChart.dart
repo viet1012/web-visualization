@@ -33,8 +33,6 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
 
   @override
   Widget build(BuildContext context) {
-
-
     return Column(
       children: [
         const Text(
@@ -143,27 +141,36 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
               enable: true,
               header: '',
               canShowMarker: true,
-              builder: (dynamic data, dynamic point, dynamic series, int pointIndex, int seriesIndex) {
+              builder: (
+                dynamic data,
+                dynamic point,
+                dynamic series,
+                int pointIndex,
+                int seriesIndex,
+              ) {
                 final item = data as ToolCostModel;
                 final status = ToolCostStatusHelper.getStatus(item);
                 final statusColor = ToolCostStatusHelper.getStatusColor(status);
 
                 if (series.name == 'Thừa ORG') {
                   // 👉 Nếu là series "TGT_Adjust" thì custom
-                  return Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.grey,
-                      borderRadius: BorderRadius.all(
-                          Radius.circular(8)
+                  return DottedBorder(
+                    color: Colors.grey.shade700,
+                    strokeWidth: 3,
+                    dashPattern: [5, 5],
+                    borderType: BorderType.RRect,
+                    radius: const Radius.circular(2),
+                    child: Container(
+                      color: Colors.black,
+                      padding: const EdgeInsets.all(8),
+                      child: Text(
+                        'Target_Org: ${numberFormat.format(item.target_ORG)}',
+                        // 👈 hiện target_ORG
+                        style: const TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                        ),
                       ),
-                      border: Border.all(
-                        width: 2, // Độ dày của border
-                      ),
-                    ),
-                    child: Text(
-                      'Target_Org: ${numberFormat.format(item.target_ORG)}', // 👈 hiện target_ORG
-                      style: const TextStyle(fontSize: 20, color: Colors.white),
                     ),
                   );
                 }
@@ -173,15 +180,14 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: statusColor,
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(8)
-                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
                       border: Border.all(
                         width: 2, // Độ dày của border
                       ),
                     ),
                     child: Text(
-                      'Actual: ${numberFormat.format(item.actual)}', // 👈 hiện target_ORG
+                      'Actual: ${numberFormat.format(item.actual)}',
+                      // 👈 hiện target_ORG
                       style: const TextStyle(fontSize: 20, color: Colors.white),
                     ),
                   );
@@ -192,9 +198,7 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: Colors.grey,
-                      borderRadius: BorderRadius.all(
-                          Radius.circular(8)
-                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
                       border: Border.all(
                         width: 2, // Độ dày của border
                       ),
@@ -204,30 +208,46 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                       style: const TextStyle(fontSize: 20, color: Colors.white),
                     ),
                   );
-                }else {
-                  // 👉 Các series khác, hiện tooltip mặc định
-                  return Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
+                } else {
+                  if (item.target_ORG > item.target_Adjust) {
+                    return Container(
                       color: Colors.grey,
-                      borderRadius: BorderRadius.all(
-                          Radius.circular(8)
+                      padding: const EdgeInsets.all(8),
+                      child: Text(
+                        'Target_Adjust: ${numberFormat.format(point.y)}',
+                        // 👈 hiện y value bình thường
+                        style: const TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                        ),
                       ),
-                      border: Border.all(
-                        width: 2, // Độ dày của border
+                    );
+                  } else {
+                    return DottedBorder(
+                      color: Colors.grey.shade700,
+                      strokeWidth: 3,
+                      dashPattern: [5, 5],
+                      borderType: BorderType.RRect,
+                      radius: const Radius.circular(2),
+                      child: Container(
+                        color: Colors.black,
+                        padding: const EdgeInsets.all(8),
+                        child: Text(
+                          item.target_ORG > item.target_Adjust
+                              ? 'Target_Adjust: ${numberFormat.format(point.y)}'
+                              : 'Target_Org: ${numberFormat.format(point.y)}',
+                          // 👈 hiện y value bình thường
+                          style: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      item.target_ORG > item.target_Adjust ?
-                    'Target_Adjust: ${numberFormat.format(point.y)}' :
-                    'Target_Org: ${numberFormat.format(point.y)}', // 👈 hiện y value bình thường
-                      style: const TextStyle( fontSize: 20, color: Colors.white),
-                    ),
-                  );
+                    );
+                  }
                 }
               },
             ),
-
           ),
         ),
         const SizedBox(height: 8),
@@ -374,7 +394,6 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                 (item.target_Adjust > item.target_ORG)
                     ? item.adjustMinusOrg
                     : 0,
-        // name: 'TGT_Adjust',
         name: 'Thiếu ORG',
 
         color: Colors.grey,

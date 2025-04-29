@@ -7,6 +7,7 @@ import 'Dashboard/DashboardScreen.dart';
 import 'Detail/ToolCostDetailOverviewScreen.dart';
 import 'Provider/ToolCostDetailProvider.dart';
 import 'Provider/ToolCostProvider.dart';
+import 'Provider/ToolCostSubDetailProvider.dart';
 import 'Routes/GoRouter.dart';
 
 /// ✅ Khai báo global: có thể dùng ở mọi nơi
@@ -19,6 +20,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => ToolCostProvider()),
         ChangeNotifierProvider(create: (_) => ToolCostDetailProvider()),
+        ChangeNotifierProvider(create: (_) => ToolCostSubDetailProvider()),
         ChangeNotifierProvider(create: (_) => DateProvider()),
       ],
       child: DashboardApp(),

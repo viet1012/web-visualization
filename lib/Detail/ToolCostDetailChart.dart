@@ -1,5 +1,6 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -93,12 +94,41 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
                 setState(() {
                   selectedIndex = index;
                 });
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ToolCostSubDetailScreen(item: widget.toolCost, detail: item, month: widget.month,),
-                  ),
+
+                // context.goNamed(
+                //   'toolcost-subdetail',
+                //   extra: {
+                //     'item': widget.toolCost,
+                //     'detail': item,
+                //     'month': widget.month,
+                //   },
+                // );
+
+
+
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (_) => ToolCostSubDetailScreen(item: widget.toolCost, detail: item, month: widget.month,),
+                //   ),
+                // );
+
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (_) => ToolCostSubDetailScreen(dept: widget.toolCost.title, group: item.title, month: widget.month,),
+                //   ),
+                // );
+                print('Navigating to /${item.title}/${widget.month}');
+                // context.go('/${widget.toolCost.title}/${item.title}?month=${widget.month}');
+                context.go(
+                  '/${widget.toolCost.title}/${item.title}',
+                  extra: {
+                    'month': widget.month,
+                  },
                 );
+
+
               }
             },
             tooltipBehavior: TooltipBehavior(
@@ -123,12 +153,14 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
   List<CartesianSeries<ToolCostDetailModel, String>> _buildSeries(
     List<ToolCostDetailModel> data,
   ) {
+
     return <CartesianSeries<ToolCostDetailModel, String>>[
+
       AreaSeries<ToolCostDetailModel, String>(
         dataSource: data,
         xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.target_ORG,
-        dataLabelMapper: (item, _) => numberFormat.format(item.target_ORG),
+        dataLabelMapper: (item, _) => item.target_ORG == 0 ? null : numberFormat.format(item.target_ORG),
         name: 'Target ORG',
         gradient: LinearGradient(
           colors: [Colors.grey.withOpacity(0.2), Colors.grey.withOpacity(0.1)],
@@ -151,7 +183,7 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
         dataSource: data,
         xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.target_Adjust,
-        dataLabelMapper: (item, _) => numberFormat.format(item.target_Adjust),
+        dataLabelMapper: (item, _) => item.target_Adjust == 0 ? null : numberFormat.format(item.target_Adjust),
         name: 'Target Adjust',
         gradient: LinearGradient(
           colors: [Colors.orange.withOpacity(0.1), Colors.orange.withOpacity(0.1)],
@@ -174,7 +206,7 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
         dataSource: data,
         xValueMapper: (item, _) => item.title,
         yValueMapper: (item, _) => item.actual,
-        dataLabelMapper: (item, _) => numberFormat.format(item.actual),
+        dataLabelMapper: (item, _) => item.actual == 0 ? null : numberFormat.format(item.actual),
         pointColorMapper:
             (item, _) => item.actual > item.target_Adjust ? Colors.red : Colors.green,
         name: 'Actual',

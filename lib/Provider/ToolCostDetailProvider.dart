@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../API/ApiService.dart';
 import '../Model/ToolCostDetailModel.dart';
 import '../Model/ToolCostModel.dart';
+import '../Model/ToolCostSubDetailModel.dart';
 
 class ToolCostDetailProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();
@@ -16,6 +17,9 @@ class ToolCostDetailProvider with ChangeNotifier {
   bool _isLoading = false;
 
   List<ToolCostDetailModel> get data => _data;
+
+  List<ToolCostSubDetailModel> _subDetails = [];
+  List<ToolCostSubDetailModel> get subDetails => _subDetails;
 
   ToolCostModel? get summary => _summary; // expose ra ngoài
   bool get isLoading => _isLoading;
@@ -83,6 +87,7 @@ class ToolCostDetailProvider with ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
+
 
   void setSelectedItem(ToolCostDetailModel item) {
     selectedItem = item;
