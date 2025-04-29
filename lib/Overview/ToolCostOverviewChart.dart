@@ -211,8 +211,14 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                 } else {
                   if (item.target_ORG > item.target_Adjust) {
                     return Container(
-                      color: Colors.grey,
                       padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        border: Border.all(
+                          width: 2, // Độ dày của border
+                        ),
+                      ),
                       child: Text(
                         'Target_Adjust: ${numberFormat.format(point.y)}',
                         // 👈 hiện y value bình thường

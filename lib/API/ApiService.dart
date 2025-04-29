@@ -6,8 +6,8 @@ import '../Model/ToolCostModel.dart';
 import '../Model/ToolCostSubDetailModel.dart';
 
 class ApiService {
-  final String baseUrl = "http://F2PC24017:8080/api";
-  // final String baseUrl = "http://192.168.122.15:9091/api";
+  // final String baseUrl = "http://F2PC24017:8080/api";
+  final String baseUrl = "http://192.168.122.15:9091/api";
 
   Future<ToolCostModel?> fetchToolCostsByDept(String month, String dept) async {
     final url = Uri.parse("$baseUrl/tool-cost/by-dept?month=$month&dept=$dept");
