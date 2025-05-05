@@ -47,8 +47,9 @@ GoRouter createRouter(VoidCallback onToggleTheme) {
         path: '/by-day/:dept',
         builder: (context, state) {
           final dept = state.pathParameters['dept'] ?? 'MOLD';
-          final extra = state.extra as Map<String, dynamic>?;
-          final month = extra?['month'] ?? _getCurrentMonth();
+          final monthString = state.uri.queryParameters['month'];
+          final month = monthString ?? _getCurrentMonth(); // Gọn gàng
+
 
           if (!validDepts.contains(dept)) {
             return const NotFoundScreen();
@@ -76,7 +77,7 @@ GoRouter createRouter(VoidCallback onToggleTheme) {
         },
       ),
       GoRoute(
-        path: '/:dept/:group',
+        path: '/sub-detail/:dept/:group',
         builder: (context, state) {
           final dept = state.pathParameters['dept'] ?? 'Mold';
           final group = state.pathParameters['group'] ?? 'Mold';

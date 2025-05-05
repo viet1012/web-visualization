@@ -122,7 +122,7 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
                 print('Navigating to /${item.title}/${widget.month}');
                 // context.go('/${widget.toolCost.title}/${item.title}?month=${widget.month}');
                 context.go(
-                  '/${widget.toolCost.title}/${item.title}',
+                  '/sub-detail/${widget.toolCost.title}/${item.title}',
                   extra: {
                     'month': widget.month,
                   },

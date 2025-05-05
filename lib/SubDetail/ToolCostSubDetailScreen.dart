@@ -122,6 +122,8 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
     final dateProvider =
         context.watch<DateProvider>(); // 👈 lấy ngày từ Provider
 
+    final formattedMonth = DateFormat('yyyy-MM').format(dateProvider.selectedDate);
+
     return Scaffold(
       appBar: CustomToolCostAppBar(
         titleText: '${widget.group} ',
@@ -137,7 +139,8 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
           });
         },
         showBackButton: true,
-        onBack: () => context.go('/${widget.dept}'),
+        onBack: () => context.go('/by-group/${widget.dept}?month=$formattedMonth'),
+
         currentDate:
             provider.lastFetchedDate, // Điều này sẽ được thay bằng Consumer
       ),

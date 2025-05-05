@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:visualization/API/ApiService.dart';
 import '../Common/ToolCostPopup.dart';
 import '../Common/ToolCostStatusHelper.dart';
 import '../Model/DetailsDataModel.dart';
 import '../Model/ToolCostModel.dart';
-import '../Provider/ToolCostProvider.dart';
 import 'dart:html' as html;
 import 'package:dotted_border/dotted_border.dart';
 
@@ -134,10 +132,7 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                               Navigator.of(context).pop();
                               // Xử lý khi chọn ô này (VD: mở chi tiết)
                               context.go(
-                                '/by-day/${item.title.toUpperCase()}',
-                                extra: {
-                                  'month': widget.month,
-                                },
+                                '/by-day/${item.title.toUpperCase()}?month=${widget.month}',
                               );
                             },
                           ),

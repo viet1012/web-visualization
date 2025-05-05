@@ -29,8 +29,7 @@ class ToolCostByDayScreen extends StatefulWidget {
   });
 
   @override
-  State<ToolCostByDayScreen> createState() =>
-      _ToolCostByDayScreenState();
+  State<ToolCostByDayScreen> createState() => _ToolCostByDayScreenState();
 }
 
 class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
@@ -48,7 +47,7 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
   @override
   void initState() {
     super.initState();
-    _currentDept  = widget.dept;
+    _currentDept = widget.dept;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = Provider.of<ToolCostByDayProvider>(
         context,
@@ -65,38 +64,54 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
   }
 
   void _updateDateFromUrl() {
-    final currentPath =
-        GoRouter.of(context).routerDelegate.currentConfiguration;
+    final dateProvider = context.read<DateProvider>();
+    final currentPath = GoRouter.of(context).routerDelegate.currentConfiguration;
+    final provider = Provider.of<ToolCostByDayProvider>(context, listen: false);
 
-    final provider = Provider.of<ToolCostByDayProvider>(
-      context,
-      listen: false,
-    );
+    final queryParameters = currentPath.uri.queryParameters;
+    final currentMonth = queryParameters['month'];
 
-    final segments = currentPath.uri.pathSegments;
+    // ✅ Sửa ở đây: lấy dept đúng từ pathSegments[1]
+    final pathSegments = currentPath.uri.pathSegments;
+    String? deptFromUrl;
+    if (pathSegments.length >= 2) {
+      deptFromUrl = pathSegments[1];
+    }
 
-    final groupFromUrl = segments.length >= 2 ? segments[1] : null;
-
-    if (groupFromUrl != null && groupFromUrl != _currentDept) {
+    if (deptFromUrl != null && deptFromUrl != _currentDept) {
       setState(() {
-        _currentDept = groupFromUrl;
+        _currentDept = deptFromUrl!;
       });
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _fetchData(provider);
       });
     }
-  }
 
+    if (currentMonth != null) {
+      final newDate = _parseMonth(currentMonth);
+      if (newDate != dateProvider.selectedDate) {
+        print("New Date: $newDate");
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          dateProvider.updateDate(newDate);
+          _fetchData(provider);
+        });
+      }
+    }
+  }
 
   void _fetchData(ToolCostByDayProvider provider) {
     final dateProvider = context.read<DateProvider>();
     final month =
         "${dateProvider.selectedDate.year}-${dateProvider.selectedDate.month.toString().padLeft(2, '0')}";
     provider.clearData(); // 👈 Reset trước khi fetch
-    provider.fetchToolCostsByDay(
-      month,
-      widget.dept,
-    );
+    provider.fetchToolCostsByDay(month, widget.dept);
+  }
+
+  DateTime _parseMonth(String monthString) {
+    final parts = monthString.split('-');
+    final year = int.tryParse(parts[0]) ?? DateTime.now().year;
+    final month = int.tryParse(parts[1]) ?? DateTime.now().month;
+    return DateTime(year, month, 1);
   }
 
   @override
@@ -114,6 +129,16 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
         selectedDate: dateProvider.selectedDate,
         onDateChanged: (newDate) async {
           context.read<DateProvider>().updateDate(newDate);
+
+          // Cập nhật URL với tháng mới
+          final newMonth =
+              "${newDate.year}-${newDate.month.toString().padLeft(2, '0')}";
+          final newUrl =
+              '/by-day/${widget.dept}?month=$newMonth'; // Tạo URL mới
+
+          // Điều hướng đến URL mới
+          GoRouter.of(context).go(newUrl);
+
           WidgetsBinding.instance.addPostFrameCallback((_) {
             final provider = Provider.of<ToolCostByDayProvider>(
               context,
@@ -122,17 +147,14 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
             _fetchData(provider);
           });
         },
+        currentDate: provider.lastFetchedDate,
         showBackButton: true,
         onBack: () => context.go('/'),
-        currentDate:
-            provider.lastFetchedDate, // Điều này sẽ được thay bằng Consumer
       ),
       body: Consumer<ToolCostByDayProvider>(
         // Bọc phần cần sử dụng provider bằng Consumer
         builder: (context, provider, child) {
-          // final status = ToolCostStatusHelper.getStatus(widget.item);
-          // final statusColor = ToolCostStatusHelper.getStatusColor(status);
-          // final statusIcon = ToolCostStatusHelper.getStatusIcon(status);
+
           if (provider.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -223,9 +245,7 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
                             name: 'CumulativeAxis',
                             opposedPosition: true,
                             minimum: 0,
-                            maximum: _getMaxCumulativeYAxis(
-                              provider.byDayData,
-                            ),
+                            maximum: _getMaxCumulativeYAxis(provider.byDayData),
                             interval: 1,
                             majorGridLines: const MajorGridLines(width: 0),
                             minorGridLines: const MinorGridLines(width: 0),
@@ -315,9 +335,10 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
 
     final startOfMonth = DateTime(selected.year, selected.month, 1);
     final yesterday = now.subtract(const Duration(days: 1));
-    final endDateToShow = (selected.year == now.year && selected.month == now.month)
-        ? yesterday
-        : DateTime(selected.year, selected.month + 1, 0);
+    final endDateToShow =
+        (selected.year == now.year && selected.month == now.month)
+            ? yesterday
+            : DateTime(selected.year, selected.month + 1, 0);
     print('Selected Date: $selected');
     print('End Date to Show: $endDateToShow');
     DateTime normalizeDate(DateTime dt) => DateTime(dt.year, dt.month, dt.day);
@@ -325,10 +346,12 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
     final normalizedStart = normalizeDate(startOfMonth);
     final normalizedEnd = normalizeDate(endDateToShow);
 
-    final filteredData = data.where((d) {
-      final dateOnly = normalizeDate(d.date);
-      return !dateOnly.isBefore(normalizedStart) && !dateOnly.isAfter(normalizedEnd);
-    }).toList();
+    final filteredData =
+        data.where((d) {
+          final dateOnly = normalizeDate(d.date);
+          return !dateOnly.isBefore(normalizedStart) &&
+              !dateOnly.isAfter(normalizedEnd);
+        }).toList();
 
     print('✅ Filtering from $normalizedStart to $normalizedEnd');
     print('📦 Original data length: ${data.length}');
