@@ -11,13 +11,11 @@ import 'ToolCostDetailScreen.dart';
 import 'package:go_router/go_router.dart';
 
 class ToolCostDetailOverviewScreen extends StatefulWidget {
-  final VoidCallback onToggleTheme;
   final String dept;
   final String month;
 
   const ToolCostDetailOverviewScreen({
     super.key,
-    required this.onToggleTheme,
     required this.dept,
     required this.month,
   });
@@ -91,24 +89,22 @@ class _ToolCostDetailOverviewScreenState
   // Hàm này sẽ được gọi trong `initState` và `didUpdateWidget` để cập nhật ngày từ URL
   void _updateDateFromUrl() {
     final dateProvider = context.read<DateProvider>();
-    final currentPath =
-        GoRouter.of(context).routerDelegate.currentConfiguration;
-    final provider = Provider.of<ToolCostDetailProvider>(
-      context,
-      listen: false,
-    );
+    final currentPath = GoRouter.of(context).routerDelegate.currentConfiguration;
+    final provider = Provider.of<ToolCostDetailProvider>(context, listen: false);
 
-    // Giả sử cấu trúc URL là "/dept?month=2025-04"
     final queryParameters = currentPath.uri.queryParameters;
-    final currentMonth = queryParameters['month']; // Đọc tham số month từ URL
-    // 🆕 Lấy "dept" từ đường dẫn (path)
-    final deptFromUrl =
-        currentPath.uri.pathSegments.isNotEmpty
-            ? currentPath.uri.pathSegments.first
-            : null;
+    final currentMonth = queryParameters['month'];
+
+    // ✅ Sửa ở đây: lấy dept đúng từ pathSegments[1]
+    final pathSegments = currentPath.uri.pathSegments;
+    String? deptFromUrl;
+    if (pathSegments.length >= 2) {
+      deptFromUrl = pathSegments[1];
+    }
+
     if (deptFromUrl != null && deptFromUrl != _currentDept) {
       setState(() {
-        _currentDept = deptFromUrl;
+        _currentDept = deptFromUrl!;
       });
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _fetchData(provider);
@@ -117,22 +113,16 @@ class _ToolCostDetailOverviewScreenState
 
     if (currentMonth != null) {
       final newDate = _parseMonth(currentMonth);
-
-      // Kiểm tra xem month từ URL có khác với month trong DateProvider không
       if (newDate != dateProvider.selectedDate) {
         print("New Date: $newDate");
-        // Chỉ cập nhật DateProvider khi month thay đổi
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          dateProvider.updateDate(
-            newDate,
-          ); // Cập nhật giá trị `selectedDate` sau khi build
-
-          // Gọi lại API sau khi cập nhật DateProvider và đảm bảo UI được render lại
+          dateProvider.updateDate(newDate);
           _fetchData(provider);
         });
       }
     }
   }
+
 
   @override
   void dispose() {
@@ -195,7 +185,7 @@ class _ToolCostDetailOverviewScreenState
           // Cập nhật URL với tháng mới
           final newMonth =
               "${newDate.year}-${newDate.month.toString().padLeft(2, '0')}";
-          final newUrl = '/${widget.dept}?month=$newMonth'; // Tạo URL mới
+          final newUrl = '/by-group/${widget.dept}?month=$newMonth'; // Tạo URL mới
 
           // Điều hướng đến URL mới
           GoRouter.of(context).go(newUrl);

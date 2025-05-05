@@ -12,32 +12,28 @@ import '../Common/NoDataWidget.dart';
 import '../Common/ToolCostPopup.dart';
 import '../Common/ToolCostStatusHelper.dart';
 import '../Model/DetailsDataModel.dart';
+import '../Model/ToolCostByDayModel.dart';
 import '../Model/ToolCostModel.dart';
 import '../Provider/DateProvider.dart';
+import '../Provider/ToolCostByDayProvider.dart';
 import '../Provider/ToolCostSubDetailProvider.dart';
 
-class ToolCostSubDetailScreen extends StatefulWidget {
-  // final ToolCostModel item;
-  // final ToolCostDetailModel detail;
+class ToolCostByDayScreen extends StatefulWidget {
   final String dept;
-  final String group;
   final String month;
 
-  const ToolCostSubDetailScreen({
+  const ToolCostByDayScreen({
     super.key,
-    //required this.item,
-    // required this.detail,
     required this.month,
     required this.dept,
-    required this.group,
   });
 
   @override
-  State<ToolCostSubDetailScreen> createState() =>
-      _ToolCostSubDetailScreenState();
+  State<ToolCostByDayScreen> createState() =>
+      _ToolCostByDayScreenState();
 }
 
-class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
+class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
   int selectedMonth = DateTime.now().month;
   int selectedYear = DateTime.now().year;
   DateTime selectedDate = DateTime(
@@ -47,16 +43,14 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
   );
 
   final numberFormat = NumberFormat("##0.0");
-  late String _currentGroup;
+  late String _currentDept;
 
   @override
   void initState() {
     super.initState();
-
-    _currentGroup = widget.group;
-
+    _currentDept  = widget.dept;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = Provider.of<ToolCostSubDetailProvider>(
+      final provider = Provider.of<ToolCostByDayProvider>(
         context,
         listen: false,
       );
@@ -65,23 +59,16 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
   }
 
   @override
-  void didUpdateWidget(covariant ToolCostSubDetailScreen oldWidget) {
+  void didUpdateWidget(covariant ToolCostByDayScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     _updateDateFromUrl();
   }
-
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   // Lắng nghe thay đổi URL trong `GoRouter`
-  //   _updateDateFromUrl();
-  // }
 
   void _updateDateFromUrl() {
     final currentPath =
         GoRouter.of(context).routerDelegate.currentConfiguration;
 
-    final provider = Provider.of<ToolCostSubDetailProvider>(
+    final provider = Provider.of<ToolCostByDayProvider>(
       context,
       listen: false,
     );
@@ -90,9 +77,9 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
 
     final groupFromUrl = segments.length >= 2 ? segments[1] : null;
 
-    if (groupFromUrl != null && groupFromUrl != _currentGroup) {
+    if (groupFromUrl != null && groupFromUrl != _currentDept) {
       setState(() {
-        _currentGroup = groupFromUrl;
+        _currentDept = groupFromUrl;
       });
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _fetchData(provider);
@@ -101,15 +88,14 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
   }
 
 
-  void _fetchData(ToolCostSubDetailProvider provider) {
+  void _fetchData(ToolCostByDayProvider provider) {
     final dateProvider = context.read<DateProvider>();
     final month =
         "${dateProvider.selectedDate.year}-${dateProvider.selectedDate.month.toString().padLeft(2, '0')}";
     provider.clearData(); // 👈 Reset trước khi fetch
-    provider.fetchToolCostsSubDetail(
+    provider.fetchToolCostsByDay(
       month,
       widget.dept,
-      widget.group,
     );
   }
 
@@ -124,12 +110,12 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
 
     return Scaffold(
       appBar: CustomToolCostAppBar(
-        titleText: '${widget.group} ',
+        titleText: '${widget.dept} ',
         selectedDate: dateProvider.selectedDate,
         onDateChanged: (newDate) async {
           context.read<DateProvider>().updateDate(newDate);
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            final provider = Provider.of<ToolCostSubDetailProvider>(
+            final provider = Provider.of<ToolCostByDayProvider>(
               context,
               listen: false,
             );
@@ -137,11 +123,11 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
           });
         },
         showBackButton: true,
-        onBack: () => context.go('/${widget.dept}'),
+        onBack: () => context.go('/'),
         currentDate:
             provider.lastFetchedDate, // Điều này sẽ được thay bằng Consumer
       ),
-      body: Consumer<ToolCostSubDetailProvider>(
+      body: Consumer<ToolCostByDayProvider>(
         // Bọc phần cần sử dụng provider bằng Consumer
         builder: (context, provider, child) {
           // final status = ToolCostStatusHelper.getStatus(widget.item);
@@ -151,7 +137,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (provider.subDetails.isEmpty) {
+          if (provider.byDayData.isEmpty) {
             return const NoDataWidget(
               title: "No Data Available",
               message: "Please try again with a different time range.",
@@ -175,7 +161,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
-                          'Target vs Actual (by day)',
+                          'Tools Cost by Day',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -212,7 +198,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
                         primaryYAxis: NumericAxis(
                           labelStyle: const TextStyle(fontSize: 18),
                           minimum: 0,
-                          interval: _getInterval(provider.subDetails),
+                          interval: _getInterval(provider.byDayData),
                           majorGridLines: const MajorGridLines(width: 0),
                           minorGridLines: const MinorGridLines(width: 0),
                           title: AxisTitle(
@@ -238,7 +224,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
                             opposedPosition: true,
                             minimum: 0,
                             maximum: _getMaxCumulativeYAxis(
-                              provider.subDetails,
+                              provider.byDayData,
                             ),
                             interval: 1,
                             majorGridLines: const MajorGridLines(width: 0),
@@ -257,7 +243,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
                           canShowMarker: true,
                           textStyle: TextStyle(fontSize: 20),
                         ),
-                        series: _buildStackedSeries(provider.subDetails),
+                        series: _buildStackedSeries(provider.byDayData),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -294,7 +280,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
     );
   }
 
-  int getLastNonZeroIndex(List<ToolCostSubDetailModel> data) {
+  int getLastNonZeroIndex(List<ToolCostByDayModel> data) {
     for (int i = data.length - 1; i >= 0; i--) {
       if (data[i].targetAdjust != 0) {
         return i;
@@ -303,8 +289,8 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
     return -1; // Trường hợp toàn bộ là 0
   }
 
-  List<CartesianSeries<ToolCostSubDetailModel, String>> _buildStackedSeries(
-    List<ToolCostSubDetailModel> data,
+  List<CartesianSeries<ToolCostByDayModel, String>> _buildStackedSeries(
+    List<ToolCostByDayModel> data,
   ) {
     List<double> cumulativeActual = [];
     List<double> cumulativeTarget = [];
@@ -357,8 +343,8 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
 
     final int lastNonZeroIndex = getLastNonZeroIndex(data);
 
-    return <CartesianSeries<ToolCostSubDetailModel, String>>[
-      StackedColumnSeries<ToolCostSubDetailModel, String>(
+    return <CartesianSeries<ToolCostByDayModel, String>>[
+      StackedColumnSeries<ToolCostByDayModel, String>(
         dataSource: data,
         dataLabelMapper:
             (item, _) => item.act == 0 ? null : numberFormat.format(item.act),
@@ -380,73 +366,73 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
           ),
         ),
 
-        onPointTap: (ChartPointDetails details) async {
-          final index = details.pointIndex ?? -1;
-          final item = data[index];
-          // Show loading dialog
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => const Center(child: CircularProgressIndicator()),
-          );
-
-          try {
-            String month = DateFormat('yyyy-MM-dd').format(item.date);
-
-            // Gọi API để lấy dữ liệu
-            List<DetailsDataModel> detailsData = await ApiService()
-                .fetchToolCostsSubSubDetail(
-                  month,
-                  // widget.item.title,
-                  // widget.detail.title,
-                  widget.dept,
-                  widget.group,
-                );
-
-            // Tắt loading
-            Navigator.of(context).pop();
-
-            if (detailsData.isNotEmpty) {
-              // Hiển thị popup dữ liệu
-              showDialog(
-                context: context,
-                builder:
-                    (_) =>
-                        ToolCostPopup(title: 'Details Data', data: detailsData),
-              );
-            } else {
-              // Có thể thêm thông báo nếu không có dữ liệu
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      'No data available',
-                      style: TextStyle(
-                        fontSize: 22.0, // Tăng kích thước font chữ
-                        fontWeight: FontWeight.bold, // Tùy chọn để làm đậm
-                      ),
-                    ),
-                  ),
-                  padding: EdgeInsets.symmetric(vertical: 20.0),
-                  // Thêm khoảng cách trên/dưới
-                  behavior:
-                      SnackBarBehavior
-                          .fixed, // Tùy chọn hiển thị phía trên thay vì ở dưới
-                ),
-              );
-            }
-          } catch (e) {
-            Navigator.of(context).pop(); // Đảm bảo tắt loading nếu lỗi
-            print("Error fetching data: $e");
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text('Error fetching data')));
-          }
-        },
+        // onPointTap: (ChartPointDetails details) async {
+        //   final index = details.pointIndex ?? -1;
+        //   final item = data[index];
+        //   // Show loading dialog
+        //   showDialog(
+        //     context: context,
+        //     barrierDismissible: false,
+        //     builder: (_) => const Center(child: CircularProgressIndicator()),
+        //   );
+        //
+        //   try {
+        //     String month = DateFormat('yyyy-MM-dd').format(item.date);
+        //
+        //     // Gọi API để lấy dữ liệu
+        //     // List<DetailsDataModel> detailsData = await ApiService()
+        //     //     .fetchToolCostsSubSubDetail(
+        //     //       month,
+        //     //       // widget.item.title,
+        //     //       // widget.detail.title,
+        //     //       widget.dept,
+        //     //       widget.group,
+        //     //     );
+        //
+        //     // Tắt loading
+        //     Navigator.of(context).pop();
+        //
+        //     if (detailsData.isNotEmpty) {
+        //       // Hiển thị popup dữ liệu
+        //       showDialog(
+        //         context: context,
+        //         builder:
+        //             (_) =>
+        //                 ToolCostPopup(title: 'Details Data', data: detailsData),
+        //       );
+        //     } else {
+        //       // Có thể thêm thông báo nếu không có dữ liệu
+        //       ScaffoldMessenger.of(context).showSnackBar(
+        //         SnackBar(
+        //           content: Padding(
+        //             padding: const EdgeInsets.all(16.0),
+        //             child: Text(
+        //               'No data available',
+        //               style: TextStyle(
+        //                 fontSize: 22.0, // Tăng kích thước font chữ
+        //                 fontWeight: FontWeight.bold, // Tùy chọn để làm đậm
+        //               ),
+        //             ),
+        //           ),
+        //           padding: EdgeInsets.symmetric(vertical: 20.0),
+        //           // Thêm khoảng cách trên/dưới
+        //           behavior:
+        //               SnackBarBehavior
+        //                   .fixed, // Tùy chọn hiển thị phía trên thay vì ở dưới
+        //         ),
+        //       );
+        //     }
+        //   } catch (e) {
+        //     Navigator.of(context).pop(); // Đảm bảo tắt loading nếu lỗi
+        //     print("Error fetching data: $e");
+        //     ScaffoldMessenger.of(
+        //       context,
+        //     ).showSnackBar(SnackBar(content: Text('Error fetching data')));
+        //   }
+        // },
       ),
 
-      AreaSeries<ToolCostSubDetailModel, String>(
+      AreaSeries<ToolCostByDayModel, String>(
         dataSource: data,
         dataLabelMapper: (item, index) {
           return index == lastNonZeroIndex
@@ -474,7 +460,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
         ),
       ),
 
-      LineSeries<ToolCostSubDetailModel, String>(
+      LineSeries<ToolCostByDayModel, String>(
         dataSource: filteredData,
 
         xValueMapper: (d, index) => DateFormat('dd').format(d.date),
@@ -502,7 +488,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
         },
       ),
 
-      LineSeries<ToolCostSubDetailModel, String>(
+      LineSeries<ToolCostByDayModel, String>(
         dataSource: data,
         xValueMapper: (d, index) => DateFormat('dd').format(d.date),
         yValueMapper: (d, index) => cumulativeTarget[index],
@@ -528,7 +514,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
         },
       ),
 
-      LineSeries<ToolCostSubDetailModel, String>(
+      LineSeries<ToolCostByDayModel, String>(
         dataSource: data,
         xValueMapper: (d, index) => DateFormat('dd').format(d.date),
         yValueMapper: (d, index) => cumulativeTargetDemo[index],
@@ -555,7 +541,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
     ];
   }
 
-  double _getInterval(List<ToolCostSubDetailModel> data) {
+  double _getInterval(List<ToolCostByDayModel> data) {
     if (data.isEmpty) return 1.0;
 
     double maxVal = data
@@ -566,7 +552,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
     return interval < 1.0 ? 1.0 : interval; // tránh interval quá nhỏ
   }
 
-  double _getMaxCumulativeYAxis(List<ToolCostSubDetailModel> data) {
+  double _getMaxCumulativeYAxis(List<ToolCostByDayModel> data) {
     if (data.isEmpty) return 1.0; // fallback nếu không có dữ liệu
 
     double totalActual = 0;

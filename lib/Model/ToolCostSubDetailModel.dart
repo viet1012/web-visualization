@@ -1,6 +1,6 @@
 class ToolCostSubDetailModel {
   final DateTime date;
-  final double targetDemo;
+  final double targetOrg;
   final double targetAdjust;
   final double act;
   final double fcUSD;
@@ -10,7 +10,7 @@ class ToolCostSubDetailModel {
 
   ToolCostSubDetailModel({
     required this.date,
-    required this.targetDemo,
+    required this.targetOrg,
     required this.targetAdjust,
     required this.act,
     required this.fcUSD,
@@ -22,7 +22,7 @@ class ToolCostSubDetailModel {
   factory ToolCostSubDetailModel.fromJson(Map<String, dynamic> json) {
     return ToolCostSubDetailModel(
       date: DateTime.parse(json['date']),
-      targetDemo: (json['fc_ORG'] ?? 0.0)/1000  ,
+      targetOrg: (json['fc_ORG'] ?? 0.0)/1000  ,
       targetAdjust: (json['fc_Adjust'] ?? 0.0)/1000    ,
       act:  (json['act'] ?? 0.0).toDouble()/1000,
       fcUSD: (json['fc_USD'] ?? 0).toDouble(),

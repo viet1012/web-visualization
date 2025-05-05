@@ -5,6 +5,7 @@ import 'package:visualization/Provider/DateProvider.dart';
 
 import 'Dashboard/DashboardScreen.dart';
 import 'Detail/ToolCostDetailOverviewScreen.dart';
+import 'Provider/ToolCostByDayProvider.dart';
 import 'Provider/ToolCostDetailProvider.dart';
 import 'Provider/ToolCostProvider.dart';
 import 'Provider/ToolCostSubDetailProvider.dart';
@@ -21,6 +22,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => ToolCostProvider()),
         ChangeNotifierProvider(create: (_) => ToolCostDetailProvider()),
         ChangeNotifierProvider(create: (_) => ToolCostSubDetailProvider()),
+        ChangeNotifierProvider(create: (_) => ToolCostByDayProvider()),
         ChangeNotifierProvider(create: (_) => DateProvider()),
       ],
       child: DashboardApp(),

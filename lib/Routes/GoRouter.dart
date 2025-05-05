@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../ByDay/ToolCostByDayScreen.dart';
 import '../Common/NotFoundScreen.dart';
 import '../Dashboard/DashboardScreen.dart';
 import '../Detail/ToolCostDetailOverviewScreen.dart';
@@ -43,9 +44,25 @@ GoRouter createRouter(VoidCallback onToggleTheme) {
             (context, state) => DashboardScreen(onToggleTheme: onToggleTheme),
       ),
       GoRoute(
-        path: '/:dept',
+        path: '/by-day/:dept',
         builder: (context, state) {
-          final dept = state.pathParameters['dept'] ?? 'Mold';
+          final dept = state.pathParameters['dept'] ?? 'MOLD';
+          final extra = state.extra as Map<String, dynamic>?;
+          final month = extra?['month'] ?? _getCurrentMonth();
+
+          if (!validDepts.contains(dept)) {
+            return const NotFoundScreen();
+          }
+          return ToolCostByDayScreen(
+            dept: dept,
+            month: month,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/by-group/:dept',
+        builder: (context, state) {
+          final dept = state.pathParameters['dept'] ?? 'MOLD';
           final monthString = state.uri.queryParameters['month'];
           final month = monthString ?? _getCurrentMonth(); // Gọn gàng
 
@@ -53,7 +70,6 @@ GoRouter createRouter(VoidCallback onToggleTheme) {
             return const NotFoundScreen();
           }
           return ToolCostDetailOverviewScreen(
-            onToggleTheme: () {},
             dept: dept,
             month: month,
           );
@@ -79,6 +95,7 @@ GoRouter createRouter(VoidCallback onToggleTheme) {
           );
         },
       ),
+
     ],
     errorBuilder: (context, state) => const NotFoundScreen(),
   );

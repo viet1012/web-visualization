@@ -99,44 +99,87 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
               if (index != -1) {
                 final item = widget.data[index];
 
-                // Hiển thị dialog loading
-                showDialog(
+                await showDialog(
                   context: context,
-                  barrierDismissible: false,
-                  builder:
-                      (_) => const Center(child: CircularProgressIndicator()),
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text('View information'),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Tuỳ chọn 1
+                          ListTile(
+                            leading: const Icon(Icons.info, color: Colors.blue),
+                            title: Text(
+                              '${item.title} by Group',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            onTap: () {
+                              Navigator.of(context).pop();
+                              // Xử lý khi chọn ô này (VD: mở chi tiết)
+                              context.go(
+                                '/by-group/${item.title.toUpperCase()}?month=${widget.month}',
+                              );
+                            },
+                          ),
+                          const Divider(),
+                          // Tuỳ chọn 2
+                          ListTile(
+                            leading: const Icon(Icons.info, color: Colors.blue),
+                            title: Text(
+                              '${item.title} by Day',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            onTap: () {
+                              Navigator.of(context).pop();
+                              // Xử lý khi chọn ô này (VD: mở chi tiết)
+                              context.go(
+                                '/by-day/${item.title.toUpperCase()}',
+                                extra: {
+                                  'month': widget.month,
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 );
-
-                try {
-                  // final detailData = await apiService.fetchToolCostsDetail(
-                  //   widget.month,
-                  //   item.title,
-                  // );
-                  // Provider.of<ToolCostProvider>(
-                  //   context,
-                  //   listen: false,
-                  // ).setSelectedItem(item);
-                  //
-                  // setState(() {
-                  //   selectedIndex = index;
-                  // });
-
-                  // Tắt dialog loading
-                  Navigator.of(context).pop();
-
-                  print('Navigating to /${item.title}/${widget.month}');
-                  context.go('/${item.title}?month=${widget.month}');
-
-                  // redirectToPage(item.title);
-                } catch (e) {
-                  // Nếu có lỗi, tắt dialog và show error
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Lỗi khi load dữ liệu: $e")),
-                  );
-                }
               }
             },
+
+            // onAxisLabelTapped: (AxisLabelTapArgs args) async {
+            //   final index = widget.data.indexWhere((e) => e.title == args.text);
+            //   if (index != -1) {
+            //     final item = widget.data[index];
+            //
+            //     // Hiển thị dialog loading
+            //     showDialog(
+            //       context: context,
+            //       barrierDismissible: false,
+            //       builder:
+            //           (_) => const Center(child: CircularProgressIndicator()),
+            //     );
+            //
+            //     try {
+            //
+            //       // Tắt dialog loading
+            //       Navigator.of(context).pop();
+            //
+            //       print('Navigating to /${item.title}/${widget.month}');
+            //       context.go('/${item.title}?month=${widget.month}');
+            //
+            //       // redirectToPage(item.title);
+            //     } catch (e) {
+            //       // Nếu có lỗi, tắt dialog và show error
+            //       Navigator.of(context).pop();
+            //       ScaffoldMessenger.of(context).showSnackBar(
+            //         SnackBar(content: Text("Lỗi khi load dữ liệu: $e")),
+            //       );
+            //     }
+            //   }
+            // },
             tooltipBehavior: TooltipBehavior(
               enable: true,
               header: '',
