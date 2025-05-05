@@ -324,40 +324,36 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
     }
 
     final now = DateTime.now();
-    final dateProvider =
-        context.read<DateProvider>(); // 👈 lấy DateProvider ở đây
-    // Xác định ngày bắt đầu của tháng
-    DateTime startOfMonth;
-    if (selectedDate.year == now.year && selectedDate.month == now.month) {
-      // Nếu là tháng hiện tại, lấy ngày 1 của tháng hiện tại
-      startOfMonth = DateTime(now.year, now.month, 1);
-    } else {
-      // Nếu không phải tháng hiện tại, lấy ngày 1 của tháng đã chọn
-      startOfMonth = DateTime(
-        dateProvider.selectedDate.year,
-        dateProvider.selectedDate.month,
-        1,
-      );
-    }
+    final dateProvider = context.read<DateProvider>();
+    final selected = dateProvider.selectedDate;
 
-    // Xác định ngày hôm qua (không cộng thêm ngày)
+    final startOfMonth = DateTime(selected.year, selected.month, 1);
     final yesterday = now.subtract(const Duration(days: 1));
+    final endDateToShow = (selected.year == now.year && selected.month == now.month)
+        ? yesterday
+        : DateTime(selected.year, selected.month + 1, 0);
+    print('Selected Date: $selected');
+    print('End Date to Show: $endDateToShow');
+    DateTime normalizeDate(DateTime dt) => DateTime(dt.year, dt.month, dt.day);
 
-    // Lọc dữ liệu: từ startOfMonth đến ngày hôm qua
-    final filteredData =
-        data
-            .where(
-              (d) =>
-                  d.date.isAfter(
-                    startOfMonth.subtract(const Duration(days: 1)),
-                  ) &&
-                  d.date.isBefore(yesterday),
-            ) // Không cộng thêm 1 ngày
-            .toList();
+    final normalizedStart = normalizeDate(startOfMonth);
+    final normalizedEnd = normalizeDate(endDateToShow);
 
-    // Cập nhật cumulativeActual theo filteredData
-    final filteredCumulativeActual =
-        cumulativeActual.take(filteredData.length).toList();
+    final filteredData = data.where((d) {
+      final dateOnly = normalizeDate(d.date);
+      return !dateOnly.isBefore(normalizedStart) && !dateOnly.isAfter(normalizedEnd);
+    }).toList();
+
+    print('✅ Filtering from $normalizedStart to $normalizedEnd');
+    print('📦 Original data length: ${data.length}');
+    print('✅ Filtered data length: ${filteredData.length}');
+
+    final List<double> filteredCumulativeActual = [];
+    double cumulative = 0;
+    for (var item in filteredData) {
+      cumulative += item.act;
+      filteredCumulativeActual.add(cumulative);
+    }
 
     final int lastNonZeroIndex = getLastNonZeroIndex(data);
 
