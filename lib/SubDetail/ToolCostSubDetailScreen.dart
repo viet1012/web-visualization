@@ -479,7 +479,6 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
 
       LineSeries<ToolCostSubDetailModel, String>(
         dataSource: filteredData,
-
         xValueMapper: (d, index) => DateFormat('dd').format(d.date),
         yValueMapper: (d, index) => filteredCumulativeActual[index],
         yAxisName: 'CumulativeAxis',
@@ -516,7 +515,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
         markerSettings: const MarkerSettings(isVisible: true),
         dataLabelSettings: const DataLabelSettings(
           isVisible: true,
-          labelAlignment: ChartDataLabelAlignment.bottom,
+          labelAlignment: ChartDataLabelAlignment.auto,
           textStyle: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.orange,
@@ -541,6 +540,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
         width: 4,
         markerSettings: const MarkerSettings(isVisible: true),
         dataLabelSettings: const DataLabelSettings(
+          labelAlignment: ChartDataLabelAlignment.auto,
           isVisible: true,
           textStyle: TextStyle(
             fontWeight: FontWeight.bold,

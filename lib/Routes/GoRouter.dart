@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
 import '../ByDay/ToolCostByDayScreen.dart';
 import '../Common/NotFoundScreen.dart';
 import '../Dashboard/DashboardScreen.dart';
 import '../Detail/ToolCostDetailOverviewScreen.dart';
-import '../Model/ToolCostDetailModel.dart';
-import '../Model/ToolCostModel.dart';
 import '../SubDetail/ToolCostSubDetailScreen.dart';
 
 // ✅ Danh sách các phòng ban hợp lệ
@@ -49,7 +46,6 @@ GoRouter createRouter(VoidCallback onToggleTheme) {
           final dept = state.pathParameters['dept'] ?? 'MOLD';
           final monthString = state.uri.queryParameters['month'];
           final month = monthString ?? _getCurrentMonth(); // Gọn gàng
-
 
           if (!validDepts.contains(dept)) {
             return const NotFoundScreen();

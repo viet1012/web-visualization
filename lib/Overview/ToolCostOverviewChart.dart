@@ -104,10 +104,11 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                       title: const Text('View information'),
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Tuỳ chọn 1
                           ListTile(
-                            leading: const Icon(Icons.info, color: Colors.blue),
+                            leading: const Icon(Icons.grid_view, color: Colors.blue,),
                             title: Text(
                               '${item.title} by Group',
                               style: TextStyle(fontSize: 20),
@@ -123,7 +124,7 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                           const Divider(),
                           // Tuỳ chọn 2
                           ListTile(
-                            leading: const Icon(Icons.info, color: Colors.blue),
+                            leading: const Icon(Icons.calendar_today, color: Colors.blue, ),
                             title: Text(
                               '${item.title} by Day',
                               style: TextStyle(fontSize: 20),

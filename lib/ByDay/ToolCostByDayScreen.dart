@@ -183,7 +183,7 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
-                          'Tools Cost by Day',
+                          'Tools Cost By Day',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -389,70 +389,67 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
           ),
         ),
 
-        // onPointTap: (ChartPointDetails details) async {
-        //   final index = details.pointIndex ?? -1;
-        //   final item = data[index];
-        //   // Show loading dialog
-        //   showDialog(
-        //     context: context,
-        //     barrierDismissible: false,
-        //     builder: (_) => const Center(child: CircularProgressIndicator()),
-        //   );
-        //
-        //   try {
-        //     String month = DateFormat('yyyy-MM-dd').format(item.date);
-        //
-        //     // Gọi API để lấy dữ liệu
-        //     // List<DetailsDataModel> detailsData = await ApiService()
-        //     //     .fetchToolCostsSubSubDetail(
-        //     //       month,
-        //     //       // widget.item.title,
-        //     //       // widget.detail.title,
-        //     //       widget.dept,
-        //     //       widget.group,
-        //     //     );
-        //
-        //     // Tắt loading
-        //     Navigator.of(context).pop();
-        //
-        //     if (detailsData.isNotEmpty) {
-        //       // Hiển thị popup dữ liệu
-        //       showDialog(
-        //         context: context,
-        //         builder:
-        //             (_) =>
-        //                 ToolCostPopup(title: 'Details Data', data: detailsData),
-        //       );
-        //     } else {
-        //       // Có thể thêm thông báo nếu không có dữ liệu
-        //       ScaffoldMessenger.of(context).showSnackBar(
-        //         SnackBar(
-        //           content: Padding(
-        //             padding: const EdgeInsets.all(16.0),
-        //             child: Text(
-        //               'No data available',
-        //               style: TextStyle(
-        //                 fontSize: 22.0, // Tăng kích thước font chữ
-        //                 fontWeight: FontWeight.bold, // Tùy chọn để làm đậm
-        //               ),
-        //             ),
-        //           ),
-        //           padding: EdgeInsets.symmetric(vertical: 20.0),
-        //           // Thêm khoảng cách trên/dưới
-        //           behavior:
-        //               SnackBarBehavior
-        //                   .fixed, // Tùy chọn hiển thị phía trên thay vì ở dưới
-        //         ),
-        //       );
-        //     }
-        //   } catch (e) {
-        //     Navigator.of(context).pop(); // Đảm bảo tắt loading nếu lỗi
-        //     print("Error fetching data: $e");
-        //     ScaffoldMessenger.of(
-        //       context,
-        //     ).showSnackBar(SnackBar(content: Text('Error fetching data')));
-        //   }
-        // },
+        onPointTap: (ChartPointDetails details) async {
+          final index = details.pointIndex ?? -1;
+          final item = data[index];
+          // Show loading dialog
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (_) => const Center(child: CircularProgressIndicator()),
+          );
+
+          try {
+            String month = DateFormat('yyyy-MM-dd').format(item.date);
+
+            // Gọi API để lấy dữ liệu
+            List<DetailsDataModel> detailsData = await ApiService()
+                .fetchDetailsDataOfDay(
+                  month,
+                  widget.dept
+                );
+
+            // Tắt loading
+            Navigator.of(context).pop();
+
+            if (detailsData.isNotEmpty) {
+              // Hiển thị popup dữ liệu
+              showDialog(
+                context: context,
+                builder:
+                    (_) =>
+                        ToolCostPopup(title: 'Details Data', data: detailsData),
+              );
+            } else {
+              // Có thể thêm thông báo nếu không có dữ liệu
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      'No data available',
+                      style: TextStyle(
+                        fontSize: 22.0, // Tăng kích thước font chữ
+                        fontWeight: FontWeight.bold, // Tùy chọn để làm đậm
+                      ),
+                    ),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 20.0),
+                  // Thêm khoảng cách trên/dưới
+                  behavior:
+                      SnackBarBehavior
+                          .fixed, // Tùy chọn hiển thị phía trên thay vì ở dưới
+                ),
+              );
+            }
+          } catch (e) {
+            Navigator.of(context).pop(); // Đảm bảo tắt loading nếu lỗi
+            print("Error fetching data: $e");
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Error fetching data')));
+          }
+        },
       ),
 
       AreaSeries<ToolCostByDayModel, String>(
@@ -495,7 +492,7 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
         enableTooltip: true,
         markerSettings: const MarkerSettings(isVisible: true),
         dataLabelSettings: const DataLabelSettings(
-          labelAlignment: ChartDataLabelAlignment.auto,
+          labelAlignment: ChartDataLabelAlignment.bottom,
           isVisible: true,
           textStyle: TextStyle(
             fontWeight: FontWeight.bold,
@@ -507,32 +504,6 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
         dataLabelMapper: (d, index) {
           return index == filteredCumulativeActual.length - 1
               ? filteredCumulativeActual[index].toStringAsFixed(1)
-              : '';
-        },
-      ),
-
-      LineSeries<ToolCostByDayModel, String>(
-        dataSource: data,
-        xValueMapper: (d, index) => DateFormat('dd').format(d.date),
-        yValueMapper: (d, index) => cumulativeTarget[index],
-        yAxisName: 'CumulativeAxis',
-        name: 'Cumulative Target',
-        color: Colors.orange,
-        width: 4,
-        markerSettings: const MarkerSettings(isVisible: true),
-        dataLabelSettings: const DataLabelSettings(
-          isVisible: true,
-          labelAlignment: ChartDataLabelAlignment.bottom,
-          textStyle: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.orange,
-            fontSize: 18,
-          ),
-        ),
-        dashArray: [0, 0],
-        dataLabelMapper: (d, index) {
-          return index == data.length - 1
-              ? cumulativeTarget[index].toStringAsFixed(1)
               : '';
         },
       ),
@@ -561,6 +532,34 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
               : '';
         },
       ),
+
+      LineSeries<ToolCostByDayModel, String>(
+        dataSource: data,
+        xValueMapper: (d, index) => DateFormat('dd').format(d.date),
+        yValueMapper: (d, index) => cumulativeTarget[index],
+        yAxisName: 'CumulativeAxis',
+        name: 'Cumulative Target',
+        color: Colors.orange,
+        width: 4,
+        markerSettings: const MarkerSettings(isVisible: true),
+        dataLabelSettings: const DataLabelSettings(
+          isVisible: true,
+          labelAlignment: ChartDataLabelAlignment.bottom,
+          textStyle: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.orange,
+          ),
+        ),
+        dashArray: [0, 0],
+        dataLabelMapper: (d, index) {
+          return index == data.length - 1
+              ? cumulativeTarget[index].toStringAsFixed(1)
+              : '';
+        },
+      ),
+
+
     ];
   }
 

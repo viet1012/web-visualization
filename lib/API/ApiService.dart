@@ -7,8 +7,8 @@ import '../Model/ToolCostModel.dart';
 import '../Model/ToolCostSubDetailModel.dart';
 
 class ApiService {
-  final String baseUrl = "http://F2PC24017:8080/api";
-  // final String baseUrl = "http://192.168.122.15:9091/api";
+  // final String baseUrl = "http://F2PC24017:8080/api";
+  final String baseUrl = "http://192.168.122.15:9091/api";
 
   Future<ToolCostModel?> fetchToolCostsByDept(String month, String dept) async {
     final url = Uri.parse("$baseUrl/tool-cost/by-dept?month=$month&dept=$dept");
@@ -211,6 +211,28 @@ class ApiService {
         return data
             .map((json) => ToolCostByDayModel.fromJson(json))
             .toList();
+      } else {
+        throw Exception('Failed to load data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("Exception caught: $e");
+      return [];
+    }
+  }
+
+  Future<List<DetailsDataModel>> fetchDetailsDataOfDay(
+      String month,
+      String deptInput,
+      ) async {
+    final url = Uri.parse("$baseUrl/by-day/details-data?month=$month&dept=$deptInput");
+    print("url: $url");
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body);
+        return data.map((json) => DetailsDataModel.fromJson(json)).toList();
       } else {
         throw Exception('Failed to load data: ${response.statusCode}');
       }
