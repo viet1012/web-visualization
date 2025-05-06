@@ -3,17 +3,12 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:visualization/Model/ToolCostDetailModel.dart';
-import 'package:visualization/Model/ToolCostSubDetailModel.dart';
 import '../API/ApiService.dart';
-import '../Common/CustomAppBar.dart';
 import '../Common/CustomToolCostAppBar.dart';
 import '../Common/NoDataWidget.dart';
 import '../Common/ToolCostPopup.dart';
-import '../Common/ToolCostStatusHelper.dart';
 import '../Model/DetailsDataModel.dart';
 import '../Model/ToolCostByDayModel.dart';
-import '../Model/ToolCostModel.dart';
 import '../Provider/DateProvider.dart';
 import '../Provider/ToolCostByDayProvider.dart';
 import '../Provider/ToolCostSubDetailProvider.dart';
@@ -65,7 +60,8 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
 
   void _updateDateFromUrl() {
     final dateProvider = context.read<DateProvider>();
-    final currentPath = GoRouter.of(context).routerDelegate.currentConfiguration;
+    final currentPath =
+        GoRouter.of(context).routerDelegate.currentConfiguration;
     final provider = Provider.of<ToolCostByDayProvider>(context, listen: false);
 
     final queryParameters = currentPath.uri.queryParameters;
@@ -154,7 +150,6 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
       body: Consumer<ToolCostByDayProvider>(
         // Bọc phần cần sử dụng provider bằng Consumer
         builder: (context, provider, child) {
-
           if (provider.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -313,20 +308,22 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
     List<ToolCostByDayModel> data,
   ) {
     List<double> cumulativeActual = [];
-    List<double> cumulativeTarget = [];
-    List<double> cumulativeTargetDemo = [];
+    List<double> cumulativeFC_Adjust = [];
+    List<double> cumulativeFC_Org = [];
 
     double totalActual = 0;
-    double totalTarget = 0;
-    double totalTargetDemo = 0;
+    double totalFC_Adjust = 0;
+    double totalFC_Org = 0;
 
     for (var item in data) {
       totalActual += item.act;
-      totalTarget += item.targetAdjust;
-      totalTargetDemo += item.targetOrg;
+      totalFC_Org += item.targetOrg;
+      // totalFC_Adjust += item.targetAdjust;
+      totalFC_Adjust = totalFC_Org * (1 + item.divAdj);
+
       cumulativeActual.add(totalActual);
-      cumulativeTarget.add(totalTarget);
-      cumulativeTargetDemo.add(totalTargetDemo);
+      cumulativeFC_Adjust.add(totalFC_Adjust);
+      cumulativeFC_Org.add(totalFC_Org);
     }
 
     final now = DateTime.now();
@@ -404,10 +401,7 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
 
             // Gọi API để lấy dữ liệu
             List<DetailsDataModel> detailsData = await ApiService()
-                .fetchDetailsDataOfDay(
-                  month,
-                  widget.dept
-                );
+                .fetchDetailsDataOfDay(month, widget.dept);
 
             // Tắt loading
             Navigator.of(context).pop();
@@ -417,8 +411,11 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
               showDialog(
                 context: context,
                 builder:
-                    (_) =>
-                        ToolCostPopup(title: 'Details Data', data: detailsData),
+                    (_) => ToolCostPopup(
+                      title: 'Details Data',
+                      data: detailsData,
+                      totalActual: item.act,
+                    ),
               );
             } else {
               // Có thể thêm thông báo nếu không có dữ liệu
@@ -492,7 +489,9 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
         enableTooltip: true,
         markerSettings: const MarkerSettings(isVisible: true),
         dataLabelSettings: const DataLabelSettings(
-          labelAlignment: ChartDataLabelAlignment.bottom,
+          labelAlignment: ChartDataLabelAlignment.auto,
+          overflowMode: OverflowMode.shift,
+
           isVisible: true,
           textStyle: TextStyle(
             fontWeight: FontWeight.bold,
@@ -511,40 +510,16 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
       LineSeries<ToolCostByDayModel, String>(
         dataSource: data,
         xValueMapper: (d, index) => DateFormat('dd').format(d.date),
-        yValueMapper: (d, index) => cumulativeTargetDemo[index],
-        yAxisName: 'CumulativeAxis',
-        name: 'Cumulative Target Demo',
-        color: Colors.grey,
-        width: 4,
-        markerSettings: const MarkerSettings(isVisible: true),
-        dataLabelSettings: const DataLabelSettings(
-          isVisible: true,
-          textStyle: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
-            fontSize: 18,
-          ),
-        ),
-        dashArray: [0, 0],
-        dataLabelMapper: (d, index) {
-          return index == data.length - 1
-              ? cumulativeTargetDemo[index].toStringAsFixed(1)
-              : '';
-        },
-      ),
-
-      LineSeries<ToolCostByDayModel, String>(
-        dataSource: data,
-        xValueMapper: (d, index) => DateFormat('dd').format(d.date),
-        yValueMapper: (d, index) => cumulativeTarget[index],
+        yValueMapper: (d, index) => cumulativeFC_Adjust[index],
         yAxisName: 'CumulativeAxis',
         name: 'Cumulative Target',
         color: Colors.orange,
         width: 4,
         markerSettings: const MarkerSettings(isVisible: true),
         dataLabelSettings: const DataLabelSettings(
+          overflowMode: OverflowMode.shift,
           isVisible: true,
-          labelAlignment: ChartDataLabelAlignment.bottom,
+          labelAlignment: ChartDataLabelAlignment.auto,
           textStyle: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -554,12 +529,37 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
         dashArray: [0, 0],
         dataLabelMapper: (d, index) {
           return index == data.length - 1
-              ? cumulativeTarget[index].toStringAsFixed(1)
+              ? cumulativeFC_Adjust[index].toStringAsFixed(1)
               : '';
         },
       ),
 
-
+      LineSeries<ToolCostByDayModel, String>(
+        dataSource: data,
+        xValueMapper: (d, index) => DateFormat('dd').format(d.date),
+        yValueMapper: (d, index) => cumulativeFC_Org[index],
+        yAxisName: 'CumulativeAxis',
+        name: 'Cumulative Target Demo',
+        color: Colors.grey,
+        width: 4,
+        markerSettings: const MarkerSettings(isVisible: true),
+        dataLabelSettings: const DataLabelSettings(
+          isVisible: true,
+          labelAlignment: ChartDataLabelAlignment.auto,
+          overflowMode: OverflowMode.shift,
+          textStyle: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+            fontSize: 18,
+          ),
+        ),
+        dashArray: [0, 0],
+        dataLabelMapper: (d, index) {
+          return index == data.length - 1
+              ? cumulativeFC_Org[index].toStringAsFixed(1)
+              : '';
+        },
+      ),
     ];
   }
 

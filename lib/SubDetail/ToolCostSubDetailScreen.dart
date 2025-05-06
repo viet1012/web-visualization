@@ -415,7 +415,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
                 context: context,
                 builder:
                     (_) =>
-                        ToolCostPopup(title: 'Details Data', data: detailsData),
+                        ToolCostPopup(title: 'Details Data', data: detailsData, totalActual: item.act,),
               );
             } else {
               // Có thể thêm thông báo nếu không có dữ liệu

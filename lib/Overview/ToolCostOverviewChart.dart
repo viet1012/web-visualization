@@ -40,7 +40,6 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
         SizedBox(
           // height: MediaQuery.of(context).size.height * .38,
           height: MediaQuery.of(context).size.height * .85,
-
           child: SfCartesianChart(
             plotAreaBorderColor: Colors.black45,
             primaryXAxis: CategoryAxis(
@@ -51,26 +50,15 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                 fontWeight: FontWeight.bold,
               ),
               axisLabelFormatter: (AxisLabelRenderDetails details) {
-                final index = int.tryParse(details.text);
-                if (index != null && index < widget.data.length) {
-                  final isSelected = selectedIndex == index;
-                  return ChartAxisLabel(
-                    widget.data[index].title,
-                    TextStyle(
-                      color: isSelected ? Colors.blueAccent : Colors.black,
-                      fontWeight:
-                          isSelected ? FontWeight.bold : FontWeight.w500,
-                      decoration:
-                          isSelected
-                              ? TextDecoration.underline
-                              : TextDecoration.none,
-                      fontSize: isSelected ? 16 : 14,
-                    ),
-                  );
-                }
                 return ChartAxisLabel(
                   details.text,
-                  TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.underline,
+                    decorationThickness: 3,
+
+                  ),
                 );
               },
             ),
@@ -108,7 +96,10 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                         children: [
                           // Tuỳ chọn 1
                           ListTile(
-                            leading: const Icon(Icons.grid_view, color: Colors.blue,),
+                            leading: const Icon(
+                              Icons.grid_view,
+                              color: Colors.blue,
+                            ),
                             title: Text(
                               '${item.title} by Group',
                               style: TextStyle(fontSize: 20),
@@ -124,7 +115,10 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                           const Divider(),
                           // Tuỳ chọn 2
                           ListTile(
-                            leading: const Icon(Icons.calendar_today, color: Colors.blue, ),
+                            leading: const Icon(
+                              Icons.calendar_today,
+                              color: Colors.blue,
+                            ),
                             title: Text(
                               '${item.title} by Day',
                               style: TextStyle(fontSize: 20),
@@ -353,7 +347,7 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                 context: context,
                 builder:
                     (_) =>
-                        ToolCostPopup(title: 'Details Data', data: detailsData),
+                        ToolCostPopup(title: 'Details Data', data: detailsData, totalActual: item.actual,),
               );
             } else {
               // Có thể thêm thông báo nếu không có dữ liệu
@@ -440,7 +434,6 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                     ? item.adjustMinusOrg
                     : 0,
         name: 'Thiếu ORG',
-
         color: Colors.grey,
         borderWidth: 4,
         width: 0.5,

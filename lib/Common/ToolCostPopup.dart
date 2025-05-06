@@ -7,9 +7,14 @@ import '../Model/DetailsDataModel.dart';
 class ToolCostPopup extends StatefulWidget {
   final String title;
   final List<DetailsDataModel> data;
+  final double totalActual;
 
-  ToolCostPopup({Key? key, required this.title, required this.data})
-    : super(key: key);
+  ToolCostPopup({
+    Key? key,
+    required this.title,
+    required this.data,
+    required this.totalActual,
+  }) : super(key: key);
 
   @override
   State<ToolCostPopup> createState() => _ToolCostPopupState();
@@ -20,12 +25,15 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
 
   final TextEditingController _filterController = TextEditingController();
   late List<DetailsDataModel> filteredData;
+  double costLoss = 0;
 
   @override
   void initState() {
     super.initState();
     filteredData = widget.data;
     _filterController.addListener(_applyFilterForInputField);
+
+    costLoss = filteredData.fold<double>(0, (sum, item) => (sum + item.amount));
   }
 
   void _applyFilterForInputField() {
@@ -130,6 +138,11 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
             ),
             Row(
               children: [
+                Text(
+                  "Share: ${((widget.totalActual) - (costLoss / 1000)).toStringAsFixed(2)}K\$",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                SizedBox(width: 16),
                 Text(
                   "Total: ${(totalAmount / 1000).toStringAsFixed(2)}K\$",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),

@@ -7,9 +7,11 @@ class ToolCostByDayProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();
 
   List<ToolCostByDayModel> _byDayData = [];
+
   List<ToolCostByDayModel> get byDayData => _byDayData;
 
   bool _isLoading = false;
+
   bool get isLoading => _isLoading;
 
   String? _lastLoadedMonth;
@@ -18,11 +20,10 @@ class ToolCostByDayProvider with ChangeNotifier {
   Timer? _dailyTimer;
 
   final DateTime _lastFetchedDate = DateTime.now();
+
   DateTime get lastFetchedDate => _lastFetchedDate;
 
-
-  Future<void> fetchToolCostsByDay(
-      String month, String deptInput) async {
+  Future<void> fetchToolCostsByDay(String month, String deptInput) async {
     final now = DateTime.now();
 
     if (_lastLoadedDate != null &&
@@ -37,7 +38,10 @@ class ToolCostByDayProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final subDetailResult = await _apiService.fetchToolCostsByDay(month, deptInput);
+    final subDetailResult = await _apiService.fetchToolCostsByDay(
+      month,
+      deptInput,
+    );
     _byDayData = subDetailResult;
 
     _lastLoadedDate = now;
