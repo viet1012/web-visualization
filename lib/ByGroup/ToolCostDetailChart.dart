@@ -5,13 +5,10 @@ import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../API/ApiService.dart';
-import '../Common/NoDataWidget.dart';
 import '../Common/ToolCostPopup.dart';
-import '../Context/ToolCostContext.dart';
 import '../Model/DetailsDataModel.dart';
 import '../Model/ToolCostDetailModel.dart';
 import '../Model/ToolCostModel.dart';
-import '../SubDetail/ToolCostSubDetailScreen.dart';
 
 class ToolCostDetailChart extends StatefulWidget {
   final ToolCostModel toolCost;
@@ -41,7 +38,7 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
     return Column(
       children: [
         SizedBox(
-          height: MediaQuery.of(context).size.height * .66,
+          height: MediaQuery.of(context).size.height * .63,
           child: SfCartesianChart(
             primaryXAxis: CategoryAxis(
               majorGridLines: const MajorGridLines(width: 0),
@@ -237,8 +234,12 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
               showDialog(
                 context: context,
                 builder:
-                    (_) =>
-                        ToolCostPopup(title: 'Details Data', data: detailsData, totalActual: item.actual),
+                    (_) => ToolCostPopup(
+                      title: 'Details Data',
+                      data: detailsData,
+                      totalActual: item.actual,
+                      group: widget.dept,
+                    ),
               );
             } else {
               // Có thể thêm thông báo nếu không có dữ liệu

@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import '../Common/AnimatedShadowCard.dart';
-import '../Common/CustomAppBar.dart';
-import '../Common/DateDisplayWidget.dart';
-import '../Common/TimeInfoCard.dart';
 import '../Common/ToolCostStatusHelper.dart';
-import '../Context/ToolCostContext.dart';
 import '../Model/ToolCostDetailModel.dart';
 import 'ToolCostDetailMiniBarChart.dart';
 import '../Model/ToolCostModel.dart';
@@ -78,7 +73,7 @@ class _ToolCostDetailScreenState extends State<ToolCostDetailScreen> {
                                 children: [
                                   Text(
                                     'Exceeded by ',
-                                    style:  TextStyle(
+                                    style: TextStyle(
                                       color: Colors.red.withOpacity(0.6),
                                       fontStyle: FontStyle.italic,
                                       fontSize: 20,
@@ -86,7 +81,7 @@ class _ToolCostDetailScreenState extends State<ToolCostDetailScreen> {
                                   ),
                                   Text(
                                     '${NumberFormat("#,##0.0").format(widget.toolCostModel.actual - widget.toolCostModel.target_Adjust)}K\$',
-                                    style:  TextStyle(
+                                    style: TextStyle(
                                       color: Colors.red.withOpacity(0.8),
                                       fontStyle: FontStyle.italic,
                                       fontSize: 20,

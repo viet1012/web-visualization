@@ -3,16 +3,13 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:visualization/Model/ToolCostDetailModel.dart';
 import 'package:visualization/Model/ToolCostSubDetailModel.dart';
+
 import '../API/ApiService.dart';
-import '../Common/CustomAppBar.dart';
 import '../Common/CustomToolCostAppBar.dart';
 import '../Common/NoDataWidget.dart';
 import '../Common/ToolCostPopup.dart';
-import '../Common/ToolCostStatusHelper.dart';
 import '../Model/DetailsDataModel.dart';
-import '../Model/ToolCostModel.dart';
 import '../Provider/DateProvider.dart';
 import '../Provider/ToolCostSubDetailProvider.dart';
 
@@ -100,17 +97,12 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
     }
   }
 
-
   void _fetchData(ToolCostSubDetailProvider provider) {
     final dateProvider = context.read<DateProvider>();
     final month =
         "${dateProvider.selectedDate.year}-${dateProvider.selectedDate.month.toString().padLeft(2, '0')}";
     provider.clearData(); // 👈 Reset trước khi fetch
-    provider.fetchToolCostsSubDetail(
-      month,
-      widget.dept,
-      widget.group,
-    );
+    provider.fetchToolCostsSubDetail(month, widget.dept, widget.group);
   }
 
   @override
@@ -122,7 +114,9 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
     final dateProvider =
         context.watch<DateProvider>(); // 👈 lấy ngày từ Provider
 
-    final formattedMonth = DateFormat('yyyy-MM').format(dateProvider.selectedDate);
+    final formattedMonth = DateFormat(
+      'yyyy-MM',
+    ).format(dateProvider.selectedDate);
 
     return Scaffold(
       appBar: CustomToolCostAppBar(
@@ -139,7 +133,8 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
           });
         },
         showBackButton: true,
-        onBack: () => context.go('/by-group/${widget.dept}?month=$formattedMonth'),
+        onBack:
+            () => context.go('/by-group/${widget.dept}?month=$formattedMonth'),
 
         currentDate:
             provider.lastFetchedDate, // Điều này sẽ được thay bằng Consumer
@@ -332,9 +327,10 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
 
     final startOfMonth = DateTime(selected.year, selected.month, 1);
     final yesterday = now.subtract(const Duration(days: 1));
-    final endDateToShow = (selected.year == now.year && selected.month == now.month)
-        ? yesterday
-        : DateTime(selected.year, selected.month + 1, 0);
+    final endDateToShow =
+        (selected.year == now.year && selected.month == now.month)
+            ? yesterday
+            : DateTime(selected.year, selected.month + 1, 0);
     print('Selected Date: $selected');
     print('End Date to Show: $endDateToShow');
     DateTime normalizeDate(DateTime dt) => DateTime(dt.year, dt.month, dt.day);
@@ -342,10 +338,12 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
     final normalizedStart = normalizeDate(startOfMonth);
     final normalizedEnd = normalizeDate(endDateToShow);
 
-    final filteredData = data.where((d) {
-      final dateOnly = normalizeDate(d.date);
-      return !dateOnly.isBefore(normalizedStart) && !dateOnly.isAfter(normalizedEnd);
-    }).toList();
+    final filteredData =
+        data.where((d) {
+          final dateOnly = normalizeDate(d.date);
+          return !dateOnly.isBefore(normalizedStart) &&
+              !dateOnly.isAfter(normalizedEnd);
+        }).toList();
 
     print('✅ Filtering from $normalizedStart to $normalizedEnd');
     print('📦 Original data length: ${data.length}');
@@ -414,8 +412,12 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
               showDialog(
                 context: context,
                 builder:
-                    (_) =>
-                        ToolCostPopup(title: 'Details Data', data: detailsData, totalActual: item.act,),
+                    (_) => ToolCostPopup(
+                      title: 'Details Data',
+                      data: detailsData,
+                      totalActual: item.act,
+                      group: widget.group,
+                    ),
               );
             } else {
               // Có thể thêm thông báo nếu không có dữ liệu
@@ -478,28 +480,27 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
       ),
 
       LineSeries<ToolCostSubDetailModel, String>(
-        dataSource: filteredData,
+        dataSource: data,
         xValueMapper: (d, index) => DateFormat('dd').format(d.date),
-        yValueMapper: (d, index) => filteredCumulativeActual[index],
+        yValueMapper: (d, index) => cumulativeTargetDemo[index],
         yAxisName: 'CumulativeAxis',
-        name: 'Cumulative Actual',
-        color: Colors.blue,
+        name: 'Cumulative Target Demo',
+        color: Colors.grey,
         width: 4,
-        enableTooltip: true,
         markerSettings: const MarkerSettings(isVisible: true),
         dataLabelSettings: const DataLabelSettings(
           labelAlignment: ChartDataLabelAlignment.auto,
           isVisible: true,
           textStyle: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.blue,
+            color: Colors.grey,
             fontSize: 18,
           ),
         ),
         dashArray: [0, 0],
         dataLabelMapper: (d, index) {
-          return index == filteredCumulativeActual.length - 1
-              ? filteredCumulativeActual[index].toStringAsFixed(1)
+          return index == data.length - 1
+              ? cumulativeTargetDemo[index].toStringAsFixed(1)
               : '';
         },
       ),
@@ -531,27 +532,28 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
       ),
 
       LineSeries<ToolCostSubDetailModel, String>(
-        dataSource: data,
+        dataSource: filteredData,
         xValueMapper: (d, index) => DateFormat('dd').format(d.date),
-        yValueMapper: (d, index) => cumulativeTargetDemo[index],
+        yValueMapper: (d, index) => filteredCumulativeActual[index],
         yAxisName: 'CumulativeAxis',
-        name: 'Cumulative Target Demo',
-        color: Colors.grey,
+        name: 'Cumulative Actual',
+        color: Colors.blue,
         width: 4,
+        enableTooltip: true,
         markerSettings: const MarkerSettings(isVisible: true),
         dataLabelSettings: const DataLabelSettings(
           labelAlignment: ChartDataLabelAlignment.auto,
           isVisible: true,
           textStyle: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.grey,
+            color: Colors.blue,
             fontSize: 18,
           ),
         ),
         dashArray: [0, 0],
         dataLabelMapper: (d, index) {
-          return index == data.length - 1
-              ? cumulativeTargetDemo[index].toStringAsFixed(1)
+          return index == filteredCumulativeActual.length - 1
+              ? filteredCumulativeActual[index].toStringAsFixed(1)
               : '';
         },
       ),

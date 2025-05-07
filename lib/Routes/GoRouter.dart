@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../ByDay/ToolCostByDayScreen.dart';
+import '../ByGroup/ToolCostDetailOverviewScreen.dart';
 import '../Common/NotFoundScreen.dart';
 import '../Dashboard/DashboardScreen.dart';
-import '../Detail/ToolCostDetailOverviewScreen.dart';
 import '../SubDetail/ToolCostSubDetailScreen.dart';
 
 // ✅ Danh sách các phòng ban hợp lệ
@@ -50,10 +50,7 @@ GoRouter createRouter(VoidCallback onToggleTheme) {
           if (!validDepts.contains(dept)) {
             return const NotFoundScreen();
           }
-          return ToolCostByDayScreen(
-            dept: dept,
-            month: month,
-          );
+          return ToolCostByDayScreen(dept: dept, month: month);
         },
       ),
       GoRoute(
@@ -66,10 +63,7 @@ GoRouter createRouter(VoidCallback onToggleTheme) {
           if (!validDepts.contains(dept)) {
             return const NotFoundScreen();
           }
-          return ToolCostDetailOverviewScreen(
-            dept: dept,
-            month: month,
-          );
+          return ToolCostDetailOverviewScreen(dept: dept, month: month);
         },
       ),
       GoRoute(
@@ -92,7 +86,6 @@ GoRouter createRouter(VoidCallback onToggleTheme) {
           );
         },
       ),
-
     ],
     errorBuilder: (context, state) => const NotFoundScreen(),
   );

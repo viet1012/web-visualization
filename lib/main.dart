@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:visualization/Provider/DateProvider.dart';
 
-import 'Dashboard/DashboardScreen.dart';
-import 'Detail/ToolCostDetailOverviewScreen.dart';
 import 'Provider/ToolCostByDayProvider.dart';
 import 'Provider/ToolCostDetailProvider.dart';
 import 'Provider/ToolCostProvider.dart';
@@ -12,8 +9,8 @@ import 'Provider/ToolCostSubDetailProvider.dart';
 import 'Routes/GoRouter.dart';
 
 /// ✅ Khai báo global: có thể dùng ở mọi nơi
-final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
-
+final RouteObserver<ModalRoute<void>> routeObserver =
+    RouteObserver<ModalRoute<void>>();
 
 void main() {
   runApp(
@@ -40,7 +37,6 @@ class DashboardApp extends StatefulWidget {
 class _DashboardAppState extends State<DashboardApp> {
   bool isDarkMode = true; // 🔥 Mặc định bật chế độ tối
 
-
   void _toggleTheme() {
     setState(() {
       isDarkMode = !isDarkMode;
@@ -51,7 +47,8 @@ class _DashboardAppState extends State<DashboardApp> {
   Widget build(BuildContext context) {
     final router = createRouter(_toggleTheme); // Tạo router mới với chế độ tối
     return MaterialApp.router(
-      routerConfig: router, // Cấu hình router cho MaterialApp
+      routerConfig: router,
+      // Cấu hình router cho MaterialApp
       title: 'Cost Monitoring Web',
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark().copyWith(
@@ -62,9 +59,7 @@ class _DashboardAppState extends State<DashboardApp> {
           foregroundColor: Colors.white,
           elevation: 0,
         ),
-        textTheme: ThemeData.dark().textTheme.apply(
-          bodyColor: Colors.white,
-        ),
+        textTheme: ThemeData.dark().textTheme.apply(bodyColor: Colors.white),
       ),
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
       debugShowCheckedModeBanner: false,

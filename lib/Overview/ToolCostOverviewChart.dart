@@ -1,14 +1,14 @@
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:visualization/API/ApiService.dart';
+
 import '../Common/ToolCostPopup.dart';
 import '../Common/ToolCostStatusHelper.dart';
 import '../Model/DetailsDataModel.dart';
 import '../Model/ToolCostModel.dart';
-import 'dart:html' as html;
-import 'package:dotted_border/dotted_border.dart';
 
 class ToolCostOverviewChart extends StatefulWidget {
   final List<ToolCostModel> data;
@@ -39,7 +39,7 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
         ),
         SizedBox(
           // height: MediaQuery.of(context).size.height * .38,
-          height: MediaQuery.of(context).size.height * .85,
+          height: MediaQuery.of(context).size.height * .8,
           child: SfCartesianChart(
             plotAreaBorderColor: Colors.black45,
             primaryXAxis: CategoryAxis(
@@ -57,7 +57,6 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                     fontWeight: FontWeight.bold,
                     decoration: TextDecoration.underline,
                     decorationThickness: 3,
-
                   ),
                 );
               },
@@ -89,43 +88,66 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                   context: context,
                   builder: (context) {
                     return AlertDialog(
-                      title: const Text('View information'),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      title: const Text(
+                        'View Information',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Tuỳ chọn 1
                           ListTile(
-                            leading: const Icon(
-                              Icons.grid_view,
-                              color: Colors.blue,
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.blue.shade50,
+                              child: const Icon(
+                                Icons.grid_view,
+                                color: Colors.blue,
+                              ),
                             ),
                             title: Text(
                               '${item.title} by Group',
-                              style: TextStyle(fontSize: 20),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            subtitle: const Text(
+                              'View data summarized by group',
                             ),
                             onTap: () {
                               Navigator.of(context).pop();
-                              // Xử lý khi chọn ô này (VD: mở chi tiết)
                               context.go(
                                 '/by-group/${item.title.toUpperCase()}?month=${widget.month}',
                               );
                             },
                           ),
                           const Divider(),
-                          // Tuỳ chọn 2
                           ListTile(
-                            leading: const Icon(
-                              Icons.calendar_today,
-                              color: Colors.blue,
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.blue.shade50,
+                              child: const Icon(
+                                Icons.calendar_today,
+                                color: Colors.blue,
+                              ),
                             ),
                             title: Text(
                               '${item.title} by Day',
-                              style: TextStyle(fontSize: 20),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            subtitle: const Text(
+                              'View daily breakdown of data',
                             ),
                             onTap: () {
                               Navigator.of(context).pop();
-                              // Xử lý khi chọn ô này (VD: mở chi tiết)
                               context.go(
                                 '/by-day/${item.title.toUpperCase()}?month=${widget.month}',
                               );
@@ -346,8 +368,12 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
               showDialog(
                 context: context,
                 builder:
-                    (_) =>
-                        ToolCostPopup(title: 'Details Data', data: detailsData, totalActual: item.actual,),
+                    (_) => ToolCostPopup(
+                      title: 'Details Data',
+                      data: detailsData,
+                      totalActual: item.title == "PE" ? 0 : item.actual,
+                      group: item.title,
+                    ),
               );
             } else {
               // Có thể thêm thông báo nếu không có dữ liệu
@@ -459,42 +485,6 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
     // Tránh chia ra 0
     final interval = (maxVal / 5).ceilToDouble();
     return interval > 0 ? interval : 1;
-  }
-
-  List<CartesianSeries<ToolCostModel, String>> _buildSeries1(
-    List<ToolCostModel> data,
-  ) {
-    return <CartesianSeries<ToolCostModel, String>>[
-      StackedColumnSeries<ToolCostModel, String>(
-        dataSource: data,
-        xValueMapper: (item, _) => item.title,
-        yValueMapper: (item, _) => item.actual,
-        dataLabelMapper: (item, _) => numberFormat.format(item.actual),
-        pointColorMapper:
-            (item, _) =>
-                item.actual > item.target_ORG ? Colors.red : Colors.green,
-        name: 'Actual',
-        dataLabelSettings: const DataLabelSettings(
-          isVisible: true,
-          textStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-        ),
-      ),
-      StackedColumnSeries<ToolCostModel, String>(
-        dataSource: data,
-        xValueMapper: (item, _) => item.title,
-        // Target - Actual để hiển thị phần còn thiếu trong cột
-        yValueMapper:
-            (item, _) =>
-                (item.target_ORG - item.actual).clamp(0, double.infinity),
-        dataLabelMapper: (item, _) => numberFormat.format(item.target_ORG),
-        name: 'Remaining to Target',
-        color: Colors.grey,
-        dataLabelSettings: const DataLabelSettings(
-          isVisible: true,
-          textStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-        ),
-      ),
-    ];
   }
 
   Widget _buildLegend() {

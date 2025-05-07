@@ -1,19 +1,23 @@
+import 'dart:typed_data';
+
 import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:universal_html/html.dart' as html;
-import 'dart:typed_data';
+
 import '../Model/DetailsDataModel.dart';
 
 class ToolCostPopup extends StatefulWidget {
   final String title;
   final List<DetailsDataModel> data;
   final double totalActual;
+  final String group;
 
   ToolCostPopup({
     Key? key,
     required this.title,
     required this.data,
     required this.totalActual,
+    required this.group,
   }) : super(key: key);
 
   @override
@@ -118,6 +122,13 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
       (sum, item) => (sum + item.amount),
     );
 
+    double diff = widget.totalActual - (costLoss / 1000);
+
+    // Nếu độ lệch nhỏ hơn 0.01 thì coi như bằng 0
+    if (diff.abs() < 0.01) {
+      diff = 0;
+    }
+
     return Column(
       children: [
         Row(
@@ -138,13 +149,18 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
             ),
             Row(
               children: [
-                Text(
-                  "Share: ${((widget.totalActual) - (costLoss / 1000)).toStringAsFixed(2)}K\$",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
+                widget.group != "PE"
+                    ? Text(
+                      "Share: ${diff.toStringAsFixed(1)}K\$",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    )
+                    : SizedBox(),
                 SizedBox(width: 16),
                 Text(
-                  "Total: ${(totalAmount / 1000).toStringAsFixed(2)}K\$",
+                  "Total: ${(totalAmount / 1000).toStringAsFixed(1)}K\$",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 SizedBox(width: 16),
@@ -405,7 +421,7 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
                   ),
                   _buildTableCell('Qty', isHeader: true),
                   _buildTableCell('Unit', isHeader: true),
-                  _buildTableCell('Amount', isHeader: true),
+                  _buildTableCell('Amount \$', isHeader: true),
                 ],
               ),
             ],
