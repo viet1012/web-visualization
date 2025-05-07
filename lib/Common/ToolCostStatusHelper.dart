@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:visualization/Model/ToolCostDetailModel.dart';
-import '../Model/ToolCostModel.dart'; // hoặc ToolCostDetailModel nếu bạn dùng model đó
+
+import '../Model/ToolCostModel.dart';
 
 class ToolCostStatusHelper {
   static String getStatus(ToolCostModel item) {
@@ -8,7 +8,6 @@ class ToolCostStatusHelper {
     if (item.actual < item.target_Adjust) return 'Under Target';
     return 'Target Achieved';
   }
-
 
   static Color getStatusColor(String status) {
     switch (status) {

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import '../Common/AnimatedShadowCard.dart';
+import '../Common/DesignedByText.dart';
 import '../Common/ToolCostStatusHelper.dart';
 import '../Model/ToolCostDetailModel.dart';
-import 'ToolCostDetailMiniBarChart.dart';
 import '../Model/ToolCostModel.dart';
 import 'ToolCostDetailChart.dart';
+import 'ToolCostDetailMiniBarChart.dart';
 
 class ToolCostDetailScreen extends StatefulWidget {
   final ToolCostModel toolCostModel;
@@ -119,6 +121,8 @@ class _ToolCostDetailScreenState extends State<ToolCostDetailScreen> {
             dept: widget.toolCostModel.title,
             month: widget.month,
           ),
+          const SizedBox(height: 16),
+          const DesignedByText(),
         ],
       ),
     );

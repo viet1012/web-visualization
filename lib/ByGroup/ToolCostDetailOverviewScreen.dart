@@ -1,14 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
 import '../Common/CustomToolCostAppBar.dart';
 import '../Common/NoDataWidget.dart';
 import '../Provider/DateProvider.dart';
 import '../Provider/ToolCostDetailProvider.dart';
 import 'ToolCostDetailScreen.dart';
-import 'package:go_router/go_router.dart';
 
 class ToolCostDetailOverviewScreen extends StatefulWidget {
   final String dept;
@@ -89,8 +90,12 @@ class _ToolCostDetailOverviewScreenState
   // Hàm này sẽ được gọi trong `initState` và `didUpdateWidget` để cập nhật ngày từ URL
   void _updateDateFromUrl() {
     final dateProvider = context.read<DateProvider>();
-    final currentPath = GoRouter.of(context).routerDelegate.currentConfiguration;
-    final provider = Provider.of<ToolCostDetailProvider>(context, listen: false);
+    final currentPath =
+        GoRouter.of(context).routerDelegate.currentConfiguration;
+    final provider = Provider.of<ToolCostDetailProvider>(
+      context,
+      listen: false,
+    );
 
     final queryParameters = currentPath.uri.queryParameters;
     final currentMonth = queryParameters['month'];
@@ -122,7 +127,6 @@ class _ToolCostDetailOverviewScreenState
       }
     }
   }
-
 
   @override
   void dispose() {
@@ -185,7 +189,8 @@ class _ToolCostDetailOverviewScreenState
           // Cập nhật URL với tháng mới
           final newMonth =
               "${newDate.year}-${newDate.month.toString().padLeft(2, '0')}";
-          final newUrl = '/by-group/${widget.dept}?month=$newMonth'; // Tạo URL mới
+          final newUrl =
+              '/by-group/${widget.dept}?month=$newMonth'; // Tạo URL mới
 
           // Điều hướng đến URL mới
           GoRouter.of(context).go(newUrl);

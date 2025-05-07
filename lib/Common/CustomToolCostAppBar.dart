@@ -6,7 +6,8 @@ import '../Common/DateDisplayWidget.dart';
 import '../Common/MonthYearDropdown.dart';
 import '../Common/TimeInfoCard.dart';
 
-class CustomToolCostAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomToolCostAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
   final String titleText;
   final DateTime selectedDate;
   final Function(DateTime) onDateChanged;
@@ -31,12 +32,13 @@ class CustomToolCostAppBar extends StatelessWidget implements PreferredSizeWidge
     final dayFormat = DateFormat('d/MMM/yyyy');
     return AppBar(
       elevation: 4,
-      leading: showBackButton
-          ? IconButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: onBack,
-      )
-          : null,
+      leading:
+          showBackButton
+              ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: onBack,
+              )
+              : null,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -59,7 +61,9 @@ class CustomToolCostAppBar extends StatelessWidget implements PreferredSizeWidge
           ),
           TimeInfoCard(
             finalTime: dayFormat.format(currentDate),
-            nextTime: dayFormat.format(currentDate.add(const Duration(days: 1))),
+            nextTime: dayFormat.format(
+              currentDate.add(const Duration(days: 1)),
+            ),
           ),
         ],
       ),

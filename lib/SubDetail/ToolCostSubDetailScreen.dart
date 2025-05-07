@@ -7,6 +7,7 @@ import 'package:visualization/Model/ToolCostSubDetailModel.dart';
 
 import '../API/ApiService.dart';
 import '../Common/CustomToolCostAppBar.dart';
+import '../Common/DesignedByText.dart';
 import '../Common/NoDataWidget.dart';
 import '../Common/ToolCostPopup.dart';
 import '../Model/DetailsDataModel.dart';
@@ -282,6 +283,8 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
                         ],
                       ),
                     ),
+                    const SizedBox(height: 16),
+                    const DesignedByText(),
                   ],
                 ),
               ),
