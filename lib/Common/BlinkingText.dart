@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class BlinkingText extends StatefulWidget {
   final String text;
+
   const BlinkingText({super.key, required this.text});
 
   @override
@@ -25,8 +26,8 @@ class _BlinkingTextState extends State<BlinkingText>
     _opacityAnim = Tween(begin: 1.0, end: 0.4).animate(_controller);
 
     _colorAnim = ColorTween(
-      begin: Colors.blue.shade600,
-      end: Colors.orange,
+      begin: Colors.blueAccent,
+      end: Colors.blue.shade700,
     ).animate(_controller);
   }
 
@@ -40,17 +41,18 @@ class _BlinkingTextState extends State<BlinkingText>
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _controller,
-      builder: (context, child) => Opacity(
-        opacity: _opacityAnim.value,
-        child: Text(
-          widget.text,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: _colorAnim.value,
+      builder:
+          (context, child) => Opacity(
+            opacity: _opacityAnim.value,
+            child: Text(
+              widget.text,
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+                color: _colorAnim.value,
+              ),
+            ),
           ),
-        ),
-      ),
     );
   }
 }

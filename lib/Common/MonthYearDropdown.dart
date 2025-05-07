@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 class MonthYearDropdown extends StatelessWidget {
   final DateTime selectedDate;
   final Function(DateTime) onDateChanged;
@@ -15,7 +16,7 @@ class MonthYearDropdown extends StatelessWidget {
     final now = DateTime.now();
     final List<DateTime> options = List.generate(
       12,
-          (index) => DateTime(now.year, now.month - index, 1),
+      (index) => DateTime(now.year, now.month - index, 1),
     );
 
     return Container(
@@ -34,11 +35,12 @@ class MonthYearDropdown extends StatelessWidget {
             fontWeight: FontWeight.w600,
             color: Colors.blueAccent,
           ),
-          dropdownColor: Colors.white,
-          items: options.map((date) {
-            final label = DateFormat('MMM yyyy').format(date);
-            return DropdownMenuItem(value: date, child: Text(label));
-          }).toList(),
+          // dropdownColor: Colors.black,
+          items:
+              options.map((date) {
+                final label = DateFormat('MMM yyyy').format(date);
+                return DropdownMenuItem(value: date, child: Text(label));
+              }).toList(),
           onChanged: (value) {
             if (value != null) {
               onDateChanged(value);

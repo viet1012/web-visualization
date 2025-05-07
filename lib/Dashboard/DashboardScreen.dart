@@ -55,7 +55,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               // Hàng 1: Tổng quan
               SizedBox(
-                height: MediaQuery.of(context).size.height * .93,
+                height: MediaQuery.of(context).size.height * .95,
                 // height: MediaQuery.of(context).size.height /2 -20,
                 width: MediaQuery.of(context).size.width,
                 child: Card(
@@ -71,7 +71,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
               ),
-          
+
               // SizedBox(
               //   width: MediaQuery.of(context).size.width / 2 - 24,
               //   child: AspectRatio(

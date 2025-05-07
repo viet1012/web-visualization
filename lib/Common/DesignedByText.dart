@@ -11,7 +11,11 @@ class DesignedByText extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 16),
         child: Text(
           "Designed by IT PRO",
-          style: TextStyle(color: Colors.grey.withOpacity(0.3), fontSize: 14),
+          style: TextStyle(
+            color: Colors.grey.withOpacity(0.4),
+            fontSize: 14,
+            fontStyle: FontStyle.italic,
+          ),
         ),
       ),
     );
