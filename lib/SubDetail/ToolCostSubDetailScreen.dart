@@ -555,7 +555,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
         ),
         dashArray: [0, 0],
         dataLabelMapper: (d, index) {
-          return index == filteredCumulativeActual.length - 1
+          return index == filteredData.length - 1
               ? filteredCumulativeActual[index].toStringAsFixed(1)
               : '';
         },

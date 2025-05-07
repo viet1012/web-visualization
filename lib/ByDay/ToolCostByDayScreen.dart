@@ -528,7 +528,6 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
           }
         },
       ),
-
       AreaSeries<ToolCostByDayModel, String>(
         dataSource: data,
         dataLabelMapper: (item, index) {
@@ -556,6 +555,7 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
           ),
         ),
       ),
+
       LineSeries<ToolCostByDayModel, String>(
         dataSource: data,
         xValueMapper: (d, index) => DateFormat('dd').format(d.date),
@@ -610,7 +610,6 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
       ),
       LineSeries<ToolCostByDayModel, String>(
         dataSource: filteredData,
-
         xValueMapper: (d, index) => DateFormat('dd').format(d.date),
         yValueMapper: (d, index) => localFilteredCumulativeActual[index],
         yAxisName: 'CumulativeAxis',
@@ -620,9 +619,8 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
         enableTooltip: true,
         markerSettings: const MarkerSettings(isVisible: true),
         dataLabelSettings: const DataLabelSettings(
-          labelAlignment: ChartDataLabelAlignment.auto,
           overflowMode: OverflowMode.shift,
-
+          labelAlignment: ChartDataLabelAlignment.auto,
           isVisible: true,
           textStyle: TextStyle(
             fontWeight: FontWeight.bold,
@@ -632,7 +630,7 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
         ),
         dashArray: [0, 0],
         dataLabelMapper: (d, index) {
-          return index == localFilteredCumulativeActual.length - 1
+          return index == filteredData.length - 1
               ? localFilteredCumulativeActual[index].toStringAsFixed(1)
               : '';
         },
