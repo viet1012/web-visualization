@@ -206,6 +206,46 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                 final item = data as ToolCostModel;
                 final status = ToolCostStatusHelper.getStatus(item);
                 final statusColor = ToolCostStatusHelper.getStatusColor(status);
+                if (series.name == 'Actual') {
+                  final percent =
+                      item.target_Adjust > 0
+                          ? (item.actual / item.target_Adjust) * 100
+                          : 0;
+
+                  return Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: statusColor,
+                      borderRadius: const BorderRadius.all(Radius.circular(8)),
+                      border: Border.all(width: 2),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Actual: ${numberFormat.format(item.actual)}',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Text(
+                          'Rate: ${percent.toStringAsFixed(1)}%',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          '👇 Click the bar to see details',
+                          style: TextStyle(fontSize: 14, color: Colors.white70),
+                        ),
+                      ],
+                    ),
+                  );
+                }
 
                 if (series.name == 'Thừa ORG') {
                   // 👉 Nếu là series "TGT_Adjust" thì custom
@@ -229,24 +269,7 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                     ),
                   );
                 }
-                if (series.name == 'Actual') {
-                  // 👉 Nếu là series "TGT_Adjust" thì custom
-                  return Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: statusColor,
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                      border: Border.all(
-                        width: 2, // Độ dày của border
-                      ),
-                    ),
-                    child: Text(
-                      'Actual: ${numberFormat.format(item.actual)}',
-                      // 👈 hiện target_ORG
-                      style: const TextStyle(fontSize: 20, color: Colors.white),
-                    ),
-                  );
-                }
+
                 if (series.name == 'Thiếu ORG') {
                   // 👉 Nếu là series "TGT_Adjust" thì custom
                   return Container(

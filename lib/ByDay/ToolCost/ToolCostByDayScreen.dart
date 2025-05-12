@@ -326,7 +326,7 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
                         series: stackedSeries,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 8),
                     Center(
                       child: Wrap(
                         spacing: 16,
@@ -350,7 +350,7 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 8),
                     const DesignedByText(),
                   ],
                 ),

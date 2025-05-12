@@ -337,179 +337,184 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
   }
 
   Widget _buildDataTable(BuildContext context, ThemeData theme) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Column(
-        children: [
-          // Sticky Header (dòng tiêu đề)
-          Table(
-            border: TableBorder.all(color: theme.dividerColor.withOpacity(0.8)),
-            columnWidths: {
-              0: FixedColumnWidth(130),
-              1: FixedColumnWidth(150),
-              2: FixedColumnWidth(500),
-              3: FixedColumnWidth(150),
-              4: FixedColumnWidth(220),
-              5: FixedColumnWidth(220),
-              6: FixedColumnWidth(100),
-              7: FixedColumnWidth(100),
-              8: FixedColumnWidth(120),
-              9: FixedColumnWidth(140),
-            },
-            children: [
-              TableRow(
-                children: [
-                  _buildDropdownHeader(
-                    title: 'Dept',
-                    selectedValue: selectedDept,
-                    values: _getUniqueValues((e) => e.dept),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedDept = value;
-                        _applyFilter();
-                      });
-                    },
-                  ),
-                  _buildDropdownHeader(
-                    title: 'Material No',
-                    selectedValue: selectedMatnr,
-                    values: _getUniqueValues((e) => e.matnr),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedMatnr = value;
-                        _applyFilter();
-                      });
-                    },
-                  ),
-                  _buildDropdownHeader(
-                    title: 'Description',
-                    selectedValue: selectedMaktx,
-                    values: _getUniqueValues((e) => e.maktx),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedMaktx = value;
-                        _applyFilter();
-                      });
-                    },
-                  ),
-                  _buildDropdownHeader(
-                    title: 'Used Date',
-                    selectedValue: selectedUsedDate,
-                    values: _getUniqueValues((e) => e.useDate),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedUsedDate = value;
-                        _applyFilter();
-                      });
-                    },
-                  ),
-                  _buildDropdownHeader(
-                    title: 'Doc Number',
-                    selectedValue: selectedXblnr2,
-                    values: _getUniqueValues((e) => e.xblnr2),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedXblnr2 = value;
-                        _applyFilter();
-                      });
-                    },
-                  ),
-                  _buildDropdownHeader(
-                    title: 'BKTXT',
-                    selectedValue: selectedBktxt,
-                    values: _getUniqueValues((e) => e.bktxt),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedBktxt = value;
-                        _applyFilter();
-                      });
-                    },
-                  ),
-                  _buildTableCell('Qty', isHeader: true),
-                  _buildDropdownHeader(
-                    title: 'Unit',
-                    selectedValue: selectedUnit,
-                    values: _getUniqueValues((e) => e.unit),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedUnit = value;
-                        _applyFilter();
-                      });
-                    },
-                  ),
-                  _buildTableCell('Amount \$', isHeader: true),
-                  _buildDropdownHeader(
-                    title: 'Note',
-                    selectedValue: selectedNote,
-                    values: _getUniqueValues((e) => e.note),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedNote = value;
-                        _applyFilter();
-                      });
-                    },
-                  ),
-                ],
+    return Scrollbar(
+      controller: _scrollController,
+      thumbVisibility: true,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Column(
+          children: [
+            // Sticky Header (dòng tiêu đề)
+            Table(
+              border: TableBorder.all(
+                color: theme.dividerColor.withOpacity(0.8),
               ),
-            ],
-          ),
-          // Scrollable content
-          Expanded(
-            child: Scrollbar(
-              controller: _scrollController,
-              thumbVisibility: true,
-              thickness: 10,
-              radius: const Radius.circular(5),
-              child: SingleChildScrollView(
+              columnWidths: {
+                0: FixedColumnWidth(130),
+                1: FixedColumnWidth(150),
+                2: FixedColumnWidth(500),
+                3: FixedColumnWidth(150),
+                4: FixedColumnWidth(220),
+                5: FixedColumnWidth(220),
+                6: FixedColumnWidth(100),
+                7: FixedColumnWidth(100),
+                8: FixedColumnWidth(120),
+                9: FixedColumnWidth(140),
+              },
+              children: [
+                TableRow(
+                  children: [
+                    _buildDropdownHeader(
+                      title: 'Dept',
+                      selectedValue: selectedDept,
+                      values: _getUniqueValues((e) => e.dept),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedDept = value;
+                          _applyFilter();
+                        });
+                      },
+                    ),
+                    _buildDropdownHeader(
+                      title: 'Material No',
+                      selectedValue: selectedMatnr,
+                      values: _getUniqueValues((e) => e.matnr),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedMatnr = value;
+                          _applyFilter();
+                        });
+                      },
+                    ),
+                    _buildDropdownHeader(
+                      title: 'Description',
+                      selectedValue: selectedMaktx,
+                      values: _getUniqueValues((e) => e.maktx),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedMaktx = value;
+                          _applyFilter();
+                        });
+                      },
+                    ),
+                    _buildDropdownHeader(
+                      title: 'Used Date',
+                      selectedValue: selectedUsedDate,
+                      values: _getUniqueValues((e) => e.useDate),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedUsedDate = value;
+                          _applyFilter();
+                        });
+                      },
+                    ),
+                    _buildDropdownHeader(
+                      title: 'Doc Number',
+                      selectedValue: selectedXblnr2,
+                      values: _getUniqueValues((e) => e.xblnr2),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedXblnr2 = value;
+                          _applyFilter();
+                        });
+                      },
+                    ),
+                    _buildDropdownHeader(
+                      title: 'BKTXT',
+                      selectedValue: selectedBktxt,
+                      values: _getUniqueValues((e) => e.bktxt),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedBktxt = value;
+                          _applyFilter();
+                        });
+                      },
+                    ),
+                    _buildTableCell('Qty', isHeader: true),
+                    _buildDropdownHeader(
+                      title: 'Unit',
+                      selectedValue: selectedUnit,
+                      values: _getUniqueValues((e) => e.unit),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedUnit = value;
+                          _applyFilter();
+                        });
+                      },
+                    ),
+                    _buildTableCell('Amount \$', isHeader: true),
+                    _buildDropdownHeader(
+                      title: 'Note',
+                      selectedValue: selectedNote,
+                      values: _getUniqueValues((e) => e.note),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedNote = value;
+                          _applyFilter();
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            // Scrollable content
+            Expanded(
+              child: Scrollbar(
                 controller: _scrollController,
-                scrollDirection: Axis.vertical,
+                thumbVisibility: true,
+                thickness: 10,
+                radius: const Radius.circular(5),
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  child: Table(
-                    border: TableBorder.all(
-                      color: theme.dividerColor.withOpacity(0.8),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Table(
+                      border: TableBorder.all(
+                        color: theme.dividerColor.withOpacity(0.8),
+                      ),
+                      columnWidths: {
+                        0: FixedColumnWidth(130),
+                        1: FixedColumnWidth(150),
+                        2: FixedColumnWidth(500),
+                        3: FixedColumnWidth(150),
+                        4: FixedColumnWidth(220),
+                        5: FixedColumnWidth(220),
+                        6: FixedColumnWidth(100),
+                        7: FixedColumnWidth(100),
+                        8: FixedColumnWidth(120),
+                        9: FixedColumnWidth(140),
+                      },
+                      children:
+                          filteredData.map((item) {
+                            return TableRow(
+                              children: [
+                                _buildTableCell(item.dept),
+                                _buildTableCell(item.matnr),
+                                _buildTableCell(item.maktx),
+                                _buildTableCell(item.useDate),
+                                _buildTableCell(item.xblnr2),
+                                _buildTableCell(item.bktxt),
+                                _buildTableCell(
+                                  item.qty.toString(),
+                                  isNumber: true,
+                                ),
+                                _buildTableCell(item.unit),
+                                _buildTableCell(
+                                  item.amount.toStringAsFixed(2),
+                                  isNumber: true,
+                                ),
+                                _buildTableCell(item.note),
+                              ],
+                            );
+                          }).toList(),
                     ),
-                    columnWidths: {
-                      0: FixedColumnWidth(130),
-                      1: FixedColumnWidth(150),
-                      2: FixedColumnWidth(500),
-                      3: FixedColumnWidth(150),
-                      4: FixedColumnWidth(220),
-                      5: FixedColumnWidth(220),
-                      6: FixedColumnWidth(100),
-                      7: FixedColumnWidth(100),
-                      8: FixedColumnWidth(120),
-                      9: FixedColumnWidth(140),
-                    },
-                    children:
-                        filteredData.map((item) {
-                          return TableRow(
-                            children: [
-                              _buildTableCell(item.dept),
-                              _buildTableCell(item.matnr),
-                              _buildTableCell(item.maktx),
-                              _buildTableCell(item.useDate),
-                              _buildTableCell(item.xblnr2),
-                              _buildTableCell(item.bktxt),
-                              _buildTableCell(
-                                item.qty.toString(),
-                                isNumber: true,
-                              ),
-                              _buildTableCell(item.unit),
-                              _buildTableCell(
-                                item.amount.toStringAsFixed(2),
-                                isNumber: true,
-                              ),
-                              _buildTableCell(item.note),
-                            ],
-                          );
-                        }).toList(),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

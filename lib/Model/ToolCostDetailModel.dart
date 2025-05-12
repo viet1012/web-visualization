@@ -2,7 +2,6 @@ class ToolCostDetailModel {
   final String title;
   final double target_ORG;
   final double target_Adjust;
-
   final double actual;
 
   ToolCostDetailModel({

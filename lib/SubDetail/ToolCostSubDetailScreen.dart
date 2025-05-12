@@ -317,7 +317,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
                         series: stackedSeries,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 8),
                     Center(
                       child: Wrap(
                         spacing: 16,
@@ -341,7 +341,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 8),
                     const DesignedByText(),
                   ],
                 ),

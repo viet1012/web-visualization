@@ -121,7 +121,7 @@ class _ToolCostDetailScreenState extends State<ToolCostDetailScreen> {
             dept: widget.toolCostModel.title,
             month: widget.month,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
           const DesignedByText(),
         ],
       ),
