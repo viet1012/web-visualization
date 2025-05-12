@@ -53,7 +53,8 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
                 item.useDate.toLowerCase().contains(query) ||
                 item.unit.toLowerCase().contains(query) ||
                 item.qty.toString().toLowerCase().contains(query) ||
-                item.amount.toString().toLowerCase().contains(query);
+                item.amount.toString().toLowerCase().contains(query) ||
+                item.note.toLowerCase().contains(query);
           }).toList();
     });
   }
@@ -80,8 +81,8 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
       backgroundColor: theme.colorScheme.surface,
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.9,
-          maxHeight: MediaQuery.of(context).size.height * 0.9,
+          maxWidth: MediaQuery.of(context).size.width,
+          maxHeight: MediaQuery.of(context).size.height,
         ),
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -110,6 +111,7 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
       selectedUnit = null;
       selectedDept = null;
       selectedUsedDate = null;
+      selectedBktxt = null;
       selectedNote = null;
       filteredData = widget.data;
     });
@@ -149,16 +151,16 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
             ),
             Row(
               children: [
-                widget.group != "PE"
-                    ? Text(
-                      "Share: ${diff.toStringAsFixed(1)}K\$",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    )
-                    : SizedBox(),
-                SizedBox(width: 16),
+                // widget.group != "PE"
+                //     ? Text(
+                //       "Share: ${diff.toStringAsFixed(1)}K\$",
+                //       style: TextStyle(
+                //         fontWeight: FontWeight.bold,
+                //         fontSize: 18,
+                //       ),
+                //     )
+                //     : SizedBox(),
+                // SizedBox(width: 16),
                 Text(
                   "Total: ${(totalAmount / 1000).toStringAsFixed(1)}K\$",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -235,6 +237,7 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
   String? selectedXblnr2;
   String? selectedUnit;
   String? selectedUsedDate;
+  String? selectedBktxt;
   String? selectedNote;
 
   void _applyFilter() {
@@ -252,7 +255,7 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
                 item.unit.toLowerCase().contains(query) ||
                 item.qty.toString().toLowerCase().contains(query) ||
                 item.amount.toString().toLowerCase().contains(query);
-
+            item.note.toLowerCase().contains(query);
             final matchesDept =
                 selectedDept == null || item.dept == selectedDept;
             final matchesMatnr =
@@ -265,9 +268,10 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
                 selectedUnit == null || item.unit == selectedUnit;
             final matchesUsedDate =
                 selectedUsedDate == null || item.useDate == selectedUsedDate;
+            final matchesBktxt =
+                selectedBktxt == null || item.bktxt == selectedBktxt;
             final matchesNote =
-                selectedNote == null || item.bktxt == selectedNote;
-
+                selectedNote == null || item.note == selectedNote;
             return matchesSearch &&
                 matchesDept &&
                 matchesMatnr &&
@@ -275,6 +279,7 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
                 matchesXblnr2 &&
                 matchesUnit &&
                 matchesUsedDate &&
+                matchesBktxt &&
                 matchesNote;
           }).toList();
     });
@@ -340,7 +345,7 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
           Table(
             border: TableBorder.all(color: theme.dividerColor.withOpacity(0.8)),
             columnWidths: {
-              0: FixedColumnWidth(120),
+              0: FixedColumnWidth(130),
               1: FixedColumnWidth(150),
               2: FixedColumnWidth(500),
               3: FixedColumnWidth(150),
@@ -349,6 +354,7 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
               6: FixedColumnWidth(100),
               7: FixedColumnWidth(100),
               8: FixedColumnWidth(120),
+              9: FixedColumnWidth(140),
             },
             children: [
               TableRow(
@@ -409,9 +415,33 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
                     },
                   ),
                   _buildDropdownHeader(
+                    title: 'BKTXT',
+                    selectedValue: selectedBktxt,
+                    values: _getUniqueValues((e) => e.bktxt),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedBktxt = value;
+                        _applyFilter();
+                      });
+                    },
+                  ),
+                  _buildTableCell('Qty', isHeader: true),
+                  _buildDropdownHeader(
+                    title: 'Unit',
+                    selectedValue: selectedUnit,
+                    values: _getUniqueValues((e) => e.unit),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedUnit = value;
+                        _applyFilter();
+                      });
+                    },
+                  ),
+                  _buildTableCell('Amount \$', isHeader: true),
+                  _buildDropdownHeader(
                     title: 'Note',
                     selectedValue: selectedNote,
-                    values: _getUniqueValues((e) => e.bktxt),
+                    values: _getUniqueValues((e) => e.note),
                     onChanged: (value) {
                       setState(() {
                         selectedNote = value;
@@ -419,9 +449,6 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
                       });
                     },
                   ),
-                  _buildTableCell('Qty', isHeader: true),
-                  _buildTableCell('Unit', isHeader: true),
-                  _buildTableCell('Amount \$', isHeader: true),
                 ],
               ),
             ],
@@ -443,7 +470,7 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
                       color: theme.dividerColor.withOpacity(0.8),
                     ),
                     columnWidths: {
-                      0: FixedColumnWidth(120),
+                      0: FixedColumnWidth(130),
                       1: FixedColumnWidth(150),
                       2: FixedColumnWidth(500),
                       3: FixedColumnWidth(150),
@@ -452,6 +479,7 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
                       6: FixedColumnWidth(100),
                       7: FixedColumnWidth(100),
                       8: FixedColumnWidth(120),
+                      9: FixedColumnWidth(140),
                     },
                     children:
                         filteredData.map((item) {
@@ -472,6 +500,7 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
                                 item.amount.toStringAsFixed(2),
                                 isNumber: true,
                               ),
+                              _buildTableCell(item.note),
                             ],
                           );
                         }).toList(),

@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import '../Model/ToolCostModel.dart';
-import '../API/ApiService.dart';
-import '../Model/ToolCostSubDetailModel.dart';
+
+import '../../API/ApiService.dart';
+import '../../Model/ToolCostModel.dart';
+import '../../Model/ToolCostSubDetailModel.dart';
+
 class ToolCostProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();
 
@@ -74,7 +76,11 @@ class ToolCostProvider with ChangeNotifier {
 
   List<ToolCostSubDetailModel> get subDetailData => _subDetailData;
 
-  Future<void> fetchToolCostsSubDetail(String month, String dept, String group) async {
+  Future<void> fetchToolCostsSubDetail(
+    String month,
+    String dept,
+    String group,
+  ) async {
     final now = DateTime.now();
 
     // Sửa điều kiện: nếu đã tải hôm nay VÀ cùng tháng thì không cần gọi lại
@@ -89,7 +95,11 @@ class ToolCostProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final result = await _apiService.fetchToolCostsSubDetail(month,dept,group);
+    final result = await _apiService.fetchToolCostsSubDetail(
+      month,
+      dept,
+      group,
+    );
     _subDetailData = result;
     _lastLoadedDate = now;
     _lastLoadedMonth = month; // Cập nhật tháng
@@ -98,14 +108,10 @@ class ToolCostProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
-
-
   void setSelectedItem(ToolCostModel item) {
     selectedItem = item;
     notifyListeners(); // Thông báo rằng có sự thay đổi dữ liệu
   }
-
 
   void clearData() {
     _data = [];

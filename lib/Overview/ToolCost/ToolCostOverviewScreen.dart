@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../Common/DesignedByText.dart';
-import '../Common/NoDataWidget.dart';
-import '../Provider/DateProvider.dart';
-import '../Provider/ToolCostProvider.dart';
+import '../../Common/DesignedByText.dart';
+import '../../Common/NoDataWidget.dart';
+import '../../Provider/DateProvider.dart';
+import '../../Provider/ToolCost/ToolCostProvider.dart';
 import 'ToolCostOverviewChart.dart';
 
 class ToolCostOverviewScreen extends StatefulWidget {

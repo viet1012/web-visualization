@@ -12,7 +12,7 @@ import '../Common/NoDataWidget.dart';
 import '../Common/ToolCostPopup.dart';
 import '../Model/DetailsDataModel.dart';
 import '../Provider/DateProvider.dart';
-import '../Provider/ToolCostSubDetailProvider.dart';
+import '../Provider/ToolCost/ToolCostSubDetailProvider.dart';
 
 class ToolCostSubDetailScreen extends StatefulWidget {
   // final ToolCostModel item;
@@ -46,6 +46,23 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
 
   final numberFormat = NumberFormat("##0.0");
   late String _currentGroup;
+
+  List<double> cumulativeFC_Adjust = [];
+  List<double> filteredCumulativeActual = [];
+  List<double> filterdCumulativeFC_Adjust_MTD = [];
+
+  double get fcAdjustWholeMonth =>
+      cumulativeFC_Adjust.isNotEmpty ? cumulativeFC_Adjust.last : 0;
+
+  double get actMTD =>
+      filteredCumulativeActual.isNotEmpty ? filteredCumulativeActual.last : 0;
+
+  double get fcAdjustMTD =>
+      filterdCumulativeFC_Adjust_MTD.isNotEmpty
+          ? filterdCumulativeFC_Adjust_MTD.last
+          : 0;
+
+  double get ratio => fcAdjustWholeMonth > 0 ? actMTD / fcAdjustMTD : 0;
 
   @override
   void initState() {
@@ -157,6 +174,9 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
               icon: Icons.error_outline,
             );
           }
+
+          final stackedSeries = _buildStackedSeries(provider.subDetails);
+
           return SingleChildScrollView(
             child: Card(
               elevation: 8,
@@ -184,9 +204,47 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
                         // Icon(statusIcon, color: statusColor, size: 24),
                       ],
                     ),
+                    Card(
+                      elevation: 6,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 8,
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _buildMetricRow(
+                              "FC_Adjust",
+                              fcAdjustWholeMonth,
+                              Colors.orange,
+                            ),
+                            SizedBox(width: 26),
+                            _buildMetricRow(
+                              "FC_Adjust_MTD",
+                              fcAdjustMTD,
+                              Colors.orangeAccent,
+                            ),
+                            SizedBox(width: 26),
+                            _buildMetricRow("Act_MTD", actMTD, Colors.blue),
+                            SizedBox(width: 26),
+                            _buildMetricRow(
+                              "Ratio",
+                              ratio * 100,
+                              getRatioColor(ratio),
+                              isPercent: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 22),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * .8,
+                      height: MediaQuery.of(context).size.height * .73,
                       child: SfCartesianChart(
                         margin: const EdgeInsets.all(0),
                         plotAreaBorderWidth: 0,
@@ -256,7 +314,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
                           canShowMarker: true,
                           textStyle: TextStyle(fontSize: 20),
                         ),
-                        series: _buildStackedSeries(provider.subDetails),
+                        series: stackedSeries,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -308,20 +366,21 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
     List<ToolCostSubDetailModel> data,
   ) {
     List<double> cumulativeActual = [];
-    List<double> cumulativeTarget = [];
-    List<double> cumulativeTargetDemo = [];
+    List<double> localCumulativeFC_Adjust = [];
+    List<double> cumulativeFC_Org = [];
 
     double totalActual = 0;
-    double totalTarget = 0;
-    double totalTargetDemo = 0;
+    double totalFC_Adjust = 0;
+    double totalFC_Org = 0;
 
     for (var item in data) {
       totalActual += item.act;
-      totalTarget += item.targetAdjust;
-      totalTargetDemo += item.targetOrg;
+      totalFC_Org += item.targetOrg;
+      totalFC_Adjust = totalFC_Org * (1 + item.divAdj);
+
       cumulativeActual.add(totalActual);
-      cumulativeTarget.add(totalTarget);
-      cumulativeTargetDemo.add(totalTargetDemo);
+      localCumulativeFC_Adjust.add(totalFC_Adjust);
+      cumulativeFC_Org.add(totalFC_Org);
     }
 
     final now = DateTime.now();
@@ -352,12 +411,25 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
     print('📦 Original data length: ${data.length}');
     print('✅ Filtered data length: ${filteredData.length}');
 
-    final List<double> filteredCumulativeActual = [];
+    final List<double> localFilteredCumulativeActual = [];
     double cumulative = 0;
+    final List<double> localFilteredCumulativeFC_Adjust_MTD = [];
+    double adjustMTD = 0;
+    double totalFC_OrgMTD = 0;
+
     for (var item in filteredData) {
       cumulative += item.act;
-      filteredCumulativeActual.add(cumulative);
+
+      totalFC_OrgMTD += item.targetOrg;
+      adjustMTD = totalFC_OrgMTD * (1 + item.divAdj);
+
+      localFilteredCumulativeActual.add(cumulative);
+      localFilteredCumulativeFC_Adjust_MTD.add(adjustMTD);
     }
+
+    cumulativeFC_Adjust = localCumulativeFC_Adjust;
+    filteredCumulativeActual = localFilteredCumulativeActual;
+    filterdCumulativeFC_Adjust_MTD = localFilteredCumulativeFC_Adjust_MTD;
 
     final int lastNonZeroIndex = getLastNonZeroIndex(data);
 
@@ -485,7 +557,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
       LineSeries<ToolCostSubDetailModel, String>(
         dataSource: data,
         xValueMapper: (d, index) => DateFormat('dd').format(d.date),
-        yValueMapper: (d, index) => cumulativeTargetDemo[index],
+        yValueMapper: (d, index) => cumulativeFC_Org[index],
         yAxisName: 'CumulativeAxis',
         name: 'Cumulative Target Demo',
         color: Colors.grey,
@@ -503,7 +575,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
         dashArray: [0, 0],
         dataLabelMapper: (d, index) {
           return index == data.length - 1
-              ? cumulativeTargetDemo[index].toStringAsFixed(1)
+              ? cumulativeFC_Org[index].toStringAsFixed(1)
               : '';
         },
       ),
@@ -511,7 +583,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
       LineSeries<ToolCostSubDetailModel, String>(
         dataSource: data,
         xValueMapper: (d, index) => DateFormat('dd').format(d.date),
-        yValueMapper: (d, index) => cumulativeTarget[index],
+        yValueMapper: (d, index) => localCumulativeFC_Adjust[index],
         yAxisName: 'CumulativeAxis',
         name: 'Cumulative Target',
         color: Colors.orange,
@@ -529,7 +601,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
         dashArray: [0, 0],
         dataLabelMapper: (d, index) {
           return index == data.length - 1
-              ? cumulativeTarget[index].toStringAsFixed(1)
+              ? localCumulativeFC_Adjust[index].toStringAsFixed(1)
               : '';
         },
       ),
@@ -537,7 +609,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
       LineSeries<ToolCostSubDetailModel, String>(
         dataSource: filteredData,
         xValueMapper: (d, index) => DateFormat('dd').format(d.date),
-        yValueMapper: (d, index) => filteredCumulativeActual[index],
+        yValueMapper: (d, index) => localFilteredCumulativeActual[index],
         yAxisName: 'CumulativeAxis',
         name: 'Cumulative Actual',
         color: Colors.blue,
@@ -556,7 +628,7 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
         dashArray: [0, 0],
         dataLabelMapper: (d, index) {
           return index == filteredData.length - 1
-              ? filteredCumulativeActual[index].toStringAsFixed(1)
+              ? localFilteredCumulativeActual[index].toStringAsFixed(1)
               : '';
         },
       ),
@@ -609,5 +681,38 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
         Text(label, style: const TextStyle(fontSize: 18)),
       ],
     );
+  }
+
+  Widget _buildMetricRow(
+    String label,
+    double value,
+    Color color, {
+    bool isPercent = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        children: [
+          Text(label, style: TextStyle(fontSize: 18)),
+          SizedBox(width: 16),
+          Text(
+            isPercent
+                ? "${value.toStringAsFixed(1)}%"
+                : "${value.toStringAsFixed(1)}K\$",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color getRatioColor(double ratio) {
+    if (ratio >= 1.0) return Colors.green;
+    if (ratio >= 0.8) return Colors.orange;
+    return Colors.red;
   }
 }

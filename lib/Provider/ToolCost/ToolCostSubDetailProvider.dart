@@ -1,7 +1,9 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
-import '../API/ApiService.dart';
-import '../Model/ToolCostSubDetailModel.dart';
+
+import '../../API/ApiService.dart';
+import '../../Model/ToolCostSubDetailModel.dart';
 
 class ToolCostSubDetailProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();
@@ -32,8 +34,14 @@ class ToolCostSubDetailProvider with ChangeNotifier {
         print("[SubDetail DATE CHANGED] Refreshing...");
         _lastFetchedDate = now;
 
-        if (_lastLoadedMonth != null && _currentDept != null && _currentGroup != null) {
-          await fetchToolCostsSubDetail(_lastLoadedMonth!, _currentDept!, _currentGroup!);
+        if (_lastLoadedMonth != null &&
+            _currentDept != null &&
+            _currentGroup != null) {
+          await fetchToolCostsSubDetail(
+            _lastLoadedMonth!,
+            _currentDept!,
+            _currentGroup!,
+          );
         }
       }
     });
@@ -43,7 +51,10 @@ class ToolCostSubDetailProvider with ChangeNotifier {
       a.year == b.year && a.month == b.month && a.day == b.day;
 
   Future<void> fetchToolCostsSubDetail(
-      String month, String deptInput, String group) async {
+    String month,
+    String deptInput,
+    String group,
+  ) async {
     final now = DateTime.now();
 
     if (_lastLoadedDate != null &&
@@ -59,7 +70,11 @@ class ToolCostSubDetailProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final subDetailResult = await _apiService.fetchToolCostsSubDetail(month, deptInput, group);
+    final subDetailResult = await _apiService.fetchToolCostsSubDetail(
+      month,
+      deptInput,
+      group,
+    );
     _subDetails = subDetailResult;
 
     _lastLoadedDate = now;

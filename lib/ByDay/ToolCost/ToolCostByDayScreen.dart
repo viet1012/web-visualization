@@ -4,16 +4,16 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-import '../API/ApiService.dart';
-import '../Common/CustomToolCostAppBar.dart';
-import '../Common/DesignedByText.dart';
-import '../Common/NoDataWidget.dart';
-import '../Common/ToolCostPopup.dart';
-import '../Model/DetailsDataModel.dart';
-import '../Model/ToolCostByDayModel.dart';
-import '../Provider/DateProvider.dart';
-import '../Provider/ToolCostByDayProvider.dart';
-import '../Provider/ToolCostSubDetailProvider.dart';
+import '../../API/ApiService.dart';
+import '../../Common/CustomToolCostAppBar.dart';
+import '../../Common/DesignedByText.dart';
+import '../../Common/NoDataWidget.dart';
+import '../../Common/ToolCostPopup.dart';
+import '../../Model/DetailsDataModel.dart';
+import '../../Model/ToolCostByDayModel.dart';
+import '../../Provider/DateProvider.dart';
+import '../../Provider/ToolCost/ToolCostByDayProvider.dart';
+import '../../Provider/ToolCost/ToolCostSubDetailProvider.dart';
 
 class ToolCostByDayScreen extends StatefulWidget {
   final String dept;
@@ -392,8 +392,6 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
       cumulativeFC_Org.add(totalFC_Org);
     }
 
-    cumulativeFC_Adjust = localCumulativeFC_Adjust;
-
     final now = DateTime.now();
     final dateProvider = context.read<DateProvider>();
     final selected = dateProvider.selectedDate;
@@ -436,7 +434,7 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
       localFilteredCumulativeActual.add(cumulative);
       localFilteredCumulativeFC_Adjust_MTD.add(adjustMTD);
     }
-
+    cumulativeFC_Adjust = localCumulativeFC_Adjust;
     filteredCumulativeActual = localFilteredCumulativeActual;
     filteredCumulativeFC_Adjust_MTD = localFilteredCumulativeFC_Adjust_MTD;
 
@@ -695,7 +693,6 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
-        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: const TextStyle(fontSize: 18)),
           SizedBox(width: 16),
