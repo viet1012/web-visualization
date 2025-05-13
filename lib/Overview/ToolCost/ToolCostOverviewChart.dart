@@ -224,7 +224,7 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Actual: ${numberFormat.format(item.actual)}',
+                          'Actual: ${numberFormat.format(item.actual)}K\$',
                           style: const TextStyle(
                             fontSize: 20,
                             color: Colors.white,
@@ -259,7 +259,7 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                       color: Colors.black,
                       padding: const EdgeInsets.all(8),
                       child: Text(
-                        'Target_Org: ${numberFormat.format(item.target_ORG)}',
+                        'Target_Org: ${numberFormat.format(item.target_ORG)}K\$',
                         // 👈 hiện target_ORG
                         style: const TextStyle(
                           fontSize: 20,
@@ -282,7 +282,7 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                       ),
                     ),
                     child: Text(
-                      'Target_Adjust: ${numberFormat.format(item.target_Adjust)}', // 👈 hiện target_ORG
+                      'Target_Adjust: ${numberFormat.format(item.target_Adjust)}K\$', // 👈 hiện target_ORG
                       style: const TextStyle(fontSize: 20, color: Colors.white),
                     ),
                   );
@@ -298,7 +298,7 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                         ),
                       ),
                       child: Text(
-                        'Target_Adjust: ${numberFormat.format(point.y)}',
+                        'Target_Adjust: ${numberFormat.format(point.y)}K\$',
                         // 👈 hiện y value bình thường
                         style: const TextStyle(
                           fontSize: 20,
@@ -318,8 +318,8 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
                         padding: const EdgeInsets.all(8),
                         child: Text(
                           item.target_ORG > item.target_Adjust
-                              ? 'Target_Adjust: ${numberFormat.format(point.y)}'
-                              : 'Target_Org: ${numberFormat.format(point.y)}',
+                              ? 'Target_Adjust: ${numberFormat.format(point.y)}K\$'
+                              : 'Target_Org: ${numberFormat.format(point.y)}K\$',
                           // 👈 hiện y value bình thường
                           style: const TextStyle(
                             fontSize: 20,
