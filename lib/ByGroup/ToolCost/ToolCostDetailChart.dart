@@ -74,7 +74,7 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
               ),
             ),
             onAxisLabelTapped: (AxisLabelTapArgs args) {
-              final index = widget.data.indexWhere((e) => e.title == args.text);
+              final index = widget.data.indexWhere((e) => e.dept == args.text);
               if (index != -1) {
                 final item = widget.data[index];
                 setState(() {
@@ -103,10 +103,10 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
                 //     builder: (_) => ToolCostSubDetailScreen(dept: widget.toolCost.title, group: item.title, month: widget.month,),
                 //   ),
                 // );
-                print('Navigating to /${item.title}/${widget.month}');
+                print('Navigating to /${item.dept}/${widget.month}');
                 // context.go('/${widget.toolCost.title}/${item.title}?month=${widget.month}');
                 context.go(
-                  '/sub-detail/${widget.toolCost.title}/${item.title}',
+                  '/sub-detail/${widget.toolCost.title}/${item.dept}',
                   extra: {'month': widget.month},
                 );
               }
@@ -129,10 +129,11 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
   List<CartesianSeries<ToolCostDetailModel, String>> _buildSeries(
     List<ToolCostDetailModel> data,
   ) {
+    final filteredData = data.where((item) => item.title != 'PE').toList();
     return <CartesianSeries<ToolCostDetailModel, String>>[
       AreaSeries<ToolCostDetailModel, String>(
         dataSource: data,
-        xValueMapper: (item, _) => item.title,
+        xValueMapper: (item, _) => item.dept,
         yValueMapper: (item, _) => item.target_ORG,
         dataLabelMapper:
             (item, _) =>
@@ -158,8 +159,8 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
         ),
       ),
       AreaSeries<ToolCostDetailModel, String>(
-        dataSource: data,
-        xValueMapper: (item, _) => item.title,
+        dataSource: filteredData,
+        xValueMapper: (item, _) => item.dept,
         yValueMapper: (item, _) => item.target_Adjust,
         dataLabelMapper:
             (item, _) =>
@@ -189,7 +190,7 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
       ),
       ColumnSeries<ToolCostDetailModel, String>(
         dataSource: data,
-        xValueMapper: (item, _) => item.title,
+        xValueMapper: (item, _) => item.dept,
         yValueMapper: (item, _) => item.actual,
         dataLabelMapper:
             (item, _) =>
@@ -224,7 +225,7 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
           try {
             // Gọi API để lấy dữ liệu
             List<DetailsDataModel> detailsData = await ApiService()
-                .fetchSubDetailsData(widget.month, widget.dept, item.title);
+                .fetchSubDetailsData(widget.month, widget.dept, item.dept);
 
             // Tắt loading
             Navigator.of(context).pop();

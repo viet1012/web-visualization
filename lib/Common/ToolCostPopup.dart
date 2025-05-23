@@ -341,6 +341,8 @@ class _ToolCostPopupState extends State<ToolCostPopup> {
       controller: _scrollController,
       thumbVisibility: true,
       child: SingleChildScrollView(
+        controller: _scrollController,
+
         scrollDirection: Axis.horizontal,
         child: Column(
           children: [

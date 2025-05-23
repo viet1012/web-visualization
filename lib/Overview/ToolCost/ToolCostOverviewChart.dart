@@ -344,6 +344,72 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
     List<ToolCostModel> data,
   ) {
     return <CartesianSeries<ToolCostModel, String>>[
+      // / / // / / / / / / / / // // / // // / / / / // / /  / / / / / // / / / / / /
+      StackedColumnSeries<ToolCostModel, String>(
+        animationDuration: 500,
+        // 👈 Tắt animation
+        dataSource: data,
+        xValueMapper: (item, _) => item.title,
+        yValueMapper:
+            (item, _) =>
+                (item.target_Adjust < item.target_ORG)
+                    ? item.target_Adjust
+                    : item.target_ORG,
+        dataLabelMapper: (item, _) => numberFormat.format(item.target_Adjust),
+        name: 'TGT_Adjust',
+        color: Colors.grey,
+        width: 0.5,
+        spacing: 0.2,
+        dataLabelSettings: const DataLabelSettings(
+          isVisible: true,
+          textStyle: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+      ),
+
+      StackedColumnSeries<ToolCostModel, String>(
+        animationDuration: 500,
+        // 👈 Tắt animation
+        dataSource: data,
+        xValueMapper: (item, _) => item.title,
+        yValueMapper: (item, _) => item.orgMinusAdjust,
+        name: 'Thừa ORG',
+        color: Colors.transparent,
+        borderColor: Colors.grey.shade700,
+        borderWidth: 2,
+        dashArray: [5, 5],
+        width: 0.5,
+        spacing: 0.2,
+        dataLabelSettings: const DataLabelSettings(isVisible: false),
+      ),
+
+      StackedColumnSeries<ToolCostModel, String>(
+        animationDuration: 500,
+        // 👈 Tắt animation
+        dataSource: data,
+        xValueMapper: (item, _) => item.title,
+        yValueMapper:
+            (item, _) =>
+                (item.target_Adjust > item.target_ORG)
+                    ? item.adjustMinusOrg
+                    : 0,
+        name: 'Thiếu ORG',
+        color: Colors.grey,
+        borderWidth: 4,
+        width: 0.5,
+        spacing: 0.2,
+        dataLabelSettings: const DataLabelSettings(
+          textStyle: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+      ),
+
       ColumnSeries<ToolCostModel, String>(
         animationDuration: 500,
         // 👈 Tắt animation
@@ -428,72 +494,6 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
             ).showSnackBar(SnackBar(content: Text('Error fetching data')));
           }
         },
-      ),
-
-      // / / // / / / / / / / / // // / // // / / / / // / /  / / / / / // / / / / / /
-      StackedColumnSeries<ToolCostModel, String>(
-        animationDuration: 500,
-        // 👈 Tắt animation
-        dataSource: data,
-        xValueMapper: (item, _) => item.title,
-        yValueMapper:
-            (item, _) =>
-                (item.target_Adjust < item.target_ORG)
-                    ? item.target_Adjust
-                    : item.target_ORG,
-        dataLabelMapper: (item, _) => numberFormat.format(item.target_Adjust),
-        name: 'TGT_Adjust',
-        color: Colors.grey,
-        width: 0.5,
-        spacing: 0.2,
-        dataLabelSettings: const DataLabelSettings(
-          isVisible: true,
-          textStyle: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
-      ),
-
-      StackedColumnSeries<ToolCostModel, String>(
-        animationDuration: 500,
-        // 👈 Tắt animation
-        dataSource: data,
-        xValueMapper: (item, _) => item.title,
-        yValueMapper: (item, _) => item.orgMinusAdjust,
-        name: 'Thừa ORG',
-        color: Colors.transparent,
-        borderColor: Colors.grey.shade700,
-        borderWidth: 2,
-        dashArray: [5, 5],
-        width: 0.5,
-        spacing: 0.2,
-        dataLabelSettings: const DataLabelSettings(isVisible: false),
-      ),
-
-      StackedColumnSeries<ToolCostModel, String>(
-        animationDuration: 500,
-        // 👈 Tắt animation
-        dataSource: data,
-        xValueMapper: (item, _) => item.title,
-        yValueMapper:
-            (item, _) =>
-                (item.target_Adjust > item.target_ORG)
-                    ? item.adjustMinusOrg
-                    : 0,
-        name: 'Thiếu ORG',
-        color: Colors.grey,
-        borderWidth: 4,
-        width: 0.5,
-        spacing: 0.2,
-        dataLabelSettings: const DataLabelSettings(
-          textStyle: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
       ),
     ];
   }
