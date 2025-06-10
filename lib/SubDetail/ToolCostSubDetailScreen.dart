@@ -8,8 +8,8 @@ import 'package:visualization/Model/ToolCostSubDetailModel.dart';
 import '../API/ApiService.dart';
 import '../Common/CustomToolCostAppBar.dart';
 import '../Common/DesignedByText.dart';
+import '../Common/DetailsDataPopup.dart';
 import '../Common/NoDataWidget.dart';
-import '../Common/ToolCostPopup.dart';
 import '../Model/DetailsDataModel.dart';
 import '../Provider/DateProvider.dart';
 import '../Provider/ToolCost/ToolCostSubDetailProvider.dart';
@@ -487,11 +487,9 @@ class _ToolCostSubDetailScreenState extends State<ToolCostSubDetailScreen> {
               showDialog(
                 context: context,
                 builder:
-                    (_) => ToolCostPopup(
-                      title: 'Details Data',
+                    (_) => DetailsDataPopup(
+                      title: 'By Day/Details',
                       data: detailsData,
-                      totalActual: item.act,
-                      group: widget.group,
                     ),
               );
             } else {

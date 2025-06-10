@@ -7,8 +7,8 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import '../../API/ApiService.dart';
 import '../../Common/CustomToolCostAppBar.dart';
 import '../../Common/DesignedByText.dart';
+import '../../Common/DetailsDataPopup.dart';
 import '../../Common/NoDataWidget.dart';
-import '../../Common/ToolCostPopup.dart';
 import '../../Model/DetailsDataModel.dart';
 import '../../Model/ToolCostByDayModel.dart';
 import '../../Provider/DateProvider.dart';
@@ -488,12 +488,7 @@ class _ToolCostByDayScreenState extends State<ToolCostByDayScreen> {
               showDialog(
                 context: context,
                 builder:
-                    (_) => ToolCostPopup(
-                      title: 'Details Data',
-                      data: detailsData,
-                      totalActual: item.act,
-                      group: widget.dept,
-                    ),
+                    (_) => DetailsDataPopup(title: 'By Day', data: detailsData),
               );
             } else {
               // Có thể thêm thông báo nếu không có dữ liệu

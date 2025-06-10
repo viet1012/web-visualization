@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:visualization/API/ApiService.dart';
 
-import '../../Common/ToolCostPopup.dart';
+import '../../Common/DetailsDataPopup.dart';
 import '../../Common/ToolCostStatusHelper.dart';
 import '../../Model/DetailsDataModel.dart';
 import '../../Model/ToolCostModel.dart';
@@ -457,12 +457,8 @@ class _ToolCostOverviewChartState extends State<ToolCostOverviewChart> {
               showDialog(
                 context: context,
                 builder:
-                    (_) => ToolCostPopup(
-                      title: 'Details Data',
-                      data: detailsData,
-                      totalActual: item.title == "PE" ? 0 : item.actual,
-                      group: item.title,
-                    ),
+                    (_) =>
+                        DetailsDataPopup(title: 'Overview', data: detailsData),
               );
             } else {
               // Có thể thêm thông báo nếu không có dữ liệu

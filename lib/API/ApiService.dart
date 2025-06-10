@@ -71,7 +71,7 @@ class ApiService {
     String deptInput,
   ) async {
     final url = Uri.parse(
-      "$baseUrl/tool-cost-detail?month=$month&dept=$deptInput",
+      "$baseUrl/tool-cost/by-group?month=$month&dept=$deptInput",
     );
     print("Url: $url");
     try {
@@ -97,7 +97,9 @@ class ApiService {
     String month,
     String deptInput,
   ) async {
-    final url = Uri.parse("$baseUrl/details-data?month=$month&dept=$deptInput");
+    final url = Uri.parse(
+      "$baseUrl/tool-cost/details-data?month=$month&dept=$deptInput",
+    );
     print("url: $url");
 
     try {
@@ -123,7 +125,7 @@ class ApiService {
     final encodedGroup = Uri.encodeComponent(group); // 👈 Encode group
 
     final url = Uri.parse(
-      "$baseUrl/sub-details-data?month=$month&dept=$deptInput&group=$encodedGroup",
+      "$baseUrl/tool-cost/by-group/details-data?month=$month&dept=$deptInput&group=$encodedGroup",
     );
     print("url: $url");
     try {
@@ -148,7 +150,7 @@ class ApiService {
   ) async {
     final encodedGroup = Uri.encodeComponent(group); // 👈 Encode group
     final url = Uri.parse(
-      "$baseUrl/tool-cost-sub-detail?month=$month&dept=$deptInput&group=$encodedGroup",
+      "$baseUrl/tool-cost/by-group/detail?month=$month&dept=$deptInput&group=$encodedGroup",
     );
 
     print("url: $url");
@@ -178,7 +180,7 @@ class ApiService {
     final encodedGroup = Uri.encodeComponent(group); // 👈 Encode group
 
     final url = Uri.parse(
-      "$baseUrl/sub-sub-details-data?month=$month&dept=$deptInput&group=$encodedGroup",
+      "$baseUrl/tool-cost/by-group/detail/data?month=$month&dept=$deptInput&group=$encodedGroup",
     );
     print("url: $url");
     try {
@@ -201,7 +203,7 @@ class ApiService {
     String deptInput,
   ) async {
     final url = Uri.parse(
-      "$baseUrl/tool-cost-by-day?month=$month&div=$deptInput",
+      "$baseUrl/tool-cost/by-day?month=$month&div=$deptInput",
     );
 
     print("url: $url");
@@ -226,7 +228,7 @@ class ApiService {
     String deptInput,
   ) async {
     final url = Uri.parse(
-      "$baseUrl/by-day/details-data?month=$month&dept=$deptInput",
+      "$baseUrl/tool-cost/by-day/details-data?month=$month&dept=$deptInput",
     );
     print("url: $url");
 

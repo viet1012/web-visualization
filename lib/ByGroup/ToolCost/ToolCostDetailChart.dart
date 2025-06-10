@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../API/ApiService.dart';
-import '../../Common/ToolCostPopup.dart';
+import '../../Common/DetailsDataPopup.dart';
 import '../../Model/DetailsDataModel.dart';
 import '../../Model/ToolCostDetailModel.dart';
 import '../../Model/ToolCostModel.dart';
@@ -235,12 +235,8 @@ class _ToolCostDetailChartState extends State<ToolCostDetailChart> {
               showDialog(
                 context: context,
                 builder:
-                    (_) => ToolCostPopup(
-                      title: 'Details Data',
-                      data: detailsData,
-                      totalActual: item.actual,
-                      group: widget.dept,
-                    ),
+                    (_) =>
+                        DetailsDataPopup(title: 'By Group', data: detailsData),
               );
             } else {
               // Có thể thêm thông báo nếu không có dữ liệu
