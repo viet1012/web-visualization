@@ -784,9 +784,9 @@ class _DetailsDataPopupState extends State<DetailsDataPopup> {
         item.useDate,
         item.kostl,
         item.konto,
-        item.maktx,
-        item.xblnr2,
-        item.bktxt,
+        item.xblnr2, // ✔ đúng vị trí
+        item.bktxt, // ✔ đúng vị trí
+        item.qty, // ✔ thêm đúng trường QTY
         item.unit,
         item.amount,
         item.note,
